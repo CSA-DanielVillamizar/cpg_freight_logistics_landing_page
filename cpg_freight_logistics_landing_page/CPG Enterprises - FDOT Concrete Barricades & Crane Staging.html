@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>Quote Request | CPG Enterprises</title><link href="https://fonts.googleapis.com/css2?family=Chivo:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-container": "#586377", "tertiary-fixed": "#ffdbce", "on-secondary-fixed-variant": "#3c475a", "on-surface-variant": "#44474c", "surface-container-lowest": "#ffffff", "surface-dim": "#cbdbf5", "secondary-fixed": "#d8e3fb", "secondary-fixed-dim": "#bcc7de", "on-tertiary-fixed": "#370e00", "error-container": "#ffdad6", "tertiary-fixed-dim": "#ffb599", "on-secondary": "#ffffff", "tertiary-container": "#370e00", "on-tertiary": "#ffffff", "inverse-primary": "#bac7e1", "surface": "#f8f9ff", "tertiary": "#000000", "on-error-container": "#93000a", "surface-container-highest": "#d3e4fe", "surface-container-low": "#eff4ff", "primary-container": "#0e1c2f", "surface-muted": "#F1F5F9", "surface-bright": "#f8f9ff", "safety-amber": "#F59E0B", "primary-fixed": "#d6e3fe", "secondary": "#545f73", "on-primary-fixed-variant": "#3a475c", "on-background": "#0b1c30", "on-secondary-fixed": "#111c2d", "surface-light": "#F8FAFC", "hazard-orange": "#EA580C", "secondary-container": "#d5e0f8", "primary-fixed-dim": "#bac7e1", "surface-container-high": "#dce9ff", "outline-variant": "#c5c6cd", "background": "#f8f9ff", "on-tertiary-fixed-variant": "#7f2b00", "primary": "#000000", "on-error": "#ffffff", "on-primary-fixed": "#0e1c2f", "on-primary-container": "#77849c", "error": "#ba1a1a", "inverse-on-surface": "#eaf1ff", "steel-gray": "#334155", "on-tertiary-container": "#e45405", "on-surface": "#0b1c30", "surface-container": "#e5eeff", "on-primary": "#ffffff", "surface-tint": "#525f75", "surface-variant": "#d3e4fe", "fleet-blue": "#1C3766", "outline": "#75777d", "inverse-surface": "#213145", "signal-red": "#DD1A1A" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "spacing-2xs": "0.25rem", "gutter-tablet": "1.5rem", "spacing-2xl": "3rem", "spacing-3xl": "4rem", "gutter-desktop": "2rem", "gutter-mobile": "1rem", "spacing-xs": "0.5rem", "container-max": "80rem", "spacing-sm": "0.75rem", "spacing-md": "1rem", "spacing-lg": "1.5rem", "spacing-xl": "2rem", "spacing-4xl": "6rem" }, fontFamily: { "label-lg": ["Inter"], "headline-sm": ["Chivo"], "headline-md": ["Chivo"], "headline-lg": ["Chivo"], "body-lg": ["Inter"], "display-lg-mobile": ["Chivo"], "label-md": ["JetBrains Mono"], "body-md": ["Inter"], "headline-xl-mobile": ["Chivo"], "label-sm": ["JetBrains Mono"], "display-lg": ["Chivo"], "headline-xl": ["Chivo"], "body-sm": ["Inter"] }, fontSize: { "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }], "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }], "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }], "display-lg-mobile": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.01em", "fontWeight": "800" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }], "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500" }], "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; } body { overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter-mobile flex items-center justify-between gap-spacing-xs"><div class="flex items-center gap-spacing-sm min-w-0"><img alt='Clean professional vector logo emblem for "CPG Enterprises of Orlando, Inc.", flat modern logistics corporate mark, bold geometric typography CPG with dynamic road / freight arrow motif, deep navy blue and industrial orange accent, transparent background, minimalist vector badge.' class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1WO6OS13QUUzV2FeEpu49aDnTmBb9mOuI-p3nVWYx8OUez6Yww_zyNqSUjJQcDsR4ZgSRiPcm8zqG5-GYNX-CtsxTBLPgkZA2Lq5aevLNWlCmV7ESBLUP4JOfNyrFxW_wknW_ZgwWwPtZr5DyCnDErhkwpRkhAXqFQwyNxrBtZ3Rplee-FB9W_zFGLc3r3aqrZmsoXVFVmXMXY5lCmdxoa1QQsgxc9YijQrJowF5jA07KQ3Gojn11lnaQ"/><div class="flex flex-col min-w-0"><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface truncate">CPG Enterprises</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-steel-gray truncate">Quote Request</span></div></div><div class="flex items-center gap-spacing-xs flex-shrink-0"><a aria-label="Call (407) 555-0194" class="h-11 px-spacing-sm flex items-center gap-spacing-2xs rounded bg-surface-container text-on-surface hover:bg-secondary-container active:scale-95 transition-all" href="tel:4075550194"><span class="material-symbols-outlined text-[20px] text-hazard-orange">call</span><span class="hidden xs:inline font-label-sm text-label-sm tracking-wide">(407) 555-0194</span></a><button aria-label="Toggle Navigation Menu" class="w-11 h-11 flex items-center justify-center rounded text-on-surface hover:bg-surface-container active:scale-95 transition-all" type="button"><span class="material-symbols-outlined text-[24px]">menu</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-spacing-2xs"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-36 px-gutter-mobile bg-surface"><div class="flex flex-col w-full">
+<!-- Top Breadcrumb & Status Pill -->
+<div class="flex flex-wrap items-center justify-between gap-spacing-sm mb-spacing-md">
+<nav aria-label="Breadcrumb" class="flex items-center gap-spacing-2xs font-label-md text-label-md text-steel-gray">
+<a class="hover:text-hazard-orange transition-colors flex items-center gap-1" data-path="home" href="#">
+<span class="material-symbols-outlined text-[15px]">home</span>
+<span>Home</span>
+</a>
+<span class="text-outline-variant font-mono">/</span>
+<a class="hover:text-hazard-orange transition-colors" data-path="services" href="#">Services</a>
+<span class="text-outline-variant font-mono">/</span>
+<span class="text-on-surface font-semibold truncate">Concrete Barricades &amp; Safety Staging</span>
+</nav>
+<div class="inline-flex items-center gap-spacing-2xs px-spacing-sm py-1 bg-surface-container rounded-full text-on-surface font-label-sm text-label-sm uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-safety-amber animate-pulse"></span>
+<span>Central FL Yard Live Inventory • 5,400+ LF Staged</span>
+</div>
+</div>
+<!-- Hero Stage Banner -->
+<section class="relative overflow-hidden rounded-xl bg-primary-container text-on-primary p-spacing-lg sm:p-spacing-2xl shadow-xl mb-spacing-xl">
+<!-- Ambient Highway Industrial Graphic Details -->
+<div class="absolute right-0 top-0 w-96 h-full opacity-10 pointer-events-none flex items-center justify-end pr-spacing-lg">
+<span class="material-symbols-outlined text-[360px] text-surface">precision_manufacturing</span>
+</div>
+<div class="relative z-10 max-w-4xl flex flex-col gap-spacing-md">
+<!-- Certification Badges -->
+<div class="flex flex-wrap items-center gap-spacing-xs">
+<span class="inline-flex items-center gap-1 px-spacing-xs py-1 rounded bg-hazard-orange text-on-primary font-label-sm text-label-sm uppercase tracking-widest font-bold">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+          FDOT Approved Source
+        </span>
+<span class="inline-flex items-center gap-1 px-spacing-xs py-1 rounded bg-surface-variant/20 text-surface font-label-sm text-label-sm uppercase tracking-widest">
+          MASH TL-3 Compliant
+        </span>
+<span class="inline-flex items-center gap-1 px-spacing-xs py-1 rounded bg-surface-variant/20 text-surface font-label-sm text-label-sm uppercase tracking-widest">
+          Turnkey Crane Boom Placement
+        </span>
+</div>
+<!-- Headline -->
+<h1 class="font-headline-xl text-headline-xl sm:text-display-lg text-on-primary tracking-tight leading-tight">
+        FDOT Concrete Jersey Barricades, Staging &amp; Turnkey Crane Placement
+      </h1>
+<!-- Subtitle -->
+<p class="font-body-lg text-body-lg text-surface-container-high max-w-3xl leading-relaxed">
+        Full-service logistics delivery, certified manufacturing supply, and precision hydraulic boom crane placement of FDOT-certified precast concrete barriers for road widening, highway infrastructure, airport civil works, and perimeter security across Florida.
+      </p>
+<!-- Action Cluster -->
+<div class="flex flex-wrap items-center gap-spacing-sm pt-spacing-xs">
+<a class="h-12 px-spacing-lg bg-hazard-orange hover:bg-on-tertiary-container text-on-primary rounded font-headline-sm text-label-lg uppercase tracking-wider flex items-center justify-center gap-spacing-xs shadow-md active:scale-95 transition-all" href="#quote-calculator">
+<span class="material-symbols-outlined text-[20px]">handyman</span>
+<span>Request Barricade Staging Quote</span>
+</a>
+<a class="h-12 px-spacing-lg bg-surface-container-low hover:bg-surface-container text-on-surface rounded font-headline-sm text-label-lg uppercase tracking-wider flex items-center justify-center gap-spacing-xs shadow-sm active:scale-95 transition-all" href="tel:4075550194">
+<span class="material-symbols-outlined text-[20px] text-hazard-orange">call</span>
+<span>Direct Civil Dispatch: (407) 555-0194</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Industrial Trust Strip -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-spacing-xs mb-spacing-2xl">
+<div class="p-spacing-md bg-surface-container-lowest rounded-xl shadow-sm flex items-center gap-spacing-sm">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-fleet-blue flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">gavel</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">FDOT Index 102-100</p>
+<p class="font-body-sm text-body-sm text-steel-gray truncate">State highway certified</p>
+</div>
+</div>
+<div class="p-spacing-md bg-surface-container-lowest rounded-xl shadow-sm flex items-center gap-spacing-sm">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-hazard-orange flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">rv_hookup</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Hydraulic Boom Trucks</p>
+<p class="font-body-sm text-body-sm text-steel-gray truncate">Zero site rental crane fee</p>
+</div>
+</div>
+<div class="p-spacing-md bg-surface-container-lowest rounded-xl shadow-sm flex items-center gap-spacing-sm">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-safety-amber flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">straighten</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">10-ft &amp; 12-ft Profiles</p>
+<p class="font-body-sm text-body-sm text-steel-gray truncate">Pin &amp; loop interlock stock</p>
+</div>
+</div>
+<div class="p-spacing-md bg-surface-container-lowest rounded-xl shadow-sm flex items-center gap-spacing-sm">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-signal-red flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">bolt</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Emergency MOT Shift</p>
+<p class="font-body-sm text-body-sm text-steel-gray truncate">Rapid night lane closures</p>
+</div>
+</div>
+</div>
+<!-- Hero Photo Highlight & Live Site Placement Focus -->
+<section class="mb-spacing-2xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-spacing-lg items-center">
+<div class="lg:col-span-7 flex flex-col gap-spacing-md">
+<div class="inline-flex items-center gap-spacing-2xs text-hazard-orange font-label-md text-label-md uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]">construction</span>
+<span>Heavy Civil Installation Execution</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface leading-snug">
+          Zero-Downtime Traffic Barrier Staging on Active Highways
+        </h2>
+<p class="font-body-md text-body-md text-steel-gray leading-relaxed">
+          CPG Enterprises operates Florida's premier dedicated barrier-staging fleet. Combining Link-Belt high-capacity hydraulic mobile cranes, specialized boom-mounted haulers, and DOT-certified riggers, we eliminate contractor crane rental overhead by hoisting, aligning, and pinning barricades directly from tractor bed to the roadway line in one seamless operation.
+        </p>
+<!-- Key Specifications Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-spacing-xs pt-spacing-xs">
+<div class="p-spacing-sm bg-surface-container-low rounded">
+<span class="font-label-sm text-label-sm text-steel-gray block uppercase">Concrete Spec</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">5,000 PSI Compressive</span>
+</div>
+<div class="p-spacing-sm bg-surface-container-low rounded">
+<span class="font-label-sm text-label-sm text-steel-gray block uppercase">Axle / Crane Reach</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">32-ft Hydraulic Radius</span>
+</div>
+<div class="p-spacing-sm bg-surface-container-low rounded">
+<span class="font-label-sm text-label-sm text-steel-gray block uppercase">Night MOT Crew</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">I-4 &amp; Turnpike Vetted</span>
+</div>
+</div>
+</div>
+<!-- Verified Job Site Photo Feature -->
+<div class="lg:col-span-5 relative">
+<div class="relative overflow-hidden rounded-xl shadow-lg bg-surface-container">
+<img alt="Link-Belt hydraulic mobile crane staging FDOT precast concrete Jersey barricades along an active multi-lane Florida highway expansion with safety certified ground crew." class="w-full h-80 sm:h-96 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIIehXcHnNNl4189cgURHIqDvS84gGuFiIOn0rwAZz1f9OVhKAePAxEjSav2IMeMPlWi79Lh5HA26y1LM4P9YNu3_uUXvxL3ySKcCI79mCCfGE4-YSIG4tQIKpZin5CF_oUAGMgEUhxXy_QqQSh_vzXkOBeV4YzI4rprfDQOkTtmpGVjc1wtlUV6ZqW1-0SZD4jBtoVNoavpQSZ1ULxpituUjOD0jHI-jqwk39xqdohiQjQApGE7SC"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary-container/90 via-transparent to-transparent flex flex-col justify-end p-spacing-md">
+<div class="flex items-center justify-between text-surface-bright">
+<span class="font-label-sm text-label-sm uppercase tracking-wider bg-black/40 backdrop-blur px-spacing-xs py-1 rounded">
+                Live Project: I-4 Central Widening
+              </span>
+<span class="font-label-sm text-label-sm font-mono text-safety-amber">
+                FDOT #432115-1-52
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-surface-container-high mt-1">
+              Precision placement of 12-ft K-Rail barriers directly into traffic separation zone under live nighttime MOT escort.
+            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Equipment & Products Matrix -->
+<section class="mb-spacing-3xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-spacing-lg gap-spacing-xs">
+<div>
+<p class="font-label-sm text-label-sm text-hazard-orange uppercase tracking-widest font-bold">Standard Spec Inventory</p>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Equipment &amp; Barricade Catalog</h2>
+</div>
+<p class="font-body-sm text-body-sm text-steel-gray max-w-md">
+        All precast profiles meet Florida Department of Transportation Standard Plans 102-100 Series and NCHRP 350 / MASH Test Level 3 parameters.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-spacing-md">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-spacing-lg rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div>
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center text-fleet-blue mb-spacing-md">
+<span class="material-symbols-outlined text-[26px]">grid_goldenratio</span>
+</div>
+<div class="inline-block px-2 py-0.5 mb-spacing-xs bg-surface-container-low text-steel-gray rounded font-label-sm text-label-sm">
+            FDOT Index 102-100
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-spacing-xs">Type K-Rail &amp; F-Shape Barriers</h3>
+<p class="font-body-sm text-body-sm text-steel-gray mb-spacing-md">
+            10-ft &amp; 12-ft precast reinforced Jersey barriers with integrated heavy-gauge steel pin-and-loop interlock connections.
+          </p>
+<ul class="space-y-1 text-steel-gray font-label-sm text-label-sm mb-spacing-md">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Weight: ~4,000 lbs (10ft) / 4,800 lbs (12ft)</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Height: 32" Standard Safety Profile</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Scupper drainage voids available</li>
+</ul>
+</div>
+<a class="w-full py-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded text-center transition-colors" href="#quote-calculator">
+          Configure Units
+        </a>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-spacing-lg rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div>
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center text-hazard-orange mb-spacing-md">
+<span class="material-symbols-outlined text-[26px]">precision_manufacturing</span>
+</div>
+<div class="inline-block px-2 py-0.5 mb-spacing-xs bg-surface-container-low text-steel-gray rounded font-label-sm text-label-sm">
+            Self-Offloading Trucks
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-spacing-xs">Hydraulic Boom Placement</h3>
+<p class="font-body-sm text-body-sm text-steel-gray mb-spacing-md">
+            Direct boom positioning over curbs, guardrails, and trenches. Completely eliminates second-tier mobile crane leases on civil jobs.
+          </p>
+<ul class="space-y-1 text-steel-gray font-label-sm text-label-sm mb-spacing-md">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Up to 60-ft Reach Articulated Arms</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Certified CCO Crane Riggers on board</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Pin alignment completed directly</li>
+</ul>
+</div>
+<a class="w-full py-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded text-center transition-colors" href="#quote-calculator">
+          Configure Placement
+        </a>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-spacing-lg rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div>
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center text-steel-gray mb-spacing-md">
+<span class="material-symbols-outlined text-[26px]">flight_takeoff</span>
+</div>
+<div class="inline-block px-2 py-0.5 mb-spacing-xs bg-surface-container-low text-steel-gray rounded font-label-sm text-label-sm">
+            FAA &amp; City Compliance
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-spacing-xs">Low-Profile Airport &amp; Urban</h3>
+<p class="font-body-sm text-body-sm text-steel-gray mb-spacing-md">
+            Designed specifically for tarmac perimeter work, airport taxiway realignments, pedestrian-density civil construction, and urban work zones.
+          </p>
+<ul class="space-y-1 text-steel-gray font-label-sm text-label-sm mb-spacing-md">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Low-height 10" and 18" FAA profiles</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> High-intensity retroreflective flags &amp; tape</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Compatible with aviation beacon mounts</li>
+</ul>
+</div>
+<a class="w-full py-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded text-center transition-colors" href="#quote-calculator">
+          Configure Airport Spec
+        </a>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest p-spacing-lg rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+<div>
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center text-signal-red mb-spacing-md">
+<span class="material-symbols-outlined text-[26px]">security</span>
+</div>
+<div class="inline-block px-2 py-0.5 mb-spacing-xs bg-surface-container-low text-steel-gray rounded font-label-sm text-label-sm">
+            Crash Rated TL-3
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-spacing-xs">Attenuators &amp; End Cushions</h3>
+<p class="font-body-sm text-body-sm text-steel-gray mb-spacing-md">
+            Trailer-mounted attenuators (TMA) and stationary energy-absorbing end treatments with certified transition hardware to concrete K-Rails.
+          </p>
+<ul class="space-y-1 text-steel-gray font-label-sm text-label-sm mb-spacing-md">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> MASH TL-3 62mph crash validation</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> Rapid reconnect terminal hardware</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-safety-amber text-[16px]">check_circle</span> TMA shadow vehicle staging options</li>
+</ul>
+</div>
+<a class="w-full py-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded text-center transition-colors" href="#quote-calculator">
+          Configure Attenuators
+        </a>
+</div>
+</div>
+</section>
+<!-- 'Why CPG Civil Staging Advantage' Bento Grid -->
+<section class="mb-spacing-3xl">
+<div class="text-center max-w-2xl mx-auto mb-spacing-xl">
+<span class="font-label-sm text-label-sm text-hazard-orange uppercase tracking-widest font-bold">The CPG Advantage</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Engineered for Civil Highway Contractors</h2>
+<p class="font-body-md text-body-md text-steel-gray mt-2">
+        We bridge the gap between concrete supplier and traffic control operator. When you hire CPG, you get barrier production, freight transport, and precision placement under one insured contract.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-spacing-md">
+<!-- Bento 1 -->
+<div class="md:col-span-2 bg-surface-container-lowest p-spacing-lg sm:p-spacing-xl rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between gap-spacing-sm mb-spacing-md">
+<div>
+<span class="font-label-sm text-label-sm text-hazard-orange uppercase font-bold tracking-wider">Zero Site Labor Requirement</span>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">Turnkey White-Line Placement</h3>
+<p class="font-body-md text-body-md text-steel-gray mt-2 max-w-xl">
+              Our haulers are not common freight drivers. Every driver is a certified rigger and crane operator. We align the barrier units directly to your surveyor's paint lines, drop the locking pins, and verify road clearance before pulling off site.
+            </p>
+</div>
+<div class="w-12 h-12 rounded bg-hazard-orange/10 text-hazard-orange flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[28px]">linear_scale</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-spacing-xs pt-spacing-sm border-t-0 bg-surface-container-low p-spacing-sm rounded">
+<div>
+<span class="font-label-sm text-label-sm text-steel-gray block">Avg Cycle Time</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-mono">4.2 min</span>
+<span class="font-body-sm text-body-sm text-steel-gray block text-[11px]">per 12ft unit</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-steel-gray block">Safety Pinning</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-mono">100%</span>
+<span class="font-body-sm text-body-sm text-steel-gray block text-[11px]">Included in haul</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-steel-gray block">Line Tolerances</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-mono">± 0.5 in</span>
+<span class="font-body-sm text-body-sm text-steel-gray block text-[11px]">FDOT compliance</span>
+</div>
+</div>
+</div>
+<!-- Bento 2 -->
+<div class="bg-primary-container text-on-primary p-spacing-lg sm:p-spacing-xl rounded-xl shadow-md flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded bg-hazard-orange text-on-primary flex items-center justify-center mb-spacing-md">
+<span class="material-symbols-outlined text-[22px]">warehouse</span>
+</div>
+<span class="font-label-sm text-label-sm text-safety-amber uppercase font-bold tracking-wider">Central FL Strategic Yard</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mt-1">5,000+ Linear Feet Always Ready</h3>
+<p class="font-body-sm text-body-sm text-surface-container-high mt-2">
+            Located at Orlando's logistical hub near Boggy Creek / SR 528. Immediate dispatch coverage for Orange, Osceola, Seminole, Lake, Polk, and Volusia counties.
+          </p>
+</div>
+<div class="pt-spacing-md flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-surface-dim">24/7 Gate Dispatch</span>
+<span class="font-label-md text-label-md font-mono text-safety-amber">ORL-DEPOT-1</span>
+</div>
+</div>
+<!-- Bento 3 -->
+<div class="bg-surface-container-lowest p-spacing-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded bg-surface-container text-fleet-blue flex-items-center justify-center mb-spacing-md flex items-center">
+<span class="material-symbols-outlined text-[22px]">dark_mode</span>
+</div>
+<span class="font-label-sm text-label-sm text-hazard-orange uppercase font-bold tracking-wider">Night Work Masters</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">High-Volume Night Shifts &amp; MOT</h3>
+<p class="font-body-sm text-body-sm text-steel-gray mt-2">
+            Vetted for Florida Turnpike, I-4 Beyond the Ultimate, and Expressway Authority nightly lane closures where speed is critical to meet the 5:00 AM reopen penalty window.
+          </p>
+</div>
+<div class="mt-spacing-md p-spacing-xs bg-surface-container-low rounded font-label-sm text-label-sm text-on-surface">
+          • 0 Reopening Violations in 8 Years
+        </div>
+</div>
+<!-- Bento 4 -->
+<div class="md:col-span-2 bg-surface-container-lowest p-spacing-lg rounded-xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-spacing-md">
+<div class="max-w-md">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm rounded uppercase mb-spacing-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">stars</span>
+            FDOT DBE Certified Enterprise
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Meet Your Project DBE Goals with CPG</h3>
+<p class="font-body-sm text-body-sm text-steel-gray mt-1">
+            CPG Enterprises of Orlando, Inc. is an official Certified Disadvantaged Business Enterprise (DBE). Barricade staging and heavy haul services fully satisfy state and federal participation quotas on prime civil bids.
+          </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-spacing-xs w-full md:w-auto flex-shrink-0">
+<div class="p-spacing-sm bg-surface-container rounded text-center">
+<span class="block font-label-sm text-label-sm text-steel-gray uppercase">State Vendor</span>
+<span class="font-label-md text-label-md font-mono text-on-surface font-semibold">FL-DOT-982</span>
+</div>
+<div class="p-spacing-sm bg-surface-container rounded text-center">
+<span class="block font-label-sm text-label-sm text-steel-gray uppercase">NAICS Codes</span>
+<span class="font-label-md text-label-md font-mono text-on-surface font-semibold">484220 • 237310</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Staging & Freight Calculator -->
+<section class="bg-surface-container-lowest rounded-xl shadow-lg p-spacing-lg sm:p-spacing-xl mb-spacing-3xl" id="quote-calculator">
+<div class="border-b-0 pb-spacing-md mb-spacing-lg">
+<div class="flex flex-wrap items-center justify-between gap-spacing-sm">
+<div>
+<span class="font-label-sm text-label-sm text-hazard-orange uppercase tracking-widest font-bold">Real-Time Estimator</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Concrete Barricade &amp; Crane Staging Calculator</h2>
+<p class="font-body-sm text-body-sm text-steel-gray mt-1">
+            Configure linear footage, placement requirements, and delivery timeline for guaranteed CPG dispatch rates.
+          </p>
+</div>
+<div class="px-spacing-sm py-1 bg-surface-container rounded font-label-sm text-label-sm text-steel-gray">
+          Instant Dispatch Pre-Routing
+        </div>
+</div>
+</div>
+<form class="grid grid-cols-1 lg:grid-cols-12 gap-spacing-xl" id="barricadeCalcForm" onsubmit="event.preventDefault(); window.calculateEstimate();">
+<!-- Form Controls -->
+<div class="lg:col-span-7 flex flex-col gap-spacing-md">
+<!-- Input Group: Linear Footage & Unit Type -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-spacing-md">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1" for="linearFeet">
+              Required Length (Linear Feet)
+            </label>
+<div class="relative">
+<input class="w-full h-11 px-spacing-sm bg-surface-container-lowest text-on-surface rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-on-surface" id="linearFeet" min="50" oninput="window.calculateEstimate()" step="10" type="number" value="600"/>
+<span class="absolute right-3 top-3 text-steel-gray font-label-sm text-label-sm">LF</span>
+</div>
+<p class="font-body-sm text-body-sm text-steel-gray mt-1 text-[12px]">Standard run increments: 10ft or 12ft units</p>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1" for="barrierProfile">
+              Barrier Profile &amp; Connection
+            </label>
+<select class="w-full h-11 px-spacing-sm bg-surface-container-lowest text-on-surface rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-on-surface" id="barrierProfile" onchange="window.calculateEstimate()">
+<option selected="" value="12ft-fshape">12-ft FDOT F-Shape Precast (4,800 lbs)</option>
+<option value="10ft-krail">10-ft K-Rail Jersey Profile (4,000 lbs)</option>
+<option value="low-profile">Low-Profile Airport / Urban Tarmac (18-in)</option>
+<option value="attenuator-pack">Crash Cushion Attenuator Array (Pair)</option>
+</select>
+<p class="font-body-sm text-body-sm text-steel-gray mt-1 text-[12px]">MASH TL-3 Pin &amp; Loop Included</p>
+</div>
+</div>
+<!-- Input Group: Placement Type & Shift -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-spacing-md">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">
+              Offload &amp; Staging Method
+            </label>
+<div class="space-y-2">
+<label class="flex items-center gap-spacing-xs p-spacing-xs bg-surface-container-low rounded cursor-pointer hover:bg-surface-container transition-colors">
+<input checked="" class="w-4 h-4 text-hazard-orange focus:ring-0" name="placementType" onchange="window.calculateEstimate()" type="radio" value="crane-line"/>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-on-surface block leading-tight">Turnkey Crane Boom Placement</span>
+<span class="font-body-sm text-body-sm text-steel-gray text-[12px]">Placed directly on line &amp; pinned</span>
+</div>
+</label>
+<label class="flex items-center gap-spacing-xs p-spacing-xs bg-surface-container-low rounded cursor-pointer hover:bg-surface-container transition-colors">
+<input class="w-4 h-4 text-hazard-orange focus:ring-0" name="placementType" onchange="window.calculateEstimate()" type="radio" value="jobsite-drop"/>
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-on-surface block leading-tight">Flatbed Ground Bulk Offload</span>
+<span class="font-body-sm text-body-sm text-steel-gray text-[12px]">Staged in contractor staging yard</span>
+</div>
+</label>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">
+              Shift Operations &amp; MOT Timing
+            </label>
+<select class="w-full h-11 px-spacing-sm bg-surface-container-lowest text-on-surface rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-on-surface" id="shiftType" onchange="window.calculateEstimate()">
+<option selected="" value="day-standard">Day Shift Staging (Standard Hours)</option>
+<option value="night-closure">Night Lane Closure Shift (8 PM - 5 AM)</option>
+<option value="weekend-marathon">Weekend Continuous Blitz (48hr Shift)</option>
+<option value="emergency-rapid">Immediate 4-Hour Emergency Mobilization</option>
+</select>
+<p class="font-body-sm text-body-sm text-steel-gray mt-1 text-[12px]">MOT coordinated radio frequencies</p>
+</div>
+</div>
+<!-- Input Group: Location & Contact -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-spacing-md">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1" for="deliveryZip">Job Site County or ZIP</label>
+<input class="w-full h-11 px-spacing-sm bg-surface-container-lowest text-on-surface rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-on-surface" id="deliveryZip" type="text" value="32801 (Orange / Orlando)"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1" for="contactPhone">Superintendent / PM Phone</label>
+<input class="w-full h-11 px-spacing-sm bg-surface-container-lowest text-on-surface rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-on-surface" id="contactPhone" placeholder="(407) 555-..." type="tel"/>
+</div>
+</div>
+</div>
+<!-- Real-Time Estimate Summary Side Card -->
+<div class="lg:col-span-5 bg-surface-container p-spacing-lg rounded-xl flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-spacing-xs mb-spacing-sm">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Live Project Breakdown</span>
+<span class="font-label-sm text-label-sm uppercase bg-safety-amber/20 text-on-surface px-2 py-0.5 rounded font-mono">
+              QUOTE #CPG-MOT-2025
+            </span>
+</div>
+<div class="space-y-spacing-xs font-body-sm text-body-sm text-steel-gray">
+<div class="flex justify-between py-1 bg-surface-container-lowest/60 px-spacing-xs rounded">
+<span>Estimated Barrier Units:</span>
+<span class="font-mono font-bold text-on-surface" id="displayUnits">50 Units (12-ft)</span>
+</div>
+<div class="flex justify-between py-1 bg-surface-container-lowest/60 px-spacing-xs rounded">
+<span>Total Cargo Weight:</span>
+<span class="font-mono font-bold text-on-surface" id="displayWeight">240,000 lbs (120 Tons)</span>
+</div>
+<div class="flex justify-between py-1 bg-surface-container-lowest/60 px-spacing-xs rounded">
+<span>Required Flatbed Trucks:</span>
+<span class="font-mono font-bold text-on-surface" id="displayTrucks">5 Truckloads</span>
+</div>
+<div class="flex justify-between py-1 bg-surface-container-lowest/60 px-spacing-xs rounded">
+<span>Crane Placement Setup:</span>
+<span class="font-mono font-bold text-hazard-orange" id="displayMethod">Included (Link-Belt Boom)</span>
+</div>
+</div>
+<!-- Total Estimate Callout -->
+<div class="mt-spacing-lg p-spacing-md bg-primary-container text-on-primary rounded-lg">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-surface-container-high block">
+              Estimated Staging Budget Range
+            </span>
+<div class="flex items-baseline gap-spacing-xs mt-1">
+<span class="font-headline-xl text-headline-xl font-mono text-safety-amber font-bold" id="displayPriceRange">
+                $4,250 - $5,100
+              </span>
+<span class="font-label-sm text-label-sm text-surface-variant">Turnkey Staged</span>
+</div>
+<p class="font-body-sm text-body-sm text-surface-container mt-1 text-[12px]">
+              Includes freight hauling, certified crane rigging, pin installation, and FDOT documentation.
+            </p>
+</div>
+</div>
+<div class="mt-spacing-lg flex flex-col gap-spacing-xs">
+<button class="w-full h-12 bg-hazard-orange hover:bg-on-tertiary-container text-on-primary rounded font-headline-sm text-label-lg uppercase tracking-wider flex items-center justify-center gap-spacing-xs shadow-md active:scale-95 transition-all" onclick="window.submitQuoteAlert()" type="button">
+<span class="material-symbols-outlined text-[20px]">send</span>
+<span>Dispatch Quote to PM / Estimator</span>
+</button>
+<p class="hidden text-center text-signal-red font-label-sm text-label-sm mt-1" id="submissionFeedback"></p>
+</div>
+</div>
+</form>
+</section>
+<!-- Rapid Mobilization Callout for Emergency DOT Repair / Storm Staging -->
+<section class="p-spacing-lg sm:p-spacing-xl rounded-xl bg-signal-red text-on-error flex flex-col sm:flex-row items-center justify-between gap-spacing-lg shadow-xl">
+<div class="flex items-center gap-spacing-md">
+<div class="w-14 h-14 rounded-full bg-surface-container-lowest/20 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[32px] text-surface">emergency</span>
+</div>
+<div>
+<div class="flex items-center gap-spacing-2xs">
+<span class="w-2.5 h-2.5 rounded-full bg-safety-amber animate-ping"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-surface font-bold">24/7 Rapid Mobilization</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-error mt-0.5">Emergency Highway Lane Closures &amp; Hurricane Barriers</h3>
+<p class="font-body-sm text-body-sm text-surface-container-high mt-1 max-w-xl">
+          Sinkhole collapse, bridge impact strikes, or severe storm road closures across Central Florida: CPG mobilizes crane placement trucks within 90 minutes.
+        </p>
+</div>
+</div>
+<div class="flex-shrink-0 w-full sm:w-auto">
+<a class="w-full sm:w-auto h-12 px-spacing-xl bg-surface-container-lowest text-on-surface font-headline-sm text-label-lg uppercase tracking-wider rounded flex items-center justify-center gap-spacing-xs shadow-lg active:scale-95 transition-all" href="tel:4075550194">
+<span class="material-symbols-outlined text-signal-red text-[22px]">ring_volume</span>
+<span>Call (407) 555-0194</span>
+</a>
+</div>
+</section>
+</div>
+<script>
+  window.calculateEstimate = function() {
+    const linearFeetInput = document.getElementById('linearFeet');
+    const barrierProfile = document.getElementById('barrierProfile').value;
+    const placementType = document.querySelector('input[name="placementType"]:checked').value;
+    const shiftType = document.getElementById('shiftType').value;
+
+    const lf = Math.max(20, parseInt(linearFeetInput.value) || 20);
+    
+    // Unit length and weight calculation
+    let unitLength = 12;
+    let unitWeight = 4800; // lbs
+    let basePricePerLF = 5.5; // staging baseline rental/hauling
+    
+    if (barrierProfile === '10ft-krail') {
+      unitLength = 10;
+      unitWeight = 4000;
+      basePricePerLF = 5.2;
+    } else if (barrierProfile === 'low-profile') {
+      unitLength = 8;
+      unitWeight = 2200;
+      basePricePerLF = 6.0;
+    } else if (barrierProfile === 'attenuator-pack') {
+      unitLength = 20;
+      unitWeight = 3200;
+      basePricePerLF = 14.0;
+    }
+
+    const units = Math.ceil(lf / unitLength);
+    const totalWeightLbs = units * unitWeight;
+    const totalTons = (totalWeightLbs / 2000).toFixed(1);
+
+    // Flatbed truck capacity ~ 48,000 lbs
+    const trucksNeeded = Math.max(1, Math.ceil(totalWeightLbs / 46000));
+
+    // Staging / Crane logic
+    let placementRateMultiplier = 1.0;
+    if (placementType === 'crane-line') {
+      placementRateMultiplier = 1.45; // certified rigger and crane boom positioning
+    }
+
+    // Shift logic
+    let shiftMultiplier = 1.0;
+    if (shiftType === 'night-closure') {
+      shiftMultiplier = 1.25;
+    } else if (shiftType === 'weekend-marathon') {
+      shiftMultiplier = 1.4;
+    } else if (shiftType === 'emergency-rapid') {
+      shiftMultiplier = 1.85;
+    }
+
+    const baseCost = lf * basePricePerLF * placementRateMultiplier * shiftMultiplier;
+    const lowEst = Math.round(baseCost * 0.92);
+    const highEst = Math.round(baseCost * 1.15);
+
+    // Update DOM
+    document.getElementById('displayUnits').textContent = `${units} Units (${unitLength}-ft)`;
+    document.getElementById('displayWeight').textContent = `${totalWeightLbs.toLocaleString()} lbs (${totalTons} Tons)`;
+    document.getElementById('displayTrucks').textContent = `${trucksNeeded} ${trucksNeeded === 1 ? 'Truckload' : 'Truckloads'}`;
+    
+    document.getElementById('displayMethod').textContent = placementType === 'crane-line' 
+      ? 'Included (Hydraulic Boom)' 
+      : 'Contractor Unload (Flatbed)';
+    
+    document.getElementById('displayPriceRange').textContent = `$${lowEst.toLocaleString()} - $${highEst.toLocaleString()}`;
+  };
+
+  window.submitQuoteAlert = function() {
+    const feedback = document.getElementById('submissionFeedback');
+    feedback.classList.remove('hidden');
+    feedback.className = 'text-center text-safety-amber font-label-md text-label-md mt-2 font-semibold';
+    feedback.textContent = 'Quote request dispatched to CPG Civil Desk. An estimator is reviewing lane specs now.';
+    setTimeout(() => {
+      feedback.textContent = 'Contractor verification sent. For immediate night dispatch call (407) 555-0194.';
+    }, 3000);
+  };
+
+  // Run on load
+  document.addEventListener('DOMContentLoaded', () => {
+    window.calculateEstimate();
+  });
+</script><footer class="mt-spacing-3xl pt-spacing-xl pb-spacing-lg border-t-0 text-center flex flex-col items-center gap-spacing-xs text-on-surface-variant"><div class="flex items-center gap-spacing-2xs font-label-md text-label-md text-on-surface"><span class="material-symbols-outlined text-[16px] text-hazard-orange">local_shipping</span><span>CPG Enterprises of Orlando, Inc.</span></div><p class="font-body-sm text-body-sm text-steel-gray">Orlando Headquarters • Heavy Haul &amp; Specialized Logistics</p><p class="font-label-sm text-label-sm tracking-widest uppercase text-steel-gray">DOT COMPLIANCE: FL-ORL-982 • MC-749211</p><p class="font-label-sm text-label-sm text-outline">© 2025 CPG Enterprises of Orlando, Inc. All rights reserved.</p></footer></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.06)]" data-active-classes="text-hazard-orange font-semibold"><div class="px-gutter-mobile pt-spacing-xs pb-spacing-2xs"><div class="grid grid-cols-2 gap-spacing-xs mb-spacing-xs"><a class="h-11 px-spacing-sm bg-primary-container text-on-primary rounded flex items-center justify-center gap-spacing-xs shadow-[0_2px_4px_rgba(11,28,48,0.2)] active:scale-95 transition-all" href="tel:4075550194"><span class="material-symbols-outlined text-[20px] text-safety-amber">phone_in_talk</span><span class="font-headline-sm text-label-lg tracking-wide uppercase">Call Dispatch</span></a><a aria-current="page" class="h-11 px-spacing-sm bg-hazard-orange rounded flex items-center justify-center gap-spacing-xs shadow-[0_2px_4px_rgba(234,88,12,0.3)] active:scale-95 transition-all text-hazard-orange font-semibold" data-path="quote-request" href="#"><span class="material-symbols-outlined text-[20px]">request_quote</span><span class="font-headline-sm text-label-lg tracking-wide uppercase">Get Quote</span></a></div><div class="flex justify-around items-center h-12"><a class="flex flex-col items-center justify-center w-14 h-11 text-on-surface-variant transition-colors" data-path="fleet-overview" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-sm text-label-sm">Fleet</span></a><a class="flex flex-col items-center justify-center w-14 h-11 text-on-surface-variant transition-colors" data-path="active-loads" href="#"><span class="material-symbols-outlined text-[20px]">route</span><span class="font-label-sm text-label-sm">Loads</span></a><a aria-current="page" class="flex flex-col items-center justify-center w-14 h-11 transition-colors text-hazard-orange font-semibold" data-path="quote-request" href="#"><span class="material-symbols-outlined text-[20px]">calculate</span><span class="font-label-sm text-label-sm">Quotes</span></a><a class="flex flex-col items-center justify-center w-14 h-11 text-on-surface-variant transition-colors" data-path="safety-compliance" href="#"><span class="material-symbols-outlined text-[20px]">verified</span><span class="font-label-sm text-label-sm">Safety</span></a></div></div></nav></body></html>
