@@ -1,6 +1,5 @@
 # Transcribed verbatim from SPEC.md section 3, US-04.
-# @ignore until the lead generation slice (US-04) is implemented in a later phase.
-@ignore @us04 @leads
+@us04 @leads
 Feature: Corporate Lead Generation via Niche Landing Pages
   As a Commercial Director
   I want high-converting landing pages for niche logistics to capture qualified enterprise leads

@@ -11,27 +11,35 @@ public sealed class DomainPrimitivesTests
     [Fact]
     public void New_entity_gets_a_non_empty_identity()
     {
-        var lead = new Lead
-        {
-            CompanyName = "Apex Construction",
-            ContactEmail = "contact@apex.com",
-            VerticalSlug = "fdot-concrete-barricades",
-        };
+        var lead = Lead.RegisterFromLandingPage(
+            "Apex Construction",
+            "Alex Apex",
+            "contact@apex.com",
+            "(407) 555-0100",
+            "fdot-concrete-barricades",
+            ServiceType.FdotConcrete,
+            "120 concrete Jersey barricades, Orlando to Tampa",
+            DateTimeOffset.UtcNow);
 
         lead.Id.Should().NotBe(Guid.Empty);
     }
 
     [Fact]
-    public void New_lead_defaults_to_status_New()
+    public void Landing_page_lead_starts_New_and_raises_a_domain_event()
     {
-        var lead = new Lead
-        {
-            CompanyName = "Apex Construction",
-            ContactEmail = "contact@apex.com",
-            VerticalSlug = "fdot-concrete-barricades",
-        };
+        var lead = Lead.RegisterFromLandingPage(
+            "Apex Construction",
+            "Alex Apex",
+            "contact@apex.com",
+            "(407) 555-0100",
+            "fdot-concrete-barricades",
+            ServiceType.FdotConcrete,
+            "120 concrete Jersey barricades, Orlando to Tampa",
+            DateTimeOffset.UtcNow);
 
         lead.Status.Should().Be(LeadStatus.New);
+        lead.ContactEmail.Should().Be("contact@apex.com");
+        lead.DomainEvents.Should().ContainSingle();
     }
 
     [Fact]

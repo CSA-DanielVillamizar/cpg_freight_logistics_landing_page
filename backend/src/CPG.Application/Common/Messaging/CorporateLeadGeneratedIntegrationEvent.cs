@@ -1,10 +1,12 @@
+using CPG.Domain.Enums;
+
 namespace CPG.Application.Common.Messaging;
 
 /// <summary>
 /// Raised after a landing-page lead is persisted with status <c>New</c>, so the commercial
 /// team can be notified asynchronously (SPEC.md US-04).
 /// </summary>
-public sealed record LeadCreatedIntegrationEvent : IntegrationEvent
+public sealed record CorporateLeadGeneratedIntegrationEvent : IntegrationEvent
 {
     public required Guid LeadId { get; init; }
 
@@ -13,4 +15,6 @@ public sealed record LeadCreatedIntegrationEvent : IntegrationEvent
     public required string ContactEmail { get; init; }
 
     public required string VerticalSlug { get; init; }
+
+    public ServiceType? ServiceType { get; init; }
 }

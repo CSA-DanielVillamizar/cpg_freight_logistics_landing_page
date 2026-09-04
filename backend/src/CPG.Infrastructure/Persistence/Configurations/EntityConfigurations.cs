@@ -98,8 +98,8 @@ internal sealed class LeadConfiguration : IEntityTypeConfiguration<Lead>
         builder.HasKey(l => l.Id);
         builder.Property(l => l.CompanyName).HasMaxLength(200).IsRequired();
         builder.Property(l => l.ContactEmail).HasMaxLength(256).IsRequired();
-        builder.Property(l => l.ContactName).HasMaxLength(200);
-        builder.Property(l => l.Phone).HasMaxLength(40);
+        builder.Property(l => l.ContactName).HasMaxLength(200).IsRequired();
+        builder.Property(l => l.Phone).HasMaxLength(40).IsRequired();
         builder.Property(l => l.VerticalSlug).HasMaxLength(120).IsRequired();
         builder.Property(l => l.CargoDetails).HasMaxLength(2000);
         builder.Property(l => l.ServiceType).HasConversion<string>().HasMaxLength(32);

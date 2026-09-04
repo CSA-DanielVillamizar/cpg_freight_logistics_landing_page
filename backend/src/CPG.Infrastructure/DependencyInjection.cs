@@ -66,6 +66,7 @@ public static class DependencyInjection
         {
             bus.SetKebabCaseEndpointNameFormatter();
             bus.AddConsumer<ComplianceNotificationConsumer>();
+            bus.AddConsumer<LeadNotificationConsumer>();
             bus.UsingRabbitMq((context, cfg) =>
             {
                 var connectionString = context.GetRequiredService<IConfiguration>()

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Badge, Card } from '@/shared/ui';
 import { TrustRibbon } from './components/TrustRibbon';
-import { VERTICALS } from './verticals';
+import { VERTICAL_CONTENT } from './verticalContent';
 
 export function LandingPage(): JSX.Element {
   return (
@@ -33,13 +33,13 @@ export function LandingPage(): JSX.Element {
       <section className="flex flex-col gap-4">
         <h2 className="text-headline-md">Specialized Freight Verticals</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {VERTICALS.map((vertical) => (
+          {VERTICAL_CONTENT.map((vertical) => (
             <Card key={vertical.slug} anchored className="flex flex-col gap-2 p-5">
               <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
                 {vertical.serviceType}
               </span>
               <h3 className="text-headline-sm">{vertical.name}</h3>
-              <p className="text-body-sm text-steel-gray">{vertical.headline}</p>
+              <p className="text-body-sm text-steel-gray">{vertical.subhead}</p>
               <Link
                 to={`/verticals/${vertical.slug}`}
                 className="mt-2 inline-flex items-center gap-1 font-mono text-label-md text-hazard-orange"

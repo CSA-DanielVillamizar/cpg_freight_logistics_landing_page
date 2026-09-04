@@ -82,7 +82,10 @@ npm run dev      # http://localhost:5173  (proxies /api -> http://localhost:5080
 | US-01 — RBAC & authentication | ✅ done | `docs/US-01-RBAC.md` |
 | US-02 — rate calculator | ✅ done | `docs/US-02-RATE-CALCULATOR.md` |
 | US-03 — carrier compliance | ✅ done | `docs/US-03-CARRIER-COMPLIANCE.md` |
-| US-04 — landing-page leads | ☐ pending | — |
+| US-04 — landing-page leads | ✅ done | `docs/US-04-LEAD-GENERATION.md` |
+
+**All 4 SPEC.md user stories delivered.** Full project report: `docs/PROJECT-CLOSE.md`.
+Test suite: `dotnet test` → **26 passed, 0 skipped, 0 failed**.
 
 ## FDE rails already wired (Phase 1)
 
