@@ -262,7 +262,7 @@ resource apiApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: appInsights.properties.ConnectionString
             }
             {
-              name: 'Cors__AllowedOrigins'
+              name: 'Cors__AllowedOrigins__0'
               value: 'https://${webAppName}.${containerEnv.properties.defaultDomain}'
             }
             {

@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using CPG.Application.Common.Interfaces;
@@ -6,8 +7,9 @@ using Microsoft.Extensions.Options;
 namespace CPG.Infrastructure.Storage;
 
 /// <summary>
-/// <see cref="IBlobStorage"/> over Azure Blob Storage. In development this points at Azurite
-/// (see docker-compose); in production at an Azure Storage account (SPEC.md US-03).
+/// <see cref="IBlobStorage"/> over Azure Blob Storage. Development points at Azurite via a
+/// connection string (<c>Provider = Azure</c>); production uses the account endpoint plus a
+/// managed identity with no secrets (<c>Provider = AzureManagedIdentity</c>) - SPEC.md US-03.
 /// </summary>
 public sealed class AzureBlobStorageService : IBlobStorage
 {
@@ -16,9 +18,30 @@ public sealed class AzureBlobStorageService : IBlobStorage
     public AzureBlobStorageService(IOptions<BlobStorageOptions> options)
     {
         ArgumentNullException.ThrowIfNull(options);
-        var connectionString = options.Value.ConnectionString
-            ?? throw new InvalidOperationException("BlobStorage:ConnectionString is required for the Azure provider.");
-        _client = new BlobServiceClient(connectionString);
+        var config = options.Value;
+
+        if (string.Equals(config.Provider, "AzureManagedIdentity", StringComparison.OrdinalIgnoreCase))
+        {
+            var serviceUri = config.ServiceUri
+                ?? throw new InvalidOperationException(
+                    "BlobStorage:ServiceUri is required for the AzureManagedIdentity provider.");
+
+            var credential = string.IsNullOrWhiteSpace(config.ManagedIdentityClientId)
+                ? new DefaultAzureCredential()
+                : new DefaultAzureCredential(new DefaultAzureCredentialOptions
+                {
+                    ManagedIdentityClientId = config.ManagedIdentityClientId,
+                });
+
+            _client = new BlobServiceClient(new Uri(serviceUri), credential);
+        }
+        else
+        {
+            var connectionString = config.ConnectionString
+                ?? throw new InvalidOperationException(
+                    "BlobStorage:ConnectionString is required for the Azure provider.");
+            _client = new BlobServiceClient(connectionString);
+        }
     }
 
     public async Task<BlobUploadResult> UploadAsync(

@@ -87,30 +87,41 @@ Mapped from the current app config surface (`backend/src/CPG.Api/appsettings.jso
 | --- | --- |
 | `API_BASE_URL` / `VITE_API_BASE_URL` | `https://<api fqdn>/api` |
 
-## Prerequisites before the FIRST deploy
+## Application ↔ infrastructure alignment (done)
 
-The Bicep is complete and lints clean (`az bicep build` → 0 warnings). Before the platform can
-actually **run** on this infrastructure, four application-side changes are required — they were
-scoped out of this IaC iteration and are called out here so nothing is silent:
+The four adaptations the app needed for this infrastructure are **implemented** (commit after
+`c219ec5`). They are configuration-switched, so local `docker compose` + `dotnet test` keep
+working unchanged:
 
-1. **Messaging transport** — `backend/src/CPG.Infrastructure/DependencyInjection.cs` configures
-   MassTransit with `UsingRabbitMq(...)`. Switch to `UsingAzureServiceBus(...)` (package
-   `MassTransit.Azure.ServiceBus.Core`), reading `ConnectionStrings:ServiceBus` (or the MI path
-   via `ServiceBus:FullyQualifiedNamespace`). Without this the API fails to start (it would try
-   `amqp://…localhost:5672`).
-2. **Blob storage via managed identity** — `AzureBlobStorageService` uses
-   `new BlobServiceClient(connectionString)`. Add a branch for `BlobStorage:Provider ==
-   "AzureManagedIdentity"` → `new BlobServiceClient(new Uri(serviceUri), new DefaultAzureCredential())`.
-3. **CORS** — `Program.cs` hard-codes the dev origin. Read `Cors:AllowedOrigins` and apply a
-   production CORS policy.
-4. **Frontend runtime config** — Vite bakes `VITE_API_BASE_URL` at build time. Either build the
-   web image with `--build-arg VITE_API_BASE_URL=...`, or serve a small `config.js` that the
-   nginx entrypoint writes from `API_BASE_URL` and the SPA reads from `window`.
+1. **Messaging transport** — `CPG.Infrastructure/DependencyInjection.cs` picks
+   `UsingAzureServiceBus` when `ServiceBus:FullyQualifiedNamespace` **or**
+   `ConnectionStrings:ServiceBus` is set (managed identity via `AZURE_CLIENT_ID`, else the
+   Key Vault connection string); otherwise `UsingRabbitMq` (local dev / tests). Package
+   `MassTransit.Azure.ServiceBus.Core`.
+2. **Blob via managed identity** — `AzureBlobStorageService` builds
+   `new BlobServiceClient(new Uri(ServiceUri), new DefaultAzureCredential(...))` when
+   `BlobStorage:Provider == "AzureManagedIdentity"`; connection-string mode otherwise. Package
+   `Azure.Identity`.
+3. **Dynamic CORS** — `Program.cs` reads `Cors:AllowedOrigins` (array or `,`/`;` list) and
+   falls back to the local Vite origins; `UseCors` now runs in every environment.
+4. **Frontend runtime config** — `index.html` loads `/config.js`; the web image's nginx
+   entrypoint (`frontend/docker-entrypoint.sh`) regenerates it from `API_BASE_URL` /
+   `VITE_API_BASE_URL` on every start; `src/shared/config/runtime.ts` resolves
+   `window.__CPG_CONFIG__` → Vite build env → `/api`.
 
-Also: **container images**. `main.parameters.json` points `apiContainerImage` / `webContainerImage`
-at a public placeholder so `what-if` runs. Build and push real images to
-`crcpgorlandoprdcus01.azurecr.io` (e.g. `cpg-api:<sha>`, `cpg-web:<sha>`) and pass them as
-parameters, then redeploy the two Container Apps.
+**Container images.** `backend/Dockerfile` (SDK build → chiseled `aspnet:8.0`, port 8080) and
+`frontend/Dockerfile` (node build → `nginx:1.27-alpine`, port 80). `main.parameters.json` points
+`apiContainerImage` / `webContainerImage` at a public placeholder so `what-if` runs; build and
+push real images to `crcpgorlandoprdcus01.azurecr.io` and pass them as parameters:
+
+```bash
+az acr login -n crcpgorlandoprdcus01
+docker build -t crcpgorlandoprdcus01.azurecr.io/cpg-api:$(git rev-parse --short HEAD) ./backend
+docker build -t crcpgorlandoprdcus01.azurecr.io/cpg-web:$(git rev-parse --short HEAD) ./frontend
+docker push crcpgorlandoprdcus01.azurecr.io/cpg-api:...
+docker push crcpgorlandoprdcus01.azurecr.io/cpg-web:...
+./infra/deploy.ps1 -Deploy   # pass apiContainerImage=... webContainerImage=... via main.parameters.json
+```
 
 ## Usage
 

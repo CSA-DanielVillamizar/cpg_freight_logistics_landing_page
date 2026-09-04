@@ -73,10 +73,21 @@ builder.Services.AddHealthChecks()
         name: "postgres",
         tags: ["ready"]);
 
-// --- CORS for the React dev server ---
-const string DevCorsPolicy = "cpg-frontend-dev";
-builder.Services.AddCors(options => options.AddPolicy(DevCorsPolicy, policy =>
-    policy.WithOrigins("http://localhost:5173", "http://localhost:4173")
+// --- CORS: origins come from Cors:AllowedOrigins (Azure Container Apps env) and fall back
+//     to the local Vite dev/preview servers when nothing is configured. ---
+const string CorsPolicyName = "cpg-frontend";
+var corsSeparators = new[] { ',', ';' };
+var corsSection = builder.Configuration.GetSection("Cors:AllowedOrigins");
+var configuredOrigins = corsSection.GetChildren().Any()
+    ? corsSection.Get<string[]>() ?? []
+    : (corsSection.Value ?? string.Empty)
+        .Split(corsSeparators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+var corsOrigins = configuredOrigins.Length > 0
+    ? configuredOrigins
+    : ["http://localhost:5173", "http://localhost:4173"];
+
+builder.Services.AddCors(options => options.AddPolicy(CorsPolicyName, policy =>
+    policy.WithOrigins(corsOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod()));
 
@@ -99,8 +110,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors(DevCorsPolicy);
 }
+
+app.UseCors(CorsPolicyName);
 
 app.UseAuthentication();
 app.UseAuthorization();

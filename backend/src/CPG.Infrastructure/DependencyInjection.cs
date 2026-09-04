@@ -1,3 +1,4 @@
+using Azure.Identity;
 using CPG.Application.Common.Interfaces;
 using CPG.Infrastructure.Identity;
 using CPG.Infrastructure.Messaging;
@@ -12,7 +13,11 @@ using Microsoft.Extensions.Options;
 
 namespace CPG.Infrastructure;
 
-/// <summary>Composition root for the Infrastructure layer (EF Core, RabbitMQ, blob storage, JWT).</summary>
+/// <summary>
+/// Composition root for the Infrastructure layer. Transport and storage adapters switch
+/// between local-dev defaults (RabbitMQ, Azurite connection string) and Azure-native,
+/// passwordless managed-identity clients based on configuration.
+/// </summary>
 public static class DependencyInjection
 {
     internal const string DefaultPostgres =
@@ -27,7 +32,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(configuration);
 
         AddPersistence(services);
-        AddMessaging(services);
+        AddMessaging(services, configuration);
         AddBlobStorage(services, configuration);
         AddSecurity(services, configuration);
 
@@ -60,21 +65,66 @@ public static class DependencyInjection
         services.AddScoped<IIdempotencyService, IdempotencyService>();
     }
 
-    private static void AddMessaging(IServiceCollection services)
+    /// <summary>
+    /// Selects the MassTransit transport: Azure Service Bus when
+    /// <c>ServiceBus:FullyQualifiedNamespace</c> or <c>ConnectionStrings:ServiceBus</c> is
+    /// present (production), otherwise RabbitMQ (local development / integration tests).
+    /// The transport choice is a registration-time decision, so it is read eagerly here;
+    /// environment variables are already loaded by this point in a real host.
+    /// </summary>
+    private static void AddMessaging(IServiceCollection services, IConfiguration configuration)
     {
+        var serviceBusNamespace = configuration["ServiceBus:FullyQualifiedNamespace"];
+        var serviceBusConnectionString = configuration.GetConnectionString("ServiceBus");
+        var useServiceBus = !string.IsNullOrWhiteSpace(serviceBusNamespace)
+            || !string.IsNullOrWhiteSpace(serviceBusConnectionString);
+
         services.AddMassTransit(bus =>
         {
             bus.SetKebabCaseEndpointNameFormatter();
             bus.AddConsumer<ComplianceNotificationConsumer>();
             bus.AddConsumer<LeadNotificationConsumer>();
-            bus.UsingRabbitMq((context, cfg) =>
-            {
-                var connectionString = context.GetRequiredService<IConfiguration>()
-                    .GetConnectionString("RabbitMq") ?? DefaultRabbitMq;
 
-                cfg.Host(new Uri(connectionString));
-                cfg.ConfigureEndpoints(context);
-            });
+            if (useServiceBus)
+            {
+                bus.UsingAzureServiceBus((context, cfg) =>
+                {
+                    var config = context.GetRequiredService<IConfiguration>();
+                    var connectionString = config.GetConnectionString("ServiceBus");
+                    var fqNamespace = config["ServiceBus:FullyQualifiedNamespace"];
+
+                    if (!string.IsNullOrWhiteSpace(fqNamespace))
+                    {
+                        // Passwordless: managed identity (AZURE_CLIENT_ID selects the UAMI).
+                        var clientId = config["AZURE_CLIENT_ID"];
+                        var credential = string.IsNullOrWhiteSpace(clientId)
+                            ? new DefaultAzureCredential()
+                            : new DefaultAzureCredential(new DefaultAzureCredentialOptions
+                            {
+                                ManagedIdentityClientId = clientId,
+                            });
+
+                        cfg.Host($"sb://{fqNamespace}", host => host.TokenCredential = credential);
+                    }
+                    else
+                    {
+                        cfg.Host(connectionString);
+                    }
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            }
+            else
+            {
+                bus.UsingRabbitMq((context, cfg) =>
+                {
+                    var connectionString = context.GetRequiredService<IConfiguration>()
+                        .GetConnectionString("RabbitMq") ?? DefaultRabbitMq;
+
+                    cfg.Host(new Uri(connectionString));
+                    cfg.ConfigureEndpoints(context);
+                });
+            }
         });
 
         services.AddScoped<IEventBus, MassTransitEventBus>();

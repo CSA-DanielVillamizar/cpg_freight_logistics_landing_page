@@ -8,7 +8,7 @@ module.exports = {
     'plugin:@typescript-eslint/stylistic-type-checked',
     'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['dist', 'node_modules', '.eslintrc.cjs', 'postcss.config.js', 'vite.config.ts', 'tailwind.config.ts'],
+  ignorePatterns: ['dist', 'node_modules', '.eslintrc.cjs', 'postcss.config.js', 'vite.config.ts', 'tailwind.config.ts', 'public/'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: ['./tsconfig.json'],

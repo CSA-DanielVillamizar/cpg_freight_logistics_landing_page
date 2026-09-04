@@ -28,13 +28,15 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
   </ItemGroup>
 
-  <ItemGroup Label="Messaging (RabbitMQ / MassTransit)">
+  <ItemGroup Label="Messaging (RabbitMQ dev / Azure Service Bus prod, MassTransit)">
     <PackageVersion Include="MassTransit" Version="8.3.0" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.0" />
+    <PackageVersion Include="MassTransit.Azure.ServiceBus.Core" Version="8.3.0" />
   </ItemGroup>
 
-  <ItemGroup Label="Blob storage (Azure / Azurite)">
+  <ItemGroup Label="Blob storage (Azurite dev / Azure Blob prod)">
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.22.2" />
+    <PackageVersion Include="Azure.Identity" Version="1.13.2" />
   </ItemGroup>
 
   <ItemGroup Label="Security / Identity">

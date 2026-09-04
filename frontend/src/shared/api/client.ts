@@ -1,6 +1,7 @@
+import { resolveApiBaseUrl } from '@/shared/config/runtime';
 import type { ProblemDetails } from './types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
+const API_BASE_URL = resolveApiBaseUrl();
 
 export class ApiError extends Error {
   public readonly status: number;
