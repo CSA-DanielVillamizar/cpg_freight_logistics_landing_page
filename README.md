@@ -80,7 +80,7 @@ npm run dev      # http://localhost:5173  (proxies /api -> http://localhost:5080
 | --- | --- | --- |
 | Phase 1 — scaffold + FDE rails | ✅ done | `docs/PHASE-1.md` |
 | US-01 — RBAC & authentication | ✅ done | `docs/US-01-RBAC.md` |
-| US-02 — rate calculator | ☐ pending | — |
+| US-02 — rate calculator | ✅ done | `docs/US-02-RATE-CALCULATOR.md` |
 | US-03 — carrier compliance | ☐ pending | — |
 | US-04 — landing-page leads | ☐ pending | — |
 

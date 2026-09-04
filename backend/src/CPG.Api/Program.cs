@@ -88,6 +88,10 @@ if (!app.Environment.IsProduction())
     await app.Services.InitialiseDatabaseAsync();
 }
 
+// Warm the CQRS + validation pipeline so the first real rate request also meets the
+// <500 ms budget (SPEC.md US-02) - pays JIT / validator-compilation cost up front.
+await app.Services.WarmUpRateEngineAsync();
+
 app.UseSerilogRequestLogging();
 app.UseExceptionHandler();
 

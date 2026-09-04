@@ -1,6 +1,5 @@
 # Transcribed verbatim from SPEC.md section 3, US-02.
-# @ignore until the rate calculator slice (US-02) is implemented in a later phase.
-@ignore @us02 @rates
+@us02 @rates
 Feature: Dynamic Rate Calculation for Specialized Freight
   As a Shipper
   I want to calculate precise shipping rates in real-time
