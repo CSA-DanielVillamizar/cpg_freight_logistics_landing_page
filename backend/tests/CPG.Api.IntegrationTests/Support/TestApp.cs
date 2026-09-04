@@ -19,6 +19,34 @@ public static class TestApp
 
     public static async Task StartAsync()
     {
+        // Docker Desktop can be slow/flaky under load; retry the container bring-up once.
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                await StartContainersAsync();
+                break;
+            }
+            catch (Exception) when (attempt < 2)
+            {
+                await SafeStopAsync();
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+        }
+
+        Factory = new CpgApiFactory(
+            _postgres!.GetConnectionString(),
+            _rabbitMq!.GetConnectionString(),
+            _azurite!.GetConnectionString());
+
+        // Force host build so migrations + user seeding run before the first scenario.
+        _ = Factory.Services;
+    }
+
+    public static Task StopAsync() => SafeStopAsync();
+
+    private static async Task StartContainersAsync()
+    {
         _postgres = new PostgreSqlBuilder()
             .WithImage("postgres:16-alpine")
             .WithDatabase("cpg")
@@ -34,33 +62,35 @@ public static class TestApp
             .WithImage("mcr.microsoft.com/azure-storage/azurite:3.33.0")
             .Build();
 
-        await Task.WhenAll(_postgres.StartAsync(), _rabbitMq.StartAsync(), _azurite.StartAsync());
-
-        Factory = new CpgApiFactory(
-            _postgres.GetConnectionString(),
-            _rabbitMq.GetConnectionString(),
-            _azurite.GetConnectionString());
-
-        // Force host build so migrations + user seeding run before the first scenario.
-        _ = Factory.Services;
+        await _postgres.StartAsync();
+        await _azurite.StartAsync();
+        await _rabbitMq.StartAsync();
     }
 
-    public static async Task StopAsync()
+    private static async Task SafeStopAsync()
     {
-        await Factory.DisposeAsync();
-        if (_postgres is not null)
+        if (Factory is not null)
         {
-            await _postgres.DisposeAsync();
+            await Factory.DisposeAsync();
         }
 
-        if (_rabbitMq is not null)
+        foreach (var container in new IAsyncDisposable?[] { _rabbitMq, _azurite, _postgres })
         {
-            await _rabbitMq.DisposeAsync();
+            if (container is not null)
+            {
+                try
+                {
+                    await container.DisposeAsync();
+                }
+                catch
+                {
+                    // best effort teardown
+                }
+            }
         }
 
-        if (_azurite is not null)
-        {
-            await _azurite.DisposeAsync();
-        }
+        _rabbitMq = null;
+        _azurite = null;
+        _postgres = null;
     }
 }

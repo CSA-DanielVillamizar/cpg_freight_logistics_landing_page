@@ -42,6 +42,7 @@ public static class DependencyInjection
     private static void AddPersistence(IServiceCollection services)
     {
         services.AddScoped<AuditableEntityInterceptor>();
+        services.AddScoped<DispatchDomainEventsInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
@@ -50,7 +51,9 @@ public static class DependencyInjection
 
             options.UseNpgsql(connectionString, npgsql =>
                 npgsql.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
-            options.AddInterceptors(sp.GetRequiredService<AuditableEntityInterceptor>());
+            options.AddInterceptors(
+                sp.GetRequiredService<AuditableEntityInterceptor>(),
+                sp.GetRequiredService<DispatchDomainEventsInterceptor>());
         });
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
@@ -62,6 +65,7 @@ public static class DependencyInjection
         services.AddMassTransit(bus =>
         {
             bus.SetKebabCaseEndpointNameFormatter();
+            bus.AddConsumer<ComplianceNotificationConsumer>();
             bus.UsingRabbitMq((context, cfg) =>
             {
                 var connectionString = context.GetRequiredService<IConfiguration>()

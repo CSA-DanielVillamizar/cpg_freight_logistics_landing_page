@@ -65,6 +65,42 @@ public sealed class ApplicationDbContextInitialiser(
         }
 
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        await SeedCarrierAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task SeedCarrierAsync(CancellationToken cancellationToken)
+    {
+        const string carrierEmail = "carrier@cpgorlando.com";
+
+        var carrierUser = await dbContext.Users
+            .FirstOrDefaultAsync(u => u.Email == carrierEmail, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (carrierUser is null)
+        {
+            return;
+        }
+
+        var alreadyLinked = await dbContext.Carriers
+            .AnyAsync(c => c.UserId == carrierUser.Id, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (alreadyLinked)
+        {
+            return;
+        }
+
+        dbContext.Carriers.Add(new Carrier
+        {
+            CompanyName = "Carl Carrier Heavy Transport LLC",
+            UserId = carrierUser.Id,
+            DotNumber = "FL-ORL-CAR-001",
+            McNumber = "MC-CAR-001",
+        });
+
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        logger.LogInformation("Seeded carrier account for {Email}", carrierEmail);
     }
 }
 

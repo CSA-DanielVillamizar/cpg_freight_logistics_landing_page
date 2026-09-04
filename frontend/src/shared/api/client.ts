@@ -31,6 +31,13 @@ export function registerAuthBridge(bridge: AuthBridge | null): void {
   authBridge = bridge;
 }
 
+/** Current bearer token, for transports that bypass `apiClient` (e.g. XHR uploads with progress). */
+export function currentAccessToken(): string | null {
+  return authBridge?.getAccessToken() ?? null;
+}
+
+export const API_BASE = API_BASE_URL;
+
 export interface RequestOptions {
   /** SPEC.md section 2 - required for idempotent write endpoints. */
   idempotencyKey?: string;

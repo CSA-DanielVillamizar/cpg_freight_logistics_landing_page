@@ -71,6 +71,40 @@ export interface CreateLeadResponse {
   status: LeadStatus;
 }
 
+export type ComplianceStatus = 'PendingCompliance' | 'UnderReview' | 'Verified' | 'Rejected';
+
+export type ComplianceDocumentType =
+  | 'CertificateOfInsurance'
+  | 'GeneralLiabilityInsurance'
+  | 'FdotPermit'
+  | 'OperatingAuthority'
+  | 'W9';
+
+export interface ComplianceDocumentSummary {
+  id: string;
+  documentType: ComplianceDocumentType;
+  originalFileName: string;
+  sizeBytes: number;
+  status: ComplianceStatus;
+  uploadedAtUtc: string;
+}
+
+/** GET /api/compliance response (SPEC.md US-03 portal). */
+export interface ComplianceStatusResponse {
+  carrierId: string;
+  companyName: string;
+  status: ComplianceStatus;
+  documents: ComplianceDocumentSummary[];
+}
+
+/** POST /api/compliance/upload 202 response. */
+export interface UploadComplianceDocumentResult {
+  carrierId: string;
+  documentId: string;
+  status: ComplianceStatus;
+  blobUri: string;
+}
+
 /** RFC 7807 problem document returned by the API on failure. */
 export interface ProblemDetails {
   type?: string;

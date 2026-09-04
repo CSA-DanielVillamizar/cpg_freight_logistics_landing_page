@@ -1,6 +1,5 @@
 # Transcribed verbatim from SPEC.md section 3, US-03.
-# @ignore until the carrier compliance slice (US-03) is implemented in a later phase.
-@ignore @us03 @compliance
+@us03 @compliance
 Feature: Carrier Document Compliance and Verification
   As a Carrier
   I want to upload my mandatory legal documents (COI, Insurance, FDOT permits)

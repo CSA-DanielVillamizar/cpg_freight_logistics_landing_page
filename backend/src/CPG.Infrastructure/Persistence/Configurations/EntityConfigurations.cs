@@ -68,6 +68,9 @@ internal sealed class CarrierConfiguration : IEntityTypeConfiguration<Carrier>
             .WithOne()
             .HasForeignKey(d => d.CarrierId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(c => c.ComplianceDocuments)
+            .HasField("_complianceDocuments")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
         builder.MapXminRowVersion();
         builder.Ignore(c => c.DomainEvents);
     }

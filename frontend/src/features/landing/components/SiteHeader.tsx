@@ -31,6 +31,14 @@ export function SiteHeader(): JSX.Element {
               Audit log
             </Link>
           ) : null}
+          {hasRole('Carrier') ? (
+            <Link
+              to="/carrier"
+              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+            >
+              Carrier portal
+            </Link>
+          ) : null}
 
           <a
             href={`tel:${DISPATCH_PHONE.replace(/[^\d]/g, '')}`}

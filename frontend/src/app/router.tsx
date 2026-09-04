@@ -3,6 +3,7 @@ import { App } from '@/App';
 import { AuditLogsPage } from '@/features/admin/AuditLogsPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireRole } from '@/features/auth/RequireRole';
+import { CarrierPortalPage } from '@/features/carrier-portal/CarrierPortalPage';
 import { LandingPage } from '@/features/landing/LandingPage';
 import { VerticalLandingPage } from '@/features/landing/VerticalLandingPage';
 import { RateCalculatorPage } from '@/features/rates/RateCalculatorPage';
@@ -21,6 +22,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole role="Admin">
             <AuditLogsPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'carrier',
+        element: (
+          <RequireRole role="Carrier">
+            <CarrierPortalPage />
           </RequireRole>
         ),
       },
