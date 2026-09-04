@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "value": "centralus" },
+    "namePrefix": { "value": "cpgorlando" },
+    "environmentAbbr": { "value": "prd" },
+    "regionAbbr": { "value": "cus" },
+    "instance": { "value": "01" },
+    "tags": {
+      "value": {
+        "Project": "CPGOrlando",
+        "Environment": "Production",
+        "CostCenter": "LogisticsPlatform"
+      }
+    },
+    "postgresAdministratorLogin": { "value": "cpgpgadmin" },
+    "jwtIssuer": { "value": "cpg-enterprises" },
+    "jwtAudience": { "value": "cpg-enterprises-clients" },
+    "apiContainerImage": { "value": "mcr.microsoft.com/k8se/quickstart:latest" },
+    "webContainerImage": { "value": "mcr.microsoft.com/k8se/quickstart:latest" },
+    "apiMinReplicas": { "value": 0 },
+    "apiMaxReplicas": { "value": 10 },
+    "webMinReplicas": { "value": 0 },
+    "webMaxReplicas": { "value": 5 },
+    "logRetentionDays": { "value": 30 },
+    "enableKeyVaultPurgeProtection": { "value": false }
+  }
+}

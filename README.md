@@ -23,8 +23,12 @@ Spec-Driven Development · BDD).
 ├── frontend/                     # React 18 + Vite + TypeScript (strict) + Tailwind
 │   └── src/
 │       ├── app/                  # Router
-│       ├── features/             # Feature-first: landing, rates, leads
+│       ├── features/             # Feature-first: landing, rates, leads, auth, carrier-portal
 │       └── shared/               # ui/ (design-system primitives), api/ (typed client), lib/
+├── infra/                        # Azure Bicep IaC (ACA scale-to-zero, PostgreSQL Burstable,
+│   │                             #   Service Bus, Key Vault + managed identity, Storage lifecycle)
+│   ├── main.bicep + modules/     # see infra/README.md
+│   └── deploy.ps1 / deploy.sh    # context → lint → what-if → deploy
 └── cpg_freight_logistics_landing_page/   # Design system + vertical page prototypes
 ```
 

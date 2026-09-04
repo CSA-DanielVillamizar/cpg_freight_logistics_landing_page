@@ -36,3 +36,7 @@ frontend/.vite/
 # Logs
 *.log
 logs/
+
+# Bicep transpile output
+infra/main.json
+infra/modules/*.json
