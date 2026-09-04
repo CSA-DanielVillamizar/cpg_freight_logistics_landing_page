@@ -1,0 +1,41 @@
+@host = http://localhost:5080
+
+### Liveness
+GET {{host}}/health
+
+### Readiness (dependencies)
+GET {{host}}/health/ready
+
+### OpenAPI document
+GET {{host}}/swagger/v1/swagger.json
+
+### US-02 - rate calculation (contract from SPEC.md section 4)
+POST {{host}}/api/rates/calculate
+Content-Type: application/json
+
+{
+  "serviceType": "ColdChain",
+  "originZip": "33101",
+  "destinationZip": "32801",
+  "weightLbs": 35000,
+  "targetTemperatureCelsius": -20.0
+}
+
+### FDE - load creation requires an Idempotency-Key
+POST {{host}}/api/loads
+Content-Type: application/json
+Idempotency-Key: 3f2504e0-4f89-11d3-9a0c-0305e82c3301
+
+{}
+
+### US-04 - landing page lead capture
+POST {{host}}/api/leads
+Content-Type: application/json
+
+{
+  "companyName": "Apex Construction",
+  "contactEmail": "contact@apex.com",
+  "verticalSlug": "fdot-concrete-barricades",
+  "serviceType": "FdotConcrete",
+  "cargoDetails": "120 concrete Jersey barricades, Orlando to Tampa"
+}

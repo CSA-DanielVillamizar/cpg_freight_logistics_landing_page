@@ -1,0 +1,42 @@
+<Project>
+
+  <!--
+    CPG Enterprises Logistics Platform - Global build configuration.
+    Enforces the SSD anti-hallucination directives from SPEC.md section 1:
+      - Strict nullable reference types (<Nullable>enable</Nullable>)
+      - Warnings promoted to errors so the build fails on unsafe code
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>9999</WarningLevel>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!--
+      'latest-minimum' keeps the correctness + nullable analyzers (the SPEC.md SSD
+      requirement) promoted to errors, without turning every style/perf suggestion
+      (CA1848, CA2007, CA1062, IDE00xx) into a build break on scaffolding code.
+    -->
+    <AnalysisLevel>latest-minimum</AnalysisLevel>
+    <AnalysisMode>Default</AnalysisMode>
+    <Deterministic>true</Deterministic>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <Product>CPG Enterprises Logistics Platform</Product>
+    <Company>CPG Enterprises of Orlando, Inc.</Company>
+    <Authors>CPG Enterprises Engineering</Authors>
+  </PropertyGroup>
+
+  <!-- Test projects: keep nullable + strictness, but allow xUnit/Reqnroll generator noise. -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('Tests'))">
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+</Project>

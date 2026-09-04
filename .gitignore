@@ -1,0 +1,38 @@
+# .NET
+bin/
+obj/
+*.user
+[Bb]uild[Ll]og.*
+.vs/
+artifacts/
+*.nupkg
+
+# EF
+*.db
+
+# Reqnroll generated code-behind
+*.feature.cs
+
+# Blob storage (local provider)
+.blob-store/
+**/.blob-store/
+
+# Node / Vite
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+*.local
+
+# Env
+.env
+.env.*.local
+
+# IDE
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+logs/

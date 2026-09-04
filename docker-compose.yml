@@ -1,0 +1,66 @@
+# CPG Enterprises Logistics Platform - local development dependencies.
+# Usage:  docker compose up -d      (bring the stack up)
+#         docker compose down -v    (tear down + wipe volumes)
+name: cpg-enterprises
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cpg-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cpg
+      POSTGRES_USER: cpg
+      POSTGRES_PASSWORD: cpg_local_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - cpg-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cpg -d cpg"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: cpg-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: cpg
+      RABBITMQ_DEFAULT_PASS: cpg_local_dev
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.33.0
+    container_name: cpg-azurite
+    restart: unless-stopped
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data"
+    ports:
+      - "10000:10000"  # blob
+      - "10001:10001"  # queue
+      - "10002:10002"  # table
+    volumes:
+      - cpg-azurite-data:/data
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    container_name: cpg-jaeger
+    restart: unless-stopped
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4317:4317"     # OTLP gRPC receiver
+      - "4318:4318"     # OTLP HTTP receiver
+
+volumes:
+  cpg-postgres-data:
+  cpg-azurite-data:

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>CPG.Domain</RootNamespace>
+    <AssemblyName>CPG.Domain</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MediatR.Contracts only: the INotification marker for domain events, no runtime. -->
+    <PackageReference Include="MediatR.Contracts" />
+  </ItemGroup>
+
+</Project>
