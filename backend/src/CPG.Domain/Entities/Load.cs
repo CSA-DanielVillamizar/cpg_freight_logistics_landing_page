@@ -36,6 +36,12 @@ public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion
 
     public required string ShipperName { get; set; }
 
+    /// <summary>The corporate shipper user (JWT subject) that requested this load, if any.</summary>
+    public Guid? ShipperUserId { get; set; }
+
+    /// <summary>Absolute URI of the signed proof-of-delivery blob; set once the load is delivered.</summary>
+    public string? PodBlobUri { get; set; }
+
     public required DateTimeOffset PickupAtUtc { get; set; }
 
     public required DateTimeOffset DeliveryAtUtc { get; set; }

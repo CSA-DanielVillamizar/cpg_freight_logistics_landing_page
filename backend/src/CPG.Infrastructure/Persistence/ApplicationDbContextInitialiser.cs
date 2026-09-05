@@ -1,4 +1,7 @@
+using System.Globalization;
+using System.Text;
 using CPG.Application.Common.Interfaces;
+using CPG.Application.Features.Shipper.GetLoadPod;
 using CPG.Domain.Entities;
 using CPG.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +14,8 @@ namespace CPG.Infrastructure.Persistence;
 public sealed class ApplicationDbContextInitialiser(
     ILogger<ApplicationDbContextInitialiser> logger,
     ApplicationDbContext dbContext,
-    IPasswordHasher passwordHasher)
+    IPasswordHasher passwordHasher,
+    IBlobStorage blobStorage)
 {
     /// <summary>Default password for every seeded account in non-production environments.</summary>
     public const string SeedPassword = "Passw0rd!";
@@ -115,6 +119,12 @@ public sealed class ApplicationDbContextInitialiser(
             .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        var shipperUserId = await dbContext.Users
+            .Where(u => u.Email == "shipper@cpgorlando.com")
+            .Select(u => (Guid?)u.Id)
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+
         var now = DateTimeOffset.UtcNow;
 
         var loads = new List<Load>
@@ -197,7 +207,7 @@ public sealed class ApplicationDbContextInitialiser(
                 OriginCity = "Tampa", OriginState = "FL", OriginZip = "33602",
                 DestinationCity = "Savannah", DestinationState = "GA", DestinationZip = "31401",
                 DistanceMiles = 412, WeightLbs = 96500, RateUsd = 4870m,
-                ShipperName = "Gulf Coast Marine & Heavy Civil",
+                ShipperName = "Gulf Coast Marine & Heavy Civil", ShipperUserId = shipperUserId,
                 PickupAtUtc = now.AddDays(1), DeliveryAtUtc = now.AddDays(2),
                 Status = LoadStatus.Dispatched, AssignedCarrierId = carrier?.Id,
                 SpecialInstructions = "Superload permit escort; pole car front & rear.",
@@ -209,7 +219,7 @@ public sealed class ApplicationDbContextInitialiser(
                 OriginCity = "Orlando", OriginState = "FL", OriginZip = "32824",
                 DestinationCity = "New Orleans", DestinationState = "LA", DestinationZip = "70112",
                 DistanceMiles = 655, WeightLbs = 51200, RateUsd = 3120m,
-                ShipperName = "Gulf Coast Marine & Heavy Civil",
+                ShipperName = "Gulf Coast Marine & Heavy Civil", ShipperUserId = shipperUserId,
                 PickupAtUtc = now.AddDays(-1), DeliveryAtUtc = now.AddDays(1),
                 Status = LoadStatus.InTransit, AssignedCarrierId = carrier?.Id,
                 SpecialInstructions = "Over-height 10'2\" cargo; wide/DOT permit corridor.",
@@ -221,8 +231,30 @@ public sealed class ApplicationDbContextInitialiser(
                 OriginCity = "Orlando", OriginState = "FL", OriginZip = "32809",
                 DestinationCity = "Atlanta", DestinationState = "GA", DestinationZip = "30301",
                 DistanceMiles = 438, WeightLbs = 26400, RateUsd = 1290m,
-                ShipperName = "Apex Construction",
+                ShipperName = "Apex Construction", ShipperUserId = shipperUserId,
                 PickupAtUtc = now.AddDays(-4), DeliveryAtUtc = now.AddDays(-3),
+                Status = LoadStatus.Delivered, AssignedCarrierId = carrier?.Id,
+            },
+            new()
+            {
+                Reference = "CPG-48188", ServiceType = ServiceType.ColdChain,
+                EquipmentType = "53' Dual-Temp Reefer",
+                OriginCity = "Lakeland", OriginState = "FL", OriginZip = "33801",
+                DestinationCity = "Nashville", DestinationState = "TN", DestinationZip = "37203",
+                DistanceMiles = 601, WeightLbs = 39500, RateUsd = 2350m,
+                ShipperName = "Apex Construction", ShipperUserId = shipperUserId,
+                PickupAtUtc = now.AddDays(-11), DeliveryAtUtc = now.AddDays(-9),
+                TargetTemperatureF = 34, Status = LoadStatus.Delivered, AssignedCarrierId = carrier?.Id,
+            },
+            new()
+            {
+                Reference = "CPG-48176", ServiceType = ServiceType.HeavyHaul,
+                EquipmentType = "RGN Multi-Axle",
+                OriginCity = "Orlando", OriginState = "FL", OriginZip = "32819",
+                DestinationCity = "Richmond", DestinationState = "VA", DestinationZip = "23219",
+                DistanceMiles = 706, WeightLbs = 44200, RateUsd = 3410m,
+                ShipperName = "Apex Construction", ShipperUserId = shipperUserId,
+                PickupAtUtc = now.AddDays(-18), DeliveryAtUtc = now.AddDays(-16),
                 Status = LoadStatus.Delivered, AssignedCarrierId = carrier?.Id,
             },
         };
@@ -230,6 +262,105 @@ public sealed class ApplicationDbContextInitialiser(
         dbContext.Loads.AddRange(loads);
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         logger.LogInformation("Seeded {Count} load board rows", loads.Count);
+
+        await SeedProofOfDeliveryAsync(loads, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Generates a signed PDF proof-of-delivery for every delivered shipper load and stores it.</summary>
+    private async Task SeedProofOfDeliveryAsync(IEnumerable<Load> loads, CancellationToken cancellationToken)
+    {
+        var delivered = loads
+            .Where(l => l.Status == LoadStatus.Delivered && l.ShipperUserId is not null)
+            .ToList();
+
+        if (delivered.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var load in delivered)
+        {
+            var pdf = BuildProofOfDeliveryPdf(load);
+            using var stream = new MemoryStream(pdf);
+            var upload = await blobStorage
+                .UploadAsync(
+                    GetLoadPodQueryHandler.ContainerName,
+                    $"{load.Id}/pod.pdf",
+                    stream,
+                    "application/pdf",
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            load.PodBlobUri = upload.Uri.ToString();
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        logger.LogInformation("Seeded {Count} proof-of-delivery documents", delivered.Count);
+    }
+
+    /// <summary>Builds a minimal, valid single-page PDF proof of delivery.</summary>
+    private static byte[] BuildProofOfDeliveryPdf(Load load)
+    {
+        static string Escape(string value) =>
+            value.Replace("\\", "\\\\", StringComparison.Ordinal)
+                .Replace("(", "\\(", StringComparison.Ordinal)
+                .Replace(")", "\\)", StringComparison.Ordinal);
+
+        var lines = new[]
+        {
+            "CPG ENTERPRISES OF ORLANDO  -  PROOF OF DELIVERY",
+            "",
+            $"Load reference:  {load.Reference}",
+            $"Lane:            {load.OriginCity}, {load.OriginState} to {load.DestinationCity}, {load.DestinationState}",
+            $"Delivered (UTC): {load.DeliveryAtUtc.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}",
+            $"Gross weight:    {load.WeightLbs.ToString("N0", CultureInfo.InvariantCulture)} lb",
+            $"Equipment:       {load.EquipmentType}",
+            "",
+            "Freight received in good order and condition.",
+            "Consignee signature on file at the CPG Orlando dispatch desk.",
+        };
+
+        var content = "BT /F1 12 Tf 56 760 Td 16 TL\n"
+            + string.Join("\n", lines.Select(line => $"({Escape(line)}) Tj T*"))
+            + "\nET";
+        var contentLength = Encoding.ASCII.GetByteCount(content);
+
+        var objects = new[]
+        {
+            "<< /Type /Catalog /Pages 2 0 R >>",
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>",
+            $"<< /Length {contentLength} >>\nstream\n{content}\nendstream",
+            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        };
+
+        using var buffer = new MemoryStream();
+
+        void Write(string text)
+        {
+            var bytes = Encoding.ASCII.GetBytes(text);
+            buffer.Write(bytes, 0, bytes.Length);
+        }
+
+        Write("%PDF-1.4\n");
+
+        var offsets = new long[objects.Length];
+        for (var i = 0; i < objects.Length; i++)
+        {
+            offsets[i] = buffer.Position;
+            Write($"{i + 1} 0 obj\n{objects[i]}\nendobj\n");
+        }
+
+        var xrefPosition = buffer.Position;
+        Write($"xref\n0 {objects.Length + 1}\n0000000000 65535 f \n");
+        foreach (var offset in offsets)
+        {
+            Write($"{offset.ToString("D10", CultureInfo.InvariantCulture)} 00000 n \n");
+        }
+
+        Write($"trailer\n<< /Size {objects.Length + 1} /Root 1 0 R >>\nstartxref\n{xrefPosition}\n%%EOF");
+
+        return buffer.ToArray();
     }
 }
 

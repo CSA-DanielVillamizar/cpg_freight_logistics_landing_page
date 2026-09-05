@@ -9,6 +9,7 @@ import { LandingPage } from '@/features/landing/LandingPage';
 import { LoadBoardPage } from '@/features/load-board/LoadBoardPage';
 import { VerticalLandingPage } from '@/features/landing/VerticalLandingPage';
 import { RateCalculatorPage } from '@/features/rates/RateCalculatorPage';
+import { ShipperDashboardPage } from '@/features/shipper-portal/ShipperDashboardPage';
 import { LiveTrackingPage } from '@/features/telemetry/LiveTrackingPage';
 
 export const router = createBrowserRouter([
@@ -57,6 +58,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole role="Carrier">
             <CarrierPortalPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'shipper/dashboard',
+        element: (
+          <RequireRole role="Shipper">
+            <ShipperDashboardPage />
           </RequireRole>
         ),
       },

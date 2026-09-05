@@ -12,9 +12,9 @@ interface LocationState {
 
 /** Default landing route per role when the user wasn't intercepted en route to a specific page. */
 const ROLE_HOME: Record<UserRole, string> = {
-  Admin: '/admin/audit-logs',
+  Admin: '/admin/carriers',
   Carrier: '/carrier',
-  Shipper: '/',
+  Shipper: '/shipper/dashboard',
 };
 
 const SEED_ACCOUNTS = [

@@ -78,6 +78,14 @@ export function SiteHeader(): JSX.Element {
               Audit log
             </Link>
           ) : null}
+          {hasRole('Shipper') ? (
+            <Link
+              to="/shipper/dashboard"
+              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+            >
+              My shipments
+            </Link>
+          ) : null}
           {hasRole('Carrier') ? (
             <Link
               to="/carrier"

@@ -128,9 +128,11 @@ internal sealed class LoadConfiguration : IEntityTypeConfiguration<Load>
         builder.Property(l => l.DestinationZip).HasMaxLength(16).IsRequired();
         builder.Property(l => l.RateUsd).HasPrecision(12, 2);
         builder.Property(l => l.ShipperName).HasMaxLength(160).IsRequired();
+        builder.Property(l => l.PodBlobUri).HasMaxLength(1024);
         builder.Property(l => l.SpecialInstructions).HasMaxLength(1000);
         builder.Property(l => l.Status).HasConversion<string>().HasMaxLength(32);
         builder.HasIndex(l => l.Status);
+        builder.HasIndex(l => l.ShipperUserId);
         builder.HasOne(l => l.AssignedCarrier)
             .WithMany()
             .HasForeignKey(l => l.AssignedCarrierId)
