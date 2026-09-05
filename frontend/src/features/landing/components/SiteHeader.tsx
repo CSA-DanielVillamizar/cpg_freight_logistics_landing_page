@@ -54,6 +54,14 @@ export function SiteHeader(): JSX.Element {
               Load board
             </Link>
           ) : null}
+          {isAuthenticated ? (
+            <Link
+              to="/tracking"
+              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+            >
+              Live tracking
+            </Link>
+          ) : null}
           {hasRole('Admin') ? (
             <Link
               to="/admin/audit-logs"

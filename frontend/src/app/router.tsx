@@ -8,6 +8,7 @@ import { LandingPage } from '@/features/landing/LandingPage';
 import { LoadBoardPage } from '@/features/load-board/LoadBoardPage';
 import { VerticalLandingPage } from '@/features/landing/VerticalLandingPage';
 import { RateCalculatorPage } from '@/features/rates/RateCalculatorPage';
+import { LiveTrackingPage } from '@/features/telemetry/LiveTrackingPage';
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole>
             <LoadBoardPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'tracking',
+        element: (
+          <RequireRole>
+            <LiveTrackingPage />
           </RequireRole>
         ),
       },
