@@ -1,7 +1,9 @@
 import { Navigate, useParams } from 'react-router-dom';
 import { Card } from '@/shared/ui';
 import { LeadCaptureForm } from '@/features/leads/LeadCaptureForm';
+import { VerticalIcon } from './components/VerticalIcon';
 import { getVerticalContent } from './verticalContent';
+import heroPhoto from '@/assets/hero-heavy-haul.jpg';
 
 export function VerticalLandingPage(): JSX.Element {
   const { slug } = useParams<{ slug: string }>();
@@ -14,8 +16,12 @@ export function VerticalLandingPage(): JSX.Element {
   return (
     <div className="flex flex-col">
       {/* Hero */}
-      <section className="bg-primary-container text-white">
+      <section
+        className="bg-primary-container bg-cover bg-center text-white"
+        style={{ backgroundImage: `linear-gradient(100deg, rgba(11,25,44,0.94) 35%, rgba(11,25,44,0.6) 100%), url(${heroPhoto})` }}
+      >
         <div className="mx-auto flex max-w-container flex-col gap-5 px-4 py-14">
+          <VerticalIcon slug={content.slug} className="h-10 w-10 text-hazard-orange" />
           <span className="font-mono text-label-sm uppercase tracking-wider text-hazard-orange">
             {content.eyebrow}
           </span>

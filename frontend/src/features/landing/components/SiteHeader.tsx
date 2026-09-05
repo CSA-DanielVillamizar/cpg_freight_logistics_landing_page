@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/useAuth';
+import cpgLogo from '@/assets/cpg-logo.png';
 
 const DISPATCH_PHONE = '(407) 555-0194';
 
@@ -15,10 +16,13 @@ export function SiteHeader(): JSX.Element {
   return (
     <header className="sticky top-0 z-50 border-b border-outline bg-surface/90 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-container items-center justify-between gap-3 px-4">
-        <Link to="/" className="flex min-w-0 flex-col">
-          <span className="font-heading text-headline-sm tracking-tight">CPG Enterprises</span>
-          <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
-            Heavy Haul &amp; Specialized Logistics
+        <Link to="/" className="flex min-w-0 items-center gap-3">
+          <img src={cpgLogo} alt="CPG Enterprises" className="h-9 w-9 shrink-0 object-contain" />
+          <span className="flex min-w-0 flex-col">
+            <span className="font-heading text-headline-sm tracking-tight">CPG Enterprises</span>
+            <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+              Heavy Haul &amp; Specialized Logistics
+            </span>
           </span>
         </Link>
 

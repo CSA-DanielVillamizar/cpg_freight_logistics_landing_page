@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-noble AS build
 WORKDIR /src
 
-COPY Directory.Build.props Directory.Packages.props global.json ./
+COPY Directory.Build.props Directory.Packages.props ./
 COPY CPG.sln ./
 COPY src/CPG.Domain/CPG.Domain.csproj src/CPG.Domain/
 COPY src/CPG.Application/CPG.Application.csproj src/CPG.Application/

@@ -1,12 +1,17 @@
 import { Link } from 'react-router-dom';
 import { Badge, Card } from '@/shared/ui';
 import { TrustRibbon } from './components/TrustRibbon';
+import { VerticalIcon } from './components/VerticalIcon';
 import { VERTICAL_CONTENT } from './verticalContent';
+import heroPhoto from '@/assets/hero-heavy-haul.jpg';
 
 export function LandingPage(): JSX.Element {
   return (
     <div className="mx-auto flex max-w-container flex-col gap-12 px-4 py-10">
-      <section className="flex flex-col gap-4 rounded-lg bg-primary-container p-8 text-white">
+      <section
+        className="relative flex flex-col gap-4 overflow-hidden rounded-lg bg-primary-container bg-cover bg-center p-8 text-white"
+        style={{ backgroundImage: `linear-gradient(100deg, rgba(11,25,44,0.94) 30%, rgba(11,25,44,0.55) 100%), url(${heroPhoto})` }}
+      >
         <Badge tone="oversize">Live Dispatch Active • Tier 1 Fleet Ready</Badge>
         <h1 className="text-headline-xl text-white sm:text-display-lg">
           Heavy Haul &amp; Flatbed Transportation Across All 48 States
@@ -35,6 +40,7 @@ export function LandingPage(): JSX.Element {
         <div className="grid gap-4 sm:grid-cols-2">
           {VERTICAL_CONTENT.map((vertical) => (
             <Card key={vertical.slug} anchored className="flex flex-col gap-2 p-5">
+              <VerticalIcon slug={vertical.slug} className="h-8 w-8 text-hazard-orange" />
               <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
                 {vertical.serviceType}
               </span>

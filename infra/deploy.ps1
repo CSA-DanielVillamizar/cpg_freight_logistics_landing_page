@@ -29,8 +29,16 @@ $template = Join-Path $here 'main.bicep'
 $parameters = Join-Path $here 'main.parameters.json'
 
 function New-StrongSecret([int] $Bytes = 32) {
+    # RNGCryptoServiceProvider (not the static RandomNumberGenerator.Fill helper) so this
+    # works on both Windows PowerShell 5.1 (.NET Framework) and PowerShell 7+ (.NET).
     $buffer = [byte[]]::new($Bytes)
-    [System.Security.Cryptography.RandomNumberGenerator]::Fill($buffer)
+    $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
+    try {
+        $rng.GetBytes($buffer)
+    }
+    finally {
+        $rng.Dispose()
+    }
     return [Convert]::ToBase64String($buffer)
 }
 
