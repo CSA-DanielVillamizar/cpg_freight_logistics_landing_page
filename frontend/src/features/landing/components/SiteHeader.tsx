@@ -4,6 +4,13 @@ import cpgLogo from '@/assets/cpg-logo.png';
 
 const DISPATCH_PHONE = '(407) 555-0194';
 
+const PRIMARY_NAV_LINKS = [
+  { label: 'Cold Chain', to: '/verticals/refrigerated-cold-chain' },
+  { label: 'FDOT Permits', to: '/verticals/fdot-concrete-barricades' },
+  { label: 'Heavy Haul', to: '/verticals/flatbed-heavy-haul' },
+  { label: 'Rate Calculator', to: '/rates' },
+] as const;
+
 export function SiteHeader(): JSX.Element {
   const { user, isAuthenticated, hasRole, logout } = useAuth();
   const navigate = useNavigate();
@@ -25,6 +32,18 @@ export function SiteHeader(): JSX.Element {
             </span>
           </span>
         </Link>
+
+        <nav className="hidden items-center gap-6 md:flex">
+          {PRIMARY_NAV_LINKS.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="font-mono text-label-sm uppercase tracking-wide text-steel-gray transition-colors hover:text-hazard-orange"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
         <nav className="flex items-center gap-2">
           {hasRole('Admin') ? (
