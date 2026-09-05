@@ -1,18 +1,19 @@
 import { Badge } from '@/shared/ui';
-import type { Load } from '../mockLoads';
-import { ServiceTypeBadge, STATUS_TONE } from './ServiceTypeBadge';
+import type { Load } from '../types';
+import { statusLabel, STATUS_TONE } from '../types';
+import { ServiceTypeBadge } from './ServiceTypeBadge';
 
 interface LoadDataGridProps {
   loads: readonly Load[];
   onSelect: (load: Load) => void;
 }
 
-const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit' });
-
-function formatStop(stop: Load['origin']): string {
-  return `${stop.city}, ${stop.state} ${stop.zip}`;
-}
 
 export function LoadDataGrid({ loads, onSelect }: LoadDataGridProps): JSX.Element {
   if (loads.length === 0) {
@@ -48,21 +49,19 @@ export function LoadDataGrid({ loads, onSelect }: LoadDataGridProps): JSX.Elemen
               className="cursor-pointer transition-colors hover:bg-surface-muted"
             >
               <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm font-semibold text-fleet-blue">
-                {load.id}
+                {load.reference}
               </td>
               <td className="whitespace-nowrap px-3 py-3">
-                <Badge tone={STATUS_TONE[load.status]}>
-                  {load.status === 'InTransit' ? 'In Transit' : load.status}
-                </Badge>
+                <Badge tone={STATUS_TONE[load.status]}>{statusLabel(load.status)}</Badge>
               </td>
               <td className="whitespace-nowrap px-3 py-3">
                 <ServiceTypeBadge serviceType={load.serviceType} />
               </td>
               <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm text-on-surface-variant">
-                {formatStop(load.origin)}
+                {load.originCity}, {load.originState} {load.originZip}
               </td>
               <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm text-on-surface-variant">
-                {formatStop(load.destination)}
+                {load.destinationCity}, {load.destinationState} {load.destinationZip}
               </td>
               <td className="whitespace-nowrap px-3 py-3 text-right font-mono text-body-sm tabular-nums text-on-surface-variant">
                 {load.distanceMiles.toLocaleString()} mi
@@ -74,10 +73,10 @@ export function LoadDataGrid({ loads, onSelect }: LoadDataGridProps): JSX.Elemen
                 {currency.format(load.rateUsd)}
               </td>
               <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm tabular-nums text-steel-gray">
-                {dateFormatter.format(new Date(load.pickupDateUtc))}
+                {dateFormatter.format(new Date(load.pickupAtUtc))}
               </td>
               <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm tabular-nums text-steel-gray">
-                {dateFormatter.format(new Date(load.deliveryDateUtc))}
+                {dateFormatter.format(new Date(load.deliveryAtUtc))}
               </td>
             </tr>
           ))}

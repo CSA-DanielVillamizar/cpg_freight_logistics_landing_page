@@ -17,7 +17,14 @@ export const router = createBrowserRouter([
       { index: true, element: <LandingPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'rates', element: <RateCalculatorPage /> },
-      { path: 'load-board', element: <LoadBoardPage /> },
+      {
+        path: 'load-board',
+        element: (
+          <RequireRole>
+            <LoadBoardPage />
+          </RequireRole>
+        ),
+      },
       { path: 'verticals/:slug', element: <VerticalLandingPage /> },
       {
         path: 'admin/audit-logs',

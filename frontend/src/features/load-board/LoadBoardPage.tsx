@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { Card } from '@/shared/ui';
 import { LoadDataGrid } from './components/LoadDataGrid';
 import { LoadDetailsDrawer } from './components/LoadDetailsDrawer';
 import type { LoadFilters } from './components/LoadFiltersSidebar';
 import { LoadFiltersSidebar } from './components/LoadFiltersSidebar';
-import type { Load } from './mockLoads';
-import { MOCK_LOADS } from './mockLoads';
+import { useLoads } from './useLoads';
 
 const EMPTY_FILTERS: LoadFilters = {
   statuses: new Set(),
@@ -13,59 +13,47 @@ const EMPTY_FILTERS: LoadFilters = {
   destinationQuery: '',
 };
 
-function matchesStop(stop: Load['origin'], query: string): boolean {
-  if (!query.trim()) {
-    return true;
-  }
-  const needle = query.trim().toLowerCase();
-  return (
-    stop.city.toLowerCase().includes(needle) ||
-    stop.state.toLowerCase().includes(needle) ||
-    stop.zip.includes(needle)
-  );
-}
-
 export function LoadBoardPage(): JSX.Element {
   const [filters, setFilters] = useState<LoadFilters>(EMPTY_FILTERS);
-  const [selectedLoad, setSelectedLoad] = useState<Load | null>(null);
+  const [selectedLoadId, setSelectedLoadId] = useState<string | null>(null);
 
-  const filteredLoads = useMemo(() => {
-    return MOCK_LOADS.filter((load) => {
-      if (filters.statuses.size > 0 && !filters.statuses.has(load.status)) {
-        return false;
-      }
-      if (filters.serviceTypes.size > 0 && !filters.serviceTypes.has(load.serviceType)) {
-        return false;
-      }
-      if (!matchesStop(load.origin, filters.originQuery)) {
-        return false;
-      }
-      if (!matchesStop(load.destination, filters.destinationQuery)) {
-        return false;
-      }
-      return true;
-    });
-  }, [filters]);
+  const { loads, status, errorMessage, refetch } = useLoads(filters);
+  const selectedLoad = loads.find((load) => load.id === selectedLoadId) ?? null;
 
   return (
     <div className="mx-auto flex max-w-container flex-col gap-6 px-4 py-10">
       <header className="flex flex-col gap-2">
         <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
-          Prototype · Dummy data only
+          Live · PostgreSQL-backed
         </span>
         <h1 className="text-headline-lg">Carrier &amp; Shipper Load Workspace</h1>
         <p className="max-w-2xl text-body-sm text-steel-gray">
           Live board of freight moving through the CPG Orlando network. Filter by status, equipment
-          and lane, then open a load to review the full spec and bid or accept.
+          and lane, then open a load to review the full spec and accept it.
         </p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-        <LoadFiltersSidebar filters={filters} onChange={setFilters} resultCount={filteredLoads.length} />
-        <LoadDataGrid loads={filteredLoads} onSelect={setSelectedLoad} />
+        <LoadFiltersSidebar filters={filters} onChange={setFilters} resultCount={loads.length} />
+
+        {status === 'error' ? (
+          <Card className="border-error bg-error-container p-4 text-body-sm text-error">
+            {errorMessage}
+          </Card>
+        ) : status === 'loading' ? (
+          <Card className="flex h-48 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
+            Loading board…
+          </Card>
+        ) : (
+          <LoadDataGrid loads={loads} onSelect={(load) => setSelectedLoadId(load.id)} />
+        )}
       </div>
 
-      <LoadDetailsDrawer load={selectedLoad} onClose={() => setSelectedLoad(null)} />
+      <LoadDetailsDrawer
+        load={selectedLoad}
+        onClose={() => setSelectedLoadId(null)}
+        onAccepted={refetch}
+      />
     </div>
   );
 }

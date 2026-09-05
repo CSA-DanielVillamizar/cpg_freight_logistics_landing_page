@@ -84,6 +84,7 @@ public static class DependencyInjection
             bus.SetKebabCaseEndpointNameFormatter();
             bus.AddConsumer<ComplianceNotificationConsumer>();
             bus.AddConsumer<LeadNotificationConsumer>();
+            bus.AddConsumer<LoadAcceptedNotificationConsumer>();
 
             if (useServiceBus)
             {

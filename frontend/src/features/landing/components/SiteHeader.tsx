@@ -9,7 +9,6 @@ const PRIMARY_NAV_LINKS = [
   { label: 'FDOT Permits', to: '/verticals/fdot-concrete-barricades' },
   { label: 'Heavy Haul', to: '/verticals/flatbed-heavy-haul' },
   { label: 'Rate Calculator', to: '/rates' },
-  { label: 'Load Board', to: '/load-board' },
 ] as const;
 
 export function SiteHeader(): JSX.Element {
@@ -47,6 +46,14 @@ export function SiteHeader(): JSX.Element {
         </nav>
 
         <nav className="flex items-center gap-2">
+          {isAuthenticated ? (
+            <Link
+              to="/load-board"
+              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+            >
+              Load board
+            </Link>
+          ) : null}
           {hasRole('Admin') ? (
             <Link
               to="/admin/audit-logs"

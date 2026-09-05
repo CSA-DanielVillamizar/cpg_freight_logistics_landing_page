@@ -1,7 +1,7 @@
 import { cn } from '@/shared/lib/cn';
 import { Card } from '@/shared/ui';
-import type { LoadServiceType, LoadStatus } from '../mockLoads';
-import { LOAD_SERVICE_TYPES, LOAD_STATUSES } from '../mockLoads';
+import type { LoadServiceType, LoadStatus } from '../types';
+import { LOAD_SERVICE_TYPES, LOAD_STATUSES } from '../types';
 
 export interface LoadFilters {
   statuses: Set<LoadStatus>;

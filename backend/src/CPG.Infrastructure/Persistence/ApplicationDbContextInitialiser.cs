@@ -67,6 +67,7 @@ public sealed class ApplicationDbContextInitialiser(
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         await SeedCarrierAsync(cancellationToken).ConfigureAwait(false);
+        await SeedLoadsAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private async Task SeedCarrierAsync(CancellationToken cancellationToken)
@@ -101,6 +102,122 @@ public sealed class ApplicationDbContextInitialiser(
 
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         logger.LogInformation("Seeded carrier account for {Email}", carrierEmail);
+    }
+
+    private async Task SeedLoadsAsync(CancellationToken cancellationToken)
+    {
+        if (await dbContext.Loads.AnyAsync(cancellationToken).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        var carrier = await dbContext.Carriers
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var now = DateTimeOffset.UtcNow;
+
+        var loads = new List<Load>
+        {
+            new()
+            {
+                Reference = "CPG-48213", ServiceType = ServiceType.ColdChain,
+                EquipmentType = "53' Dual-Temp Reefer",
+                OriginCity = "Orlando", OriginState = "FL", OriginZip = "32801",
+                DestinationCity = "Charlotte", DestinationState = "NC", DestinationZip = "28202",
+                DistanceMiles = 543, WeightLbs = 38200, RateUsd = 2140m,
+                ShipperName = "Sunbelt Produce Cooperative",
+                PickupAtUtc = now.AddDays(3), DeliveryAtUtc = now.AddDays(4),
+                TargetTemperatureF = -10, Status = LoadStatus.Available,
+                SpecialInstructions = "Continuous temp logging; pre-cooled trailer required.",
+            },
+            new()
+            {
+                Reference = "CPG-48217", ServiceType = ServiceType.ColdChain,
+                EquipmentType = "Deep-Freeze Flash Trailer",
+                OriginCity = "Plant City", OriginState = "FL", OriginZip = "33563",
+                DestinationCity = "Miami", DestinationState = "FL", DestinationZip = "33101",
+                DistanceMiles = 214, WeightLbs = 41000, RateUsd = 980m,
+                ShipperName = "Sunbelt Produce Cooperative",
+                PickupAtUtc = now.AddDays(2), DeliveryAtUtc = now.AddDays(2).AddHours(9),
+                TargetTemperatureF = -20, Status = LoadStatus.Available,
+                SpecialInstructions = "Sub-zero steady pull-down; food-grade sanitation slip.",
+            },
+            new()
+            {
+                Reference = "CPG-48220", ServiceType = ServiceType.FdotConcrete,
+                EquipmentType = "Self-Offloading Flatbed",
+                OriginCity = "Ocala", OriginState = "FL", OriginZip = "34470",
+                DestinationCity = "Gainesville", DestinationState = "FL", DestinationZip = "32601",
+                DistanceMiles = 41, WeightLbs = 40000, RateUsd = 610m,
+                ShipperName = "Florida Infrastructure Corp",
+                PickupAtUtc = now.AddDays(4), DeliveryAtUtc = now.AddDays(4).AddHours(5),
+                Status = LoadStatus.Available,
+                SpecialInstructions = "MASH TL-3 crash-rated units only.",
+            },
+            new()
+            {
+                Reference = "CPG-48223", ServiceType = ServiceType.StandardDryVan,
+                EquipmentType = "53' Dry Van",
+                OriginCity = "Kissimmee", OriginState = "FL", OriginZip = "34741",
+                DestinationCity = "Charleston", DestinationState = "SC", DestinationZip = "29401",
+                DistanceMiles = 487, WeightLbs = 29900, RateUsd = 1470m,
+                ShipperName = "Marcus Sterling Distribution",
+                PickupAtUtc = now.AddDays(5), DeliveryAtUtc = now.AddDays(6),
+                Status = LoadStatus.Available,
+            },
+            new()
+            {
+                Reference = "CPG-48226", ServiceType = ServiceType.ColdChain,
+                EquipmentType = "Life Science Transporter",
+                OriginCity = "Orlando", OriginState = "FL", OriginZip = "32806",
+                DestinationCity = "Raleigh", DestinationState = "NC", DestinationZip = "27601",
+                DistanceMiles = 549, WeightLbs = 18700, RateUsd = 2670m,
+                ShipperName = "BioCore Pharmaceuticals",
+                PickupAtUtc = now.AddDays(6), DeliveryAtUtc = now.AddDays(7),
+                TargetTemperatureF = 39, Status = LoadStatus.Available,
+                SpecialInstructions = "GDP / 21 CFR Part 11; geofenced deadbolts; chain-of-custody signature.",
+            },
+            new()
+            {
+                Reference = "CPG-48214", ServiceType = ServiceType.HeavyHaul,
+                EquipmentType = "RGN Multi-Axle",
+                OriginCity = "Tampa", OriginState = "FL", OriginZip = "33602",
+                DestinationCity = "Savannah", DestinationState = "GA", DestinationZip = "31401",
+                DistanceMiles = 412, WeightLbs = 96500, RateUsd = 4870m,
+                ShipperName = "Gulf Coast Marine & Heavy Civil",
+                PickupAtUtc = now.AddDays(1), DeliveryAtUtc = now.AddDays(2),
+                Status = LoadStatus.Dispatched, AssignedCarrierId = carrier?.Id,
+                SpecialInstructions = "Superload permit escort; pole car front & rear.",
+            },
+            new()
+            {
+                Reference = "CPG-48219", ServiceType = ServiceType.HeavyHaul,
+                EquipmentType = "Step-Deck / Drop-Deck",
+                OriginCity = "Orlando", OriginState = "FL", OriginZip = "32824",
+                DestinationCity = "New Orleans", DestinationState = "LA", DestinationZip = "70112",
+                DistanceMiles = 655, WeightLbs = 51200, RateUsd = 3120m,
+                ShipperName = "Gulf Coast Marine & Heavy Civil",
+                PickupAtUtc = now.AddDays(-1), DeliveryAtUtc = now.AddDays(1),
+                Status = LoadStatus.InTransit, AssignedCarrierId = carrier?.Id,
+                SpecialInstructions = "Over-height 10'2\" cargo; wide/DOT permit corridor.",
+            },
+            new()
+            {
+                Reference = "CPG-48216", ServiceType = ServiceType.StandardDryVan,
+                EquipmentType = "53' Dry Van",
+                OriginCity = "Orlando", OriginState = "FL", OriginZip = "32809",
+                DestinationCity = "Atlanta", DestinationState = "GA", DestinationZip = "30301",
+                DistanceMiles = 438, WeightLbs = 26400, RateUsd = 1290m,
+                ShipperName = "Apex Construction",
+                PickupAtUtc = now.AddDays(-4), DeliveryAtUtc = now.AddDays(-3),
+                Status = LoadStatus.Delivered, AssignedCarrierId = carrier?.Id,
+            },
+        };
+
+        dbContext.Loads.AddRange(loads);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        logger.LogInformation("Seeded {Count} load board rows", loads.Count);
     }
 }
 

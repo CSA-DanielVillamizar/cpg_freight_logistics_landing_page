@@ -1,11 +1,11 @@
 import { VerticalIcon } from '@/features/landing/components/VerticalIcon';
-import type { LoadServiceType, LoadStatus } from '../mockLoads';
-import { LOAD_SERVICE_TYPES } from '../mockLoads';
-import type { BadgeTone } from '@/shared/ui';
+import type { LoadServiceType } from '../types';
+import { LOAD_SERVICE_TYPES } from '../types';
 
 const SERVICE_ICON_SLUG: Record<LoadServiceType, string> = {
   ColdChain: 'refrigerated-cold-chain',
   HeavyHaul: 'flatbed-heavy-haul',
+  Flatbed: 'flatbed-heavy-haul',
   FdotConcrete: 'fdot-concrete-barricades',
   StandardDryVan: 'standard-dry-van',
 };
@@ -13,13 +13,6 @@ const SERVICE_ICON_SLUG: Record<LoadServiceType, string> = {
 const SERVICE_LABEL: Record<LoadServiceType, string> = Object.fromEntries(
   LOAD_SERVICE_TYPES.map((entry) => [entry.value, entry.label]),
 ) as Record<LoadServiceType, string>;
-
-export const STATUS_TONE: Record<LoadStatus, BadgeTone> = {
-  Available: 'available',
-  Dispatched: 'dispatched',
-  InTransit: 'transit',
-  Delivered: 'delivered',
-};
 
 interface ServiceTypeBadgeProps {
   serviceType: LoadServiceType;

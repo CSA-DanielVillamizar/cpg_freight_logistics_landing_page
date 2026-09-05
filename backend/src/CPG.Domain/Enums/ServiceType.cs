@@ -14,4 +14,7 @@ public enum ServiceType
 
     /// <summary>FDOT concrete barricade delivery and crane staging.</summary>
     FdotConcrete = 4,
+
+    /// <summary>Standard 48'/53' enclosed dry van freight (Load Board).</summary>
+    StandardDryVan = 5,
 }

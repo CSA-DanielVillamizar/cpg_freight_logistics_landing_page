@@ -119,10 +119,22 @@ internal sealed class LoadConfiguration : IEntityTypeConfiguration<Load>
         builder.Property(l => l.Reference).HasMaxLength(64).IsRequired();
         builder.HasIndex(l => l.Reference).IsUnique();
         builder.Property(l => l.ServiceType).HasConversion<string>().HasMaxLength(32);
+        builder.Property(l => l.EquipmentType).HasMaxLength(120).IsRequired();
+        builder.Property(l => l.OriginCity).HasMaxLength(120).IsRequired();
+        builder.Property(l => l.OriginState).HasMaxLength(2).IsRequired();
         builder.Property(l => l.OriginZip).HasMaxLength(16).IsRequired();
+        builder.Property(l => l.DestinationCity).HasMaxLength(120).IsRequired();
+        builder.Property(l => l.DestinationState).HasMaxLength(2).IsRequired();
         builder.Property(l => l.DestinationZip).HasMaxLength(16).IsRequired();
+        builder.Property(l => l.RateUsd).HasPrecision(12, 2);
+        builder.Property(l => l.ShipperName).HasMaxLength(160).IsRequired();
+        builder.Property(l => l.SpecialInstructions).HasMaxLength(1000);
         builder.Property(l => l.Status).HasConversion<string>().HasMaxLength(32);
         builder.HasIndex(l => l.Status);
+        builder.HasOne(l => l.AssignedCarrier)
+            .WithMany()
+            .HasForeignKey(l => l.AssignedCarrierId)
+            .OnDelete(DeleteBehavior.SetNull);
         builder.MapXminRowVersion();
         builder.Ignore(l => l.DomainEvents);
     }
