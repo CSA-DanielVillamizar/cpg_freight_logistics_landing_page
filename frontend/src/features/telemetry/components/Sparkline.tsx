@@ -1,4 +1,4 @@
-import type { ColdChainTelemetry } from '../mockTelemetry';
+import type { ColdChainTelemetry } from '../types';
 
 interface SparklineProps {
   telemetry: ColdChainTelemetry;

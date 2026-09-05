@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/cn';
-import type { ColdChainTelemetry } from '../mockTelemetry';
-import { isTemperatureBreached } from '../mockTelemetry';
+import type { ColdChainTelemetry } from '../types';
+import { isTemperatureBreached } from '../types';
 import { Sparkline } from './Sparkline';
 
 interface SensorCardProps {

@@ -29,3 +29,11 @@ export function resolveApiBaseUrl(): string {
 
   return '/api';
 }
+
+/**
+ * Origin the API is served from, without the `/api` suffix — used for non-`/api` paths such as
+ * the SignalR hub (`/hubs/telemetry`). In dev this is empty so the Vite proxy handles `/hubs`.
+ */
+export function resolveApiOrigin(): string {
+  return resolveApiBaseUrl().replace(/\/api\/?$/, '');
+}

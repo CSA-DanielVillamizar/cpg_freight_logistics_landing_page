@@ -1,5 +1,5 @@
 import { cn } from '@/shared/lib/cn';
-import type { TimelineEvent, TimelineKind } from '../mockTelemetry';
+import type { TimelineEvent, TimelineKind } from '../types';
 
 interface EventTimelineProps {
   events: readonly TimelineEvent[];

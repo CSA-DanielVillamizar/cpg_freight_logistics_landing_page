@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { registerAuthBridge } from '@/shared/api/client';
 import type { AuthResponse, AuthenticatedUser } from '@/shared/api/types';
@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
   const [session, setSession] = useState<Session | null>(() => readStoredSession());
   const sessionRef = useRef<Session | null>(session);
   sessionRef.current = session;
+  const refreshInFlight = useRef<Promise<boolean> | null>(null);
 
   const applySession = useCallback((response: AuthResponse) => {
     const next: Session = {
@@ -48,11 +49,15 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
       expiresAtUtc: response.expiresAtUtc,
       user: response.user,
     };
+    // Update the ref synchronously so a 401 retry mid-refresh reads the new token
+    // immediately, before React has re-rendered.
+    sessionRef.current = next;
     setSession(next);
     persistSession(next);
   }, []);
 
   const logout = useCallback(() => {
+    sessionRef.current = null;
     setSession(null);
     persistSession(null);
   }, []);
@@ -66,26 +71,46 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
     [applySession],
   );
 
-  useEffect(() => {
-    registerAuthBridge({
+  const bridge = useMemo(
+    () => ({
       getAccessToken: () => sessionRef.current?.accessToken ?? null,
-      refresh: async () => {
+      refresh: (): Promise<boolean> => {
+        // Single-flight: concurrent 401s must not each rotate the refresh token
+        // (the second rotation would fail and force a spurious logout).
+        if (refreshInFlight.current) {
+          return refreshInFlight.current;
+        }
+
         const current = sessionRef.current;
         if (!current) {
-          return false;
+          return Promise.resolve(false);
         }
-        try {
-          applySession(await authApi.refresh({ refreshToken: current.refreshToken }));
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      onAuthLost: logout,
-    });
 
-    return () => registerAuthBridge(null);
-  }, [applySession, logout]);
+        const attempt = authApi
+          .refresh({ refreshToken: current.refreshToken })
+          .then((response) => {
+            applySession(response);
+            return true;
+          })
+          .catch(() => false)
+          .finally(() => {
+            refreshInFlight.current = null;
+          });
+
+        refreshInFlight.current = attempt;
+        return attempt;
+      },
+      onAuthLost: () => logout(),
+    }),
+    [applySession, logout],
+  );
+
+  // Register during render (not in an effect): child effects run before parent
+  // effects, so the first authenticated request on a protected page would otherwise
+  // fire before the bridge exists, 401, and clear the session. No cleanup — the
+  // provider is a root singleton for the app's lifetime, and StrictMode's simulated
+  // unmount/remount would otherwise leave the bridge null.
+  registerAuthBridge(bridge);
 
   const value = useMemo<AuthContextValue>(
     () => ({

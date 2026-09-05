@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using CPG.Api.Hubs;
 using CPG.Api.Infrastructure;
 using CPG.Application;
 using CPG.Application.Common.Interfaces;
 using CPG.Infrastructure;
 using CPG.Infrastructure.Persistence;
+using CPG.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +31,16 @@ builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// --- Real-time telemetry (SignalR) ---
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+        options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddSingleton<ITelemetryBroadcaster, SignalRTelemetryBroadcaster>();
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<FleetTelemetrySimulator>();
+}
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -60,6 +72,23 @@ builder.Services
             NameClaimType = ClaimTypes.Name,
             RoleClaimType = ClaimTypes.Role,
         };
+
+        // SignalR/WebSockets can't set Authorization headers — take the JWT from the
+        // access_token query string on hub requests.
+        bearer.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            },
+        };
     });
 
 builder.Services.AddAuthorizationBuilder().AddCpgAuthorization();
@@ -89,7 +118,8 @@ var corsOrigins = configuredOrigins.Length > 0
 builder.Services.AddCors(options => options.AddPolicy(CorsPolicyName, policy =>
     policy.WithOrigins(corsOrigins)
         .AllowAnyHeader()
-        .AllowAnyMethod()));
+        .AllowAnyMethod()
+        .AllowCredentials()));
 
 var app = builder.Build();
 
@@ -120,6 +150,7 @@ app.UseAuthorization();
 app.UseMiddleware<IdempotencyKeyMiddleware>();
 
 app.MapControllers();
+app.MapHub<TelemetryHub>("/hubs/telemetry");
 app.MapHealthChecks("/health");
 app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {

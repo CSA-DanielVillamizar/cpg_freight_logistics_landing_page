@@ -1,4 +1,4 @@
-import type { TrackedLoad } from '../mockTelemetry';
+import type { TrackedLoad } from '../types';
 
 interface SimulatedMapProps {
   load: TrackedLoad;

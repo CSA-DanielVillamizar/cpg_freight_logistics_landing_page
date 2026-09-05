@@ -174,9 +174,21 @@ public sealed class ApplicationDbContextInitialiser(
                 DestinationCity = "Raleigh", DestinationState = "NC", DestinationZip = "27601",
                 DistanceMiles = 549, WeightLbs = 18700, RateUsd = 2670m,
                 ShipperName = "BioCore Pharmaceuticals",
-                PickupAtUtc = now.AddDays(6), DeliveryAtUtc = now.AddDays(7),
-                TargetTemperatureF = 39, Status = LoadStatus.Available,
+                PickupAtUtc = now.AddHours(-6), DeliveryAtUtc = now.AddHours(6),
+                TargetTemperatureF = 0, Status = LoadStatus.InTransit, AssignedCarrierId = carrier?.Id,
                 SpecialInstructions = "GDP / 21 CFR Part 11; geofenced deadbolts; chain-of-custody signature.",
+            },
+            new()
+            {
+                Reference = "CPG-48231", ServiceType = ServiceType.ColdChain,
+                EquipmentType = "Deep-Freeze Flash Trailer",
+                OriginCity = "Plant City", OriginState = "FL", OriginZip = "33563",
+                DestinationCity = "Atlanta", DestinationState = "GA", DestinationZip = "30301",
+                DistanceMiles = 456, WeightLbs = 41000, RateUsd = 2210m,
+                ShipperName = "Sunbelt Produce Cooperative",
+                PickupAtUtc = now.AddHours(-5), DeliveryAtUtc = now.AddHours(4),
+                TargetTemperatureF = -4, Status = LoadStatus.InTransit, AssignedCarrierId = carrier?.Id,
+                SpecialInstructions = "Sub-zero frozen produce; door-seal integrity check every checkpoint.",
             },
             new()
             {
