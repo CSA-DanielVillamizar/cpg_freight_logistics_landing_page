@@ -1,6 +1,7 @@
 using CPG.Api.Infrastructure;
 using CPG.Application.Features.Loads;
 using CPG.Application.Features.Loads.Accept;
+using CPG.Application.Features.Loads.Deliver;
 using CPG.Application.Features.Loads.GetLoads;
 using CPG.Domain.Enums;
 using MediatR;
@@ -44,4 +45,19 @@ public sealed class LoadsController(ISender sender) : ApiControllerBase
         Guid id,
         CancellationToken cancellationToken)
         => Ok(await sender.Send(new AcceptLoadCommand(id), cancellationToken));
+
+    /// <summary>
+    /// The assigned carrier marks their in-transit load delivered; billing then raises the
+    /// shipper invoice asynchronously. 403 if assigned to another carrier, 409 if not in transit.
+    /// </summary>
+    [HttpPost("{id:guid}/deliver")]
+    [Authorize(Policy = AuthorizationPolicies.CarrierOnly)]
+    [ProducesResponseType(typeof(LoadSummaryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<LoadSummaryResponse>> DeliverLoad(
+        Guid id,
+        CancellationToken cancellationToken)
+        => Ok(await sender.Send(new MarkLoadDeliveredCommand(id), cancellationToken));
 }

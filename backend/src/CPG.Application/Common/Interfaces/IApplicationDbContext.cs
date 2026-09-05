@@ -21,6 +21,8 @@ public interface IApplicationDbContext
 
     DbSet<Load> Loads { get; }
 
+    DbSet<Invoice> Invoices { get; }
+
     DbSet<AuditLogEntry> AuditLogEntries { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

@@ -264,6 +264,48 @@ public sealed class ApplicationDbContextInitialiser(
         logger.LogInformation("Seeded {Count} load board rows", loads.Count);
 
         await SeedProofOfDeliveryAsync(loads, cancellationToken).ConfigureAwait(false);
+        await SeedInvoicesAsync(loads, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Raises an invoice for every delivered shipper load — one paid, one due, one overdue.</summary>
+    private async Task SeedInvoicesAsync(IReadOnlyList<Load> loads, CancellationToken cancellationToken)
+    {
+        var delivered = loads
+            .Where(l => l.Status == LoadStatus.Delivered && l.ShipperUserId is not null)
+            .OrderBy(l => l.DeliveryAtUtc)
+            .ToList();
+
+        if (delivered.Count == 0)
+        {
+            return;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+
+        for (var index = 0; index < delivered.Count; index++)
+        {
+            var load = delivered[index];
+            var reference = $"INV-{load.Reference.Replace("CPG-", string.Empty, StringComparison.Ordinal)}";
+
+            // Oldest delivery -> already paid; middle -> overdue; newest -> pending within terms.
+            var (issuedAt, markPaid) = index switch
+            {
+                0 => (now.AddDays(-16), true),
+                1 => (now.AddDays(-40), false),
+                _ => (now.AddDays(-3), false),
+            };
+
+            var invoice = Invoice.ForDeliveredLoad(load, reference, issuedAt);
+            if (markPaid)
+            {
+                invoice.MarkPaid(issuedAt.AddDays(5));
+            }
+
+            dbContext.Invoices.Add(invoice);
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        logger.LogInformation("Seeded {Count} shipper invoices", delivered.Count);
     }
 
     /// <summary>Generates a signed PDF proof-of-delivery for every delivered shipper load and stores it.</summary>

@@ -142,6 +142,26 @@ internal sealed class LoadConfiguration : IEntityTypeConfiguration<Load>
     }
 }
 
+internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
+{
+    public void Configure(EntityTypeBuilder<Invoice> builder)
+    {
+        builder.ToTable("invoices");
+        builder.HasKey(i => i.Id);
+        builder.Property(i => i.Reference).HasMaxLength(64).IsRequired();
+        builder.HasIndex(i => i.Reference).IsUnique();
+        builder.HasIndex(i => i.LoadId).IsUnique();
+        builder.HasIndex(i => i.ShipperUserId);
+        builder.HasIndex(i => i.StripeSessionId);
+        builder.Property(i => i.AmountUsd).HasPrecision(12, 2);
+        builder.Property(i => i.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(i => i.StripeSessionId).HasMaxLength(256);
+        builder.Property(i => i.StripeCheckoutUrl).HasMaxLength(2048);
+        builder.MapXminRowVersion();
+        builder.Ignore(i => i.DomainEvents);
+    }
+}
+
 internal sealed class AuditLogEntryConfiguration : IEntityTypeConfiguration<AuditLogEntry>
 {
     public void Configure(EntityTypeBuilder<AuditLogEntry> builder)

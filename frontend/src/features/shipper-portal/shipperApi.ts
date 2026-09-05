@@ -35,8 +35,35 @@ export interface ShipperLoadsResponse {
   metrics: ShipperLoadMetrics;
 }
 
+export type InvoiceStatus = 'Draft' | 'Pending' | 'Paid' | 'Overdue';
+
+export interface ShipperInvoiceView {
+  id: string;
+  reference: string;
+  loadReference: string;
+  amountUsd: number;
+  status: InvoiceStatus;
+  issuedAtUtc: string;
+  dueDate: string;
+  paidAtUtc: string | null;
+  payable: boolean;
+}
+
+export interface ShipperInvoicesResponse {
+  invoices: ShipperInvoiceView[];
+  totalOutstandingUsd: number;
+  overdueCount: number;
+}
+
 export const shipperApi = {
   getLoads: (): Promise<ShipperLoadsResponse> => apiClient.get<ShipperLoadsResponse>('/shipper/loads'),
+
+  getInvoices: (): Promise<ShipperInvoicesResponse> =>
+    apiClient.get<ShipperInvoicesResponse>('/shipper/invoices'),
+
+  /** Opens a Stripe Checkout session and returns the URL to redirect the browser to. */
+  payInvoice: (invoiceId: string): Promise<{ checkoutUrl: string }> =>
+    apiClient.post<{ checkoutUrl: string }>(`/shipper/invoices/${invoiceId}/pay`, undefined),
 
   /** Fetches the POD PDF with the shipper JWT and opens it in a new tab (blob URL). */
   openPod: async (loadId: string): Promise<void> => {

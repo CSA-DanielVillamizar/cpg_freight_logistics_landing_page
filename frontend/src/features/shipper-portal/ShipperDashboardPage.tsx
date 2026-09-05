@@ -6,6 +6,7 @@ import { STATUS_TONE } from '@/features/load-board/types';
 import { ApiError } from '@/shared/api/client';
 import { cn } from '@/shared/lib/cn';
 import { Badge, Button, Card } from '@/shared/ui';
+import { ShipperNav } from './ShipperNav';
 import { shipperApi } from './shipperApi';
 import type { ShipperLoadView, ShipperLoadsResponse } from './shipperApi';
 
@@ -89,6 +90,8 @@ export function ShipperDashboardPage(): JSX.Element {
           delivery for completed loads.
         </p>
       </header>
+
+      <ShipperNav />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Metric label="Active shipments" value={String(data.metrics.activeCount)} />

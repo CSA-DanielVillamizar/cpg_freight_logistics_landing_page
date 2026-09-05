@@ -36,6 +36,7 @@ public static class DependencyInjection
         AddBlobStorage(services, configuration);
         AddSecurity(services, configuration);
 
+        services.AddSingleton<IStripePaymentService, Billing.MockStripePaymentService>();
         services.AddSingleton<IDateTimeProvider, Services.DateTimeProvider>();
         services.AddDatabaseInitialiser();
 
@@ -85,6 +86,7 @@ public static class DependencyInjection
             bus.AddConsumer<ComplianceNotificationConsumer>();
             bus.AddConsumer<LeadNotificationConsumer>();
             bus.AddConsumer<LoadAcceptedNotificationConsumer>();
+            bus.AddConsumer<LoadDeliveredNotificationConsumer>();
 
             if (useServiceBus)
             {

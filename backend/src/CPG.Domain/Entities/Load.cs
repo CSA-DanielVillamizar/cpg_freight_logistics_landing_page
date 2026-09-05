@@ -85,4 +85,22 @@ public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion
 
         RaiseDomainEvent(new LoadAcceptedDomainEvent(Id, Reference, carrierId));
     }
+
+    /// <summary>
+    /// The carrier completes the haul. Moves the load to <see cref="LoadStatus.Delivered"/> and
+    /// raises <see cref="LoadDeliveredDomainEvent"/> so billing can raise the shipper invoice.
+    /// </summary>
+    /// <exception cref="DomainException">The load is not in transit or dispatched.</exception>
+    public void MarkDelivered()
+    {
+        if (Status is not (LoadStatus.Dispatched or LoadStatus.InTransit))
+        {
+            throw new DomainException(
+                $"Load {Reference} cannot be delivered from status {Status}.");
+        }
+
+        Status = LoadStatus.Delivered;
+
+        RaiseDomainEvent(new LoadDeliveredDomainEvent(Id, Reference, ShipperUserId));
+    }
 }
