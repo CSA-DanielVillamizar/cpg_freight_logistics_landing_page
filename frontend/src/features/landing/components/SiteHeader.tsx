@@ -9,6 +9,7 @@ const PRIMARY_NAV_LINKS = [
   { label: 'FDOT Permits', to: '/verticals/fdot-concrete-barricades' },
   { label: 'Heavy Haul', to: '/verticals/flatbed-heavy-haul' },
   { label: 'Rate Calculator', to: '/rates' },
+  { label: 'Load Board', to: '/load-board' },
 ] as const;
 
 export function SiteHeader(): JSX.Element {

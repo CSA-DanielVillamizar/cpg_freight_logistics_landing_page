@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/shared/lib/cn';
 
-export type BadgeTone = 'dispatched' | 'delivered' | 'oversize' | 'neutral';
+export type BadgeTone = 'dispatched' | 'delivered' | 'oversize' | 'neutral' | 'available' | 'transit';
 
 interface BadgeProps {
   tone?: BadgeTone;
@@ -13,6 +13,8 @@ const TONE_CLASSES: Record<BadgeTone, string> = {
   delivered: 'bg-success-container text-success border border-[#A7F3D0]',
   oversize: 'bg-primary text-hazard-orange border border-hazard-orange',
   neutral: 'bg-surface-muted text-steel-gray border border-outline',
+  available: 'bg-secondary-container text-fleet-blue border border-fleet-blue/40',
+  transit: 'bg-primary text-white border border-fleet-blue',
 };
 
 export function Badge({ tone = 'neutral', children }: BadgeProps): JSX.Element {

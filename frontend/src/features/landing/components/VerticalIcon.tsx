@@ -52,6 +52,16 @@ export function VerticalIcon({ slug, className }: VerticalIconProps): JSX.Elemen
           <path d="M8.75 17.5h6.5" />
         </svg>
       );
+    case 'standard-dry-van':
+      return (
+        <svg {...common}>
+          <rect x="2" y="7" width="16" height="9" rx="1" />
+          <path d="M18 10h2.5l1.5 2.5V16h-1" />
+          <circle cx="6.5" cy="17.5" r="1.75" />
+          <circle cx="17.5" cy="17.5" r="1.75" />
+          <path d="M8.25 17.5h7.5" />
+        </svg>
+      );
     case 'mobile-rate-calculator':
       return (
         <svg {...common}>
