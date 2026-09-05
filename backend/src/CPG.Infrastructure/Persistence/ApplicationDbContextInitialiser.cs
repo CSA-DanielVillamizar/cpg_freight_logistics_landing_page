@@ -43,7 +43,11 @@ public sealed class ApplicationDbContextInitialiser(
         }
     }
 
-    public async Task SeedAsync(CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Seeds the baseline RBAC accounts. Run in every environment — there is no self-service
+    /// registration, so these are the only way into the platform (SPEC.md US-01).
+    /// </summary>
+    public async Task SeedIdentityAsync(CancellationToken cancellationToken = default)
     {
         foreach (var (email, fullName, role) in SeedUsers)
         {
@@ -69,7 +73,14 @@ public sealed class ApplicationDbContextInitialiser(
         }
 
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
 
+    /// <summary>
+    /// Seeds demo freight data (a carrier, the load board, PODs, invoices). Non-production only —
+    /// production gets a clean schema plus the RBAC accounts.
+    /// </summary>
+    public async Task SeedDemoDataAsync(CancellationToken cancellationToken = default)
+    {
         await SeedCarrierAsync(cancellationToken).ConfigureAwait(false);
         await SeedLoadsAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -415,13 +426,24 @@ public static class InitialiserExtensions
         return services;
     }
 
+    /// <summary>
+    /// Applies pending EF Core migrations (every environment) and seeds the RBAC accounts. Demo
+    /// freight/invoice data is only loaded when <paramref name="seedDemoData"/> is true.
+    /// </summary>
     public static async Task InitialiseDatabaseAsync(
         this IServiceProvider services,
+        bool seedDemoData,
         CancellationToken cancellationToken = default)
     {
         using var scope = services.CreateScope();
         var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+
         await initialiser.InitialiseAsync(cancellationToken).ConfigureAwait(false);
-        await initialiser.SeedAsync(cancellationToken).ConfigureAwait(false);
+        await initialiser.SeedIdentityAsync(cancellationToken).ConfigureAwait(false);
+
+        if (seedDemoData)
+        {
+            await initialiser.SeedDemoDataAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 }

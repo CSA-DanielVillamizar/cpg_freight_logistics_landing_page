@@ -123,11 +123,9 @@ builder.Services.AddCors(options => options.AddPolicy(CorsPolicyName, policy =>
 
 var app = builder.Build();
 
-// Apply migrations + seed the RBAC baseline users outside Production (SPEC.md US-01).
-if (!app.Environment.IsProduction())
-{
-    await app.Services.InitialiseDatabaseAsync();
-}
+// Apply pending EF Core migrations and seed the RBAC accounts on every startup (there is no
+// self-service registration). Demo freight/invoice data is loaded outside Production only.
+await app.Services.InitialiseDatabaseAsync(seedDemoData: !app.Environment.IsProduction());
 
 // Warm the CQRS + validation pipeline so the first real rate request also meets the
 // <500 ms budget (SPEC.md US-02) - pays JIT / validator-compilation cost up front.
