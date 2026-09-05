@@ -68,4 +68,33 @@ public class Carrier : AggregateRoot, IAuditableEntity, IHasRowVersion
 
         return document;
     }
+
+    /// <summary>
+    /// An administrator concludes the compliance review. Approval moves the carrier to
+    /// <see cref="ComplianceStatus.Verified"/> (able to accept high-value loads); rejection to
+    /// <see cref="ComplianceStatus.Rejected"/>. Every document still <c>Under Review</c> is
+    /// stamped with the same outcome. Returns the ids of the documents that changed.
+    /// </summary>
+    /// <exception cref="DomainException">
+    /// No documents have been submitted yet (nothing to review).
+    /// </exception>
+    public IReadOnlyList<Guid> CompleteComplianceReview(bool approved)
+    {
+        if (_complianceDocuments.Count == 0)
+        {
+            throw new DomainException("Carrier has no compliance documents to review.");
+        }
+
+        var outcome = approved ? ComplianceStatus.Verified : ComplianceStatus.Rejected;
+        ComplianceStatus = outcome;
+
+        var changed = new List<Guid>();
+        foreach (var document in _complianceDocuments.Where(d => d.Status == ComplianceStatus.UnderReview))
+        {
+            document.Status = outcome;
+            changed.Add(document.Id);
+        }
+
+        return changed;
+    }
 }

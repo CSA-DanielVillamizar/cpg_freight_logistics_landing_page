@@ -64,6 +64,14 @@ export function SiteHeader(): JSX.Element {
           ) : null}
           {hasRole('Admin') ? (
             <Link
+              to="/admin/carriers"
+              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+            >
+              Carrier review
+            </Link>
+          ) : null}
+          {hasRole('Admin') ? (
+            <Link
               to="/admin/audit-logs"
               className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
             >

@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { App } from '@/App';
+import { AdminDashboardPage } from '@/features/admin/AdminDashboardPage';
 import { AuditLogsPage } from '@/features/admin/AuditLogsPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireRole } from '@/features/auth/RequireRole';
@@ -35,6 +36,14 @@ export const router = createBrowserRouter([
         ),
       },
       { path: 'verticals/:slug', element: <VerticalLandingPage /> },
+      {
+        path: 'admin/carriers',
+        element: (
+          <RequireRole role="Admin">
+            <AdminDashboardPage />
+          </RequireRole>
+        ),
+      },
       {
         path: 'admin/audit-logs',
         element: (
