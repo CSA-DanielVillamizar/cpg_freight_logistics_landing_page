@@ -2,12 +2,20 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ApiError } from '@/shared/api/client';
+import type { UserRole } from '@/shared/api/types';
 import { Button, Card, Input } from '@/shared/ui';
 import { useAuth } from './useAuth';
 
 interface LocationState {
   from?: { pathname: string };
 }
+
+/** Default landing route per role when the user wasn't intercepted en route to a specific page. */
+const ROLE_HOME: Record<UserRole, string> = {
+  Admin: '/admin/audit-logs',
+  Carrier: '/carrier',
+  Shipper: '/',
+};
 
 const SEED_ACCOUNTS = [
   { role: 'Admin', email: 'admin@cpgorlando.com' },
@@ -19,7 +27,7 @@ export function LoginPage(): JSX.Element {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = (location.state as LocationState | null)?.from?.pathname ?? '/';
+  const explicitFrom = (location.state as LocationState | null)?.from?.pathname;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,8 +39,8 @@ export function LoginPage(): JSX.Element {
     setSubmitting(true);
     setError(null);
     try {
-      await login(email, password);
-      navigate(redirectTo, { replace: true });
+      const user = await login(email, password);
+      navigate(explicitFrom ?? ROLE_HOME[user.role], { replace: true });
     } catch (caught) {
       setError(
         caught instanceof ApiError && caught.status === 401
