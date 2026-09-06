@@ -1,0 +1,71 @@
+name: Deploy Web to Azure Container Apps
+
+# A push to main that touches the frontend rebuilds the web image in ACR
+# (tagged with the commit SHA) and rolls it out to the production Container App.
+# The frontend reads its API URL at runtime (docker-entrypoint.sh rewrites
+# /config.js from API_BASE_URL), so no build-time API URL is needed here.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-web-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  ACR_NAME: crcpgorlandoprdcus01
+  RESOURCE_GROUP: rg-cpgorlando-prd-cus-01
+  CONTAINER_APP: ca-cpgorlando-web-prd-cus-01
+  IMAGE_REPO: cpg-web
+  DOCKERFILE: frontend/Dockerfile
+  BUILD_CONTEXT: frontend
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push image to ACR
+        # az acr build authenticates with the current Azure session, uploads the
+        # build context and builds server-side in ACR Tasks — no local Docker daemon.
+        run: |
+          az acr build \
+            --registry "$ACR_NAME" \
+            --image "$IMAGE_REPO:${{ github.sha }}" \
+            --image "$IMAGE_REPO:latest" \
+            --file "$DOCKERFILE" \
+            "$BUILD_CONTEXT"
+
+      - name: Deploy to Azure Container Apps
+        # Point the app at the immutable SHA tag so every run creates a new revision
+        # (re-pushing :latest to the same reference is a no-op).
+        run: |
+          az containerapp update \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --image "$ACR_NAME.azurecr.io/$IMAGE_REPO:${{ github.sha }}"
+
+      - name: Show active revision
+        run: |
+          az containerapp revision list \
+            --name "$CONTAINER_APP" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query "[?properties.active].{revision:name, image:properties.template.containers[0].image, health:properties.healthState, state:properties.runningState}" \
+            --output table
+
+      - name: Azure logout
+        if: always()
+        run: az logout || true
