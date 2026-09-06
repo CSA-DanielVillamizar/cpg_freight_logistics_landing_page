@@ -33,6 +33,7 @@ public sealed class CreateLoadCommandHandler(
             : request.Reference.Trim();
 
         var referenceTaken = await dbContext.Loads
+            .IgnoreQueryFilters()
             .AnyAsync(l => l.Reference == reference, cancellationToken)
             .ConfigureAwait(false);
 

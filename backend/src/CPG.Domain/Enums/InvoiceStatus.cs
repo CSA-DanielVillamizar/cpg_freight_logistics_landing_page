@@ -7,4 +7,7 @@ public enum InvoiceStatus
     Pending = 2,
     Paid = 3,
     Overdue = 4,
+
+    /// <summary>Voided because the underlying load was deleted before payment.</summary>
+    Cancelled = 5,
 }

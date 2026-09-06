@@ -131,14 +131,21 @@ internal sealed class LoadConfiguration : IEntityTypeConfiguration<Load>
         builder.Property(l => l.PodBlobUri).HasMaxLength(1024);
         builder.Property(l => l.SpecialInstructions).HasMaxLength(1000);
         builder.Property(l => l.Status).HasConversion<string>().HasMaxLength(32);
+        builder.Property(l => l.IsDeleted).HasDefaultValue(false);
         builder.HasIndex(l => l.Status);
         builder.HasIndex(l => l.ShipperUserId);
+        builder.HasIndex(l => l.IsDeleted);
         builder.HasOne(l => l.AssignedCarrier)
             .WithMany()
             .HasForeignKey(l => l.AssignedCarrierId)
             .OnDelete(DeleteBehavior.SetNull);
         builder.MapXminRowVersion();
         builder.Ignore(l => l.DomainEvents);
+
+        // Defence in depth: hide soft-deleted rows and synthetic E2E fixtures
+        // (references prefixed "CPG-E2E-") from every default query. Admin audit
+        // reads and by-id command handlers opt back in with IgnoreQueryFilters().
+        builder.HasQueryFilter(l => !l.IsDeleted && !l.Reference.StartsWith("CPG-E2E-"));
     }
 }
 
@@ -157,8 +164,17 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(i => i.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(i => i.StripeSessionId).HasMaxLength(256);
         builder.Property(i => i.StripeCheckoutUrl).HasMaxLength(2048);
+        builder.Property(i => i.IsDeleted).HasDefaultValue(false);
+        builder.HasIndex(i => i.IsDeleted);
         builder.MapXminRowVersion();
         builder.Ignore(i => i.DomainEvents);
+
+        // Same defence in depth as loads: hide soft-deleted invoices and E2E
+        // fixtures (their references are prefixed "INV-E2E-", derived from the
+        // "CPG-E2E-" load reference).
+        builder.HasQueryFilter(i => !i.IsDeleted
+            && !i.Reference.StartsWith("CPG-E2E-")
+            && !i.Reference.StartsWith("INV-E2E-"));
     }
 }
 

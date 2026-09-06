@@ -8,7 +8,7 @@ namespace CPG.Domain.Entities;
 /// A freight load posted to the Carrier &amp; Shipper Load Workspace. Assignment is guarded by
 /// optimistic concurrency via the PostgreSQL <c>xmin</c> token (SPEC.md section 2).
 /// </summary>
-public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion
+public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion, ISoftDelete
 {
     public required string Reference { get; set; }
 
@@ -51,6 +51,9 @@ public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion
     public string? SpecialInstructions { get; set; }
 
     public LoadStatus Status { get; set; } = LoadStatus.Available;
+
+    /// <summary>Logical-delete flag (see <see cref="ISoftDelete"/>). The row is retained for audit.</summary>
+    public bool IsDeleted { get; set; }
 
     public Guid? AssignedCarrierId { get; set; }
 

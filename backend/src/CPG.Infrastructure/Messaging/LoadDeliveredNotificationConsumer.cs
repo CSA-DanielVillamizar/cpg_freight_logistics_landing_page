@@ -31,7 +31,10 @@ public sealed class LoadDeliveredNotificationConsumer(
             return;
         }
 
+        // System process: operate on the full dataset. A synthetic E2E load is hidden from
+        // every user-facing query but its delivery must still raise (and de-dupe) an invoice.
         var alreadyBilled = await dbContext.Invoices
+            .IgnoreQueryFilters()
             .AnyAsync(invoice => invoice.LoadId == message.LoadId, cancellationToken)
             .ConfigureAwait(false);
 
@@ -41,10 +44,11 @@ public sealed class LoadDeliveredNotificationConsumer(
         }
 
         var load = await dbContext.Loads
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(l => l.Id == message.LoadId, cancellationToken)
             .ConfigureAwait(false);
 
-        if (load is null || load.Status != LoadStatus.Delivered)
+        if (load is null || load.IsDeleted || load.Status != LoadStatus.Delivered)
         {
             return;
         }

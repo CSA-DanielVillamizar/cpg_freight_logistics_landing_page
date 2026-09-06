@@ -2,6 +2,7 @@ using CPG.Api.Infrastructure;
 using CPG.Application.Features.Loads;
 using CPG.Application.Features.Loads.Accept;
 using CPG.Application.Features.Loads.Create;
+using CPG.Application.Features.Loads.Delete;
 using CPG.Application.Features.Loads.Deliver;
 using CPG.Application.Features.Loads.Depart;
 using CPG.Application.Features.Loads.GetLoads;
@@ -97,4 +98,22 @@ public sealed class LoadsController(ISender sender) : ApiControllerBase
         Guid id,
         CancellationToken cancellationToken)
         => Ok(await sender.Send(new MarkLoadDeliveredCommand(id), cancellationToken));
+
+    /// <summary>
+    /// Logical-deletes a load (never a hard delete): sets <c>IsDeleted</c>, cancels the
+    /// associated shipper invoice if it is not yet paid, and writes a <c>LoadDeleted</c> audit
+    /// row. The load and invoice vanish from the board and shipper portal immediately.
+    /// Idempotent. Restricted to the <c>Admin</c> role. 409 if the invoice is already paid.
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    [Authorize(Policy = AuthorizationPolicies.AdminOnly)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> DeleteLoad(Guid id, CancellationToken cancellationToken)
+    {
+        await sender.Send(new DeleteLoadCommand(id), cancellationToken);
+        return NoContent();
+    }
 }

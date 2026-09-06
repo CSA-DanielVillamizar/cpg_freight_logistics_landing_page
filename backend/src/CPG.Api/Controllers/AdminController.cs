@@ -3,6 +3,7 @@ using CPG.Application.Features.Admin;
 using CPG.Application.Features.Admin.GetAuditLogs;
 using CPG.Application.Features.Admin.GetCarrierDocument;
 using CPG.Application.Features.Admin.GetCarriers;
+using CPG.Application.Features.Admin.GetLoads;
 using CPG.Application.Features.Admin.ReviewCarrier;
 using CPG.Domain.Enums;
 using MediatR;
@@ -57,6 +58,16 @@ public sealed class AdminController(ISender sender) : ApiControllerBase
         => Ok(await sender.Send(
             new ReviewCarrierComplianceCommand(id, request.Decision, request.Notes),
             cancellationToken));
+
+    /// <summary>
+    /// Every load for audit — <b>including</b> soft-deleted rows and synthetic <c>CPG-E2E-</c>
+    /// fixtures that the global query filter hides everywhere else. Newest first, capped at 200.
+    /// </summary>
+    [HttpGet("loads")]
+    [ProducesResponseType(typeof(IReadOnlyList<AdminLoadView>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IReadOnlyList<AdminLoadView>>> GetLoads(CancellationToken cancellationToken)
+        => Ok(await sender.Send(new GetAllLoadsQuery(), cancellationToken));
 
     /// <summary>Streams the bytes of one of a carrier's compliance documents (COI, insurance, permit).</summary>
     [HttpGet("carriers/{carrierId:guid}/documents/{documentId:guid}/content")]

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using CPG.Application.Common.Exceptions;
 using CPG.Application.Common.Interfaces;
+using CPG.Application.Common.Persistence;
 using CPG.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ public sealed class AcceptLoadCommandHandler(
             ?? throw new NotFoundException("No carrier account is linked to the current user.");
 
         var load = await dbContext.Loads
+            .OperableById()
             .Include(l => l.AssignedCarrier)
             .FirstOrDefaultAsync(l => l.Id == request.LoadId, cancellationToken)
             .ConfigureAwait(false)
