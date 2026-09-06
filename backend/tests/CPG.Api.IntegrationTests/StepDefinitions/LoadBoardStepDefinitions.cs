@@ -175,6 +175,95 @@ public sealed class LoadBoardStepDefinitions(ScenarioState state)
     public void ThenTheRequestFailsWithStatus(int statusCode)
         => ((int)state.LastResponse!.StatusCode).Should().Be(statusCode, state.LastBody);
 
+    [Given(@"an authenticated Shipper posting freight")]
+    public async Task GivenAnAuthenticatedShipper()
+    {
+        var login = await state.Client.PostAsJsonAsync("/api/auth/login", new LoginRequest
+        {
+            Email = "shipper@cpgorlando.com",
+            Password = ApplicationDbContextInitialiser.SeedPassword,
+        });
+        login.EnsureSuccessStatusCode();
+
+        using var document = JsonDocument.Parse(await login.Content.ReadAsStringAsync());
+        state.Authenticate(document.RootElement.GetProperty("accessToken").GetString()!);
+    }
+
+    [When(@"the shipper posts the load ""(.*)"" from ""(.*)"" to ""(.*)""")]
+    public async Task WhenTheShipperPostsTheLoad(string reference, string origin, string destination)
+    {
+        var (originCity, originState) = SplitStop(origin);
+        var (destinationCity, destinationState) = SplitStop(destination);
+
+        state.LastResponse = await state.Client.PostAsJsonAsync("/api/loads", new
+        {
+            reference,
+            serviceType = "StandardDryVan",
+            equipmentType = "53' Dry Van",
+            originCity,
+            originState,
+            originZip = "33602",
+            destinationCity,
+            destinationState,
+            destinationZip = "31401",
+            distanceMiles = 350,
+            weightLbs = 26000,
+            rateUsd = 1650m,
+            shipperName = "BDD Shipper Co.",
+            pickupAtUtc = DateTimeOffset.UtcNow.AddDays(1),
+            deliveryAtUtc = DateTimeOffset.UtcNow.AddDays(2),
+        });
+        state.LastBody = await state.LastResponse.Content.ReadAsStringAsync();
+        state.LastResponse.StatusCode.Should().Be(HttpStatusCode.Created, state.LastBody);
+
+        using var document = JsonDocument.Parse(state.LastBody!);
+        _loadIds[reference] = document.RootElement.GetProperty("id").GetGuid();
+    }
+
+    [Then(@"the load ""(.*)"" is on the board with status ""(.*)""")]
+    public async Task ThenTheLoadIsOnTheBoardWithStatus(string reference, string status)
+    {
+        var response = await state.Client.GetAsync($"/api/loads?status={status}");
+        response.EnsureSuccessStatusCode();
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var row = document.RootElement.EnumerateArray()
+            .FirstOrDefault(r => r.GetProperty("reference").GetString() == reference);
+
+        row.ValueKind.Should().NotBe(JsonValueKind.Undefined, $"{reference} should be on the board");
+        row.GetProperty("status").GetString().Should().Be(status);
+    }
+
+    [When(@"the carrier departs load ""(.*)""")]
+    public async Task WhenTheCarrierDepartsLoad(string reference)
+    {
+        state.LastResponse = await state.Client.PostAsync($"/api/loads/{_loadIds[reference]}/depart", content: null);
+        state.LastBody = await state.LastResponse.Content.ReadAsStringAsync();
+    }
+
+    [Then(@"the depart response reports status ""(.*)""")]
+    public void ThenTheDepartResponseReportsStatus(string status)
+    {
+        state.LastResponse!.StatusCode.Should().Be(HttpStatusCode.OK, state.LastBody);
+        using var document = JsonDocument.Parse(state.LastBody!);
+        document.RootElement.GetProperty("status").GetString().Should().Be(status);
+    }
+
+    [When(@"the carrier delivers load ""(.*)""")]
+    public async Task WhenTheCarrierDeliversLoad(string reference)
+    {
+        state.LastResponse = await state.Client.PostAsync($"/api/loads/{_loadIds[reference]}/deliver", content: null);
+        state.LastBody = await state.LastResponse.Content.ReadAsStringAsync();
+    }
+
+    [Then(@"the deliver response reports status ""(.*)""")]
+    public void ThenTheDeliverResponseReportsStatus(string status)
+    {
+        state.LastResponse!.StatusCode.Should().Be(HttpStatusCode.OK, state.LastBody);
+        using var document = JsonDocument.Parse(state.LastBody!);
+        document.RootElement.GetProperty("status").GetString().Should().Be(status);
+    }
+
     private static (string City, string State) SplitStop(string value)
     {
         var parts = value.Split(',', 2, StringSplitOptions.TrimEntries);

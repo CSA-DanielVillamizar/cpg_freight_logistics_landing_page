@@ -87,6 +87,22 @@ public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion
     }
 
     /// <summary>
+    /// The assigned carrier reports the truck has departed the origin. Moves the load from
+    /// <see cref="LoadStatus.Dispatched"/> to <see cref="LoadStatus.InTransit"/>.
+    /// </summary>
+    /// <exception cref="DomainException">The load has not been dispatched to a carrier.</exception>
+    public void MarkInTransit()
+    {
+        if (Status != LoadStatus.Dispatched)
+        {
+            throw new DomainException(
+                $"Load {Reference} cannot depart from status {Status}; it must be Dispatched.");
+        }
+
+        Status = LoadStatus.InTransit;
+    }
+
+    /// <summary>
     /// The carrier completes the haul. Moves the load to <see cref="LoadStatus.Delivered"/> and
     /// raises <see cref="LoadDeliveredDomainEvent"/> so billing can raise the shipper invoice.
     /// </summary>
