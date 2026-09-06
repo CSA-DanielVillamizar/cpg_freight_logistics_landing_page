@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ApiError } from '@/shared/api/client';
+import { formatEnum } from '@/shared/lib/formatEnum';
 import { Badge, Button, Card, EmptyState } from '@/shared/ui';
 import type { BadgeTone } from '@/shared/ui';
 import { ShipperNav } from './ShipperNav';
@@ -167,7 +168,7 @@ export function ShipperBillingPage(): JSX.Element {
                         {formatDate(invoice.dueDate)}
                       </td>
                       <td className="whitespace-nowrap px-3 py-3">
-                        <Badge tone={STATUS_TONE[invoice.status]}>{invoice.status}</Badge>
+                        <Badge tone={STATUS_TONE[invoice.status]}>{formatEnum(invoice.status)}</Badge>
                       </td>
                       <td className="whitespace-nowrap px-3 py-3 text-right">
                         {invoice.payable ? (

@@ -48,7 +48,7 @@ export function RateCalculatorPage(): JSX.Element {
       <div className="flex flex-col gap-6">
         <header className="flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-            Precision Freight Quoting · SPEC.md US-02
+            Precision Freight Quoting
           </span>
           <h1 className="text-headline-lg">Interactive Rate Calculator</h1>
           <p className="text-body-sm text-steel-gray">

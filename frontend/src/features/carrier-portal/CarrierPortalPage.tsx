@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ApiError } from '@/shared/api/client';
 import type { ComplianceStatus, ComplianceStatusResponse } from '@/shared/api/types';
+import { formatEnum } from '@/shared/lib/formatEnum';
 import { Badge, Card } from '@/shared/ui';
 import type { BadgeTone } from '@/shared/ui';
 import { complianceApi } from './complianceApi';
@@ -11,13 +12,6 @@ const STATUS_TONE: Record<ComplianceStatus, BadgeTone> = {
   UnderReview: 'dispatched',
   Verified: 'delivered',
   Rejected: 'oversize',
-};
-
-const STATUS_LABEL: Record<ComplianceStatus, string> = {
-  PendingCompliance: 'Pending Compliance',
-  UnderReview: 'Under Review',
-  Verified: 'Verified',
-  Rejected: 'Rejected',
 };
 
 const bytesToMb = (bytes: number): string => `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
@@ -47,7 +41,7 @@ export function CarrierPortalPage(): JSX.Element {
     <div className="mx-auto flex max-w-container flex-col gap-8 px-4 py-10">
       <header className="flex flex-col gap-2">
         <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-          Carrier Portal · SPEC.md US-03
+          Compliance Portal
         </span>
         <h1 className="text-headline-lg">Compliance &amp; Verification</h1>
         <p className="text-body-sm text-steel-gray">
@@ -72,7 +66,7 @@ export function CarrierPortalPage(): JSX.Element {
                 </span>
               </span>
             </div>
-            <Badge tone={STATUS_TONE[status.status]}>{STATUS_LABEL[status.status]}</Badge>
+            <Badge tone={STATUS_TONE[status.status]}>{formatEnum(status.status)}</Badge>
           </Card>
 
           <div className="grid gap-6 md:grid-cols-[0.9fr_1.1fr]">
@@ -92,14 +86,14 @@ export function CarrierPortalPage(): JSX.Element {
                       <div className="flex min-w-0 flex-col">
                         <span className="truncate font-mono text-body-sm">{doc.originalFileName}</span>
                         <span className="text-body-sm text-steel-gray">
-                          {doc.documentType} ·{' '}
+                          {formatEnum(doc.documentType)} ·{' '}
                           <span className="font-mono tabular-nums">
                             {bytesToMb(doc.sizeBytes)} ·{' '}
                             {new Date(doc.uploadedAtUtc).toLocaleDateString()}
                           </span>
                         </span>
                       </div>
-                      <Badge tone={STATUS_TONE[doc.status]}>{STATUS_LABEL[doc.status]}</Badge>
+                      <Badge tone={STATUS_TONE[doc.status]}>{formatEnum(doc.status)}</Badge>
                     </li>
                   ))}
                 </ul>

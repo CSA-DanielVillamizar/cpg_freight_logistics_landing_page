@@ -102,7 +102,7 @@ export function AdminDashboardPage(): JSX.Element {
     <div className="mx-auto flex max-w-container flex-col gap-5 px-4 py-8">
       <header className="flex flex-col gap-2">
         <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-          Admin control tower · SPEC.md US-03
+          Admin Control Tower
         </span>
         <h1 className="text-headline-lg">Carrier Compliance Review</h1>
         <p className="max-w-2xl text-body-sm text-steel-gray">

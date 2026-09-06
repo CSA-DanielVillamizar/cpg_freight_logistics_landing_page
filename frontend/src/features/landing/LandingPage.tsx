@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { formatEnum } from '@/shared/lib/formatEnum';
 import { Card } from '@/shared/ui';
 import { TrustRibbon } from './components/TrustRibbon';
 import { VerticalIcon } from './components/VerticalIcon';
@@ -44,7 +45,7 @@ export function LandingPage(): JSX.Element {
             <Card key={vertical.slug} className="flex flex-col gap-2 p-5">
               <VerticalIcon slug={vertical.slug} className="h-8 w-8 text-fleet-blue" />
               <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-                {vertical.serviceType}
+                {formatEnum(vertical.serviceType)}
               </span>
               <h3 className="text-headline-sm">{vertical.name}</h3>
               <p className="text-body-sm text-steel-gray">{vertical.subhead}</p>

@@ -86,27 +86,29 @@ export function LoginPage(): JSX.Element {
         </form>
       </Card>
 
-      <Card className="p-4">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-steel-gray">
-          Development seed accounts — password <code>Passw0rd!</code>
-        </p>
-        <ul className="flex flex-col gap-1 font-mono text-body-sm text-on-surface-variant">
-          {SEED_ACCOUNTS.map((account) => (
-            <li key={account.email}>
-              <button
-                type="button"
-                className="text-fleet-blue hover:underline"
-                onClick={() => {
-                  setEmail(account.email);
-                  setPassword('Passw0rd!');
-                }}
-              >
-                {account.role}: {account.email}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </Card>
+      {import.meta.env.DEV ? (
+        <Card className="p-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-steel-gray">
+            Development seed accounts — password <code>Passw0rd!</code>
+          </p>
+          <ul className="flex flex-col gap-1 font-mono text-body-sm text-on-surface-variant">
+            {SEED_ACCOUNTS.map((account) => (
+              <li key={account.email}>
+                <button
+                  type="button"
+                  className="text-fleet-blue hover:underline"
+                  onClick={() => {
+                    setEmail(account.email);
+                    setPassword('Passw0rd!');
+                  }}
+                >
+                  {account.role}: {account.email}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
     </div>
   );
 }

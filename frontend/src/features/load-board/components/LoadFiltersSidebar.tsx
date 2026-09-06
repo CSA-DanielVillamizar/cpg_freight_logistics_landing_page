@@ -1,4 +1,5 @@
 import { cn } from '@/shared/lib/cn';
+import { formatEnum } from '@/shared/lib/formatEnum';
 import { Card } from '@/shared/ui';
 import type { LoadServiceType, LoadStatus } from '../types';
 import { LOAD_SERVICE_TYPES, LOAD_STATUSES } from '../types';
@@ -49,7 +50,7 @@ export function LoadFiltersSidebar({ filters, onChange, resultCount }: LoadFilte
               checked={filters.statuses.has(status)}
               onChange={() => onChange({ ...filters, statuses: toggle(filters.statuses, status) })}
             />
-            {status === 'InTransit' ? 'In Transit' : status}
+            {formatEnum(status)}
           </label>
         ))}
       </fieldset>

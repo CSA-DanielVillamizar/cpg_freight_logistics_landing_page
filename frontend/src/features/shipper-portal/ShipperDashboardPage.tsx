@@ -5,6 +5,7 @@ import { ServiceTypeBadge } from '@/features/load-board/components/ServiceTypeBa
 import { STATUS_TONE } from '@/features/load-board/types';
 import { ApiError } from '@/shared/api/client';
 import { cn } from '@/shared/lib/cn';
+import { formatEnum } from '@/shared/lib/formatEnum';
 import { Badge, Button, Card, EmptyState } from '@/shared/ui';
 import { ShipperNav } from './ShipperNav';
 import { shipperApi } from './shipperApi';
@@ -20,8 +21,7 @@ const currency = new Intl.NumberFormat('en-US', {
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
 const formatDate = (iso: string): string => dateFormatter.format(new Date(iso));
-const statusLabel = (status: ShipperLoadView['status']): string =>
-  status === 'InTransit' ? 'In Transit' : status;
+const statusLabel = (status: ShipperLoadView['status']): string => formatEnum(status);
 
 export function ShipperDashboardPage(): JSX.Element {
   const [status, setStatus] = useState<PageStatus>('loading');

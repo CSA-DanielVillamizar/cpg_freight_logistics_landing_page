@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { loadsApi } from '@/features/load-board/api/loadsApi';
 import { cn } from '@/shared/lib/cn';
+import { formatEnum } from '@/shared/lib/formatEnum';
 import { Card, EmptyState } from '@/shared/ui';
 import { EventTimeline } from './components/EventTimeline';
 import { SensorCard } from './components/SensorCard';
@@ -11,13 +12,6 @@ import { isTemperatureBreached } from './types';
 import { useTelemetrySignalR, type TelemetryConnectionState } from './useTelemetrySignalR';
 
 const MAX_TRAIL = 40;
-const SERVICE_LABEL: Record<string, string> = {
-  ColdChain: 'Cold Chain',
-  HeavyHaul: 'Heavy Haul',
-  Flatbed: 'Flatbed',
-  FdotConcrete: 'FDOT Barricades',
-  StandardDryVan: 'Standard Dry Van',
-};
 
 const etaFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -112,7 +106,7 @@ export function LiveTrackingPage(): JSX.Element {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-            Real-time · SignalR / WebSockets
+            Real-Time Fleet Tracking
           </span>
           <h1 className="text-headline-lg">Live Tracking &amp; Telemetry</h1>
           <p className="max-w-2xl text-body-sm text-steel-gray">
@@ -161,7 +155,7 @@ export function LiveTrackingPage(): JSX.Element {
                     {alert ? <span className="h-2 w-2 rounded-full bg-signal-red" aria-label="alert" /> : null}
                   </span>
                   <span className={cn('text-xs', active ? 'text-white/70' : 'text-steel-gray')}>
-                    {SERVICE_LABEL[entry.serviceType] ?? entry.serviceType} ·{' '}
+                    {formatEnum(entry.serviceType)} ·{' '}
                     <span className="font-mono tabular-nums">{entry.speedMph} mph</span>
                   </span>
                 </button>
@@ -188,7 +182,7 @@ export function LiveTrackingPage(): JSX.Element {
             <div className="flex flex-col gap-4">
               <Card className="flex flex-col gap-2 p-5">
                 <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-                  {SERVICE_LABEL[selected.serviceType] ?? selected.serviceType} ·{' '}
+                  {formatEnum(selected.serviceType)} ·{' '}
                   <span className="font-mono normal-case tracking-normal">{selected.reference}</span>
                 </span>
                 <h2 className="text-headline-sm">

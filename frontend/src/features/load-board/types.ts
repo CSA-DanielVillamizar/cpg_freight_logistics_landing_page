@@ -1,5 +1,6 @@
 /** Mirrors the backend LoadSummaryResponse DTO (GET /api/loads). */
 
+import { formatEnum } from '@/shared/lib/formatEnum';
 import type { BadgeTone } from '@/shared/ui';
 
 export type LoadStatus = 'Available' | 'Dispatched' | 'InTransit' | 'Delivered';
@@ -50,7 +51,7 @@ export const LOAD_SERVICE_TYPES: readonly { value: LoadServiceType; label: strin
 ];
 
 export function statusLabel(status: LoadStatus): string {
-  return status === 'InTransit' ? 'In Transit' : status;
+  return formatEnum(status);
 }
 
 export const STATUS_TONE: Record<LoadStatus, BadgeTone> = {

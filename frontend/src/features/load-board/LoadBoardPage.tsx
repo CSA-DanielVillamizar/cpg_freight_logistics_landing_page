@@ -24,7 +24,7 @@ export function LoadBoardPage(): JSX.Element {
     <div className="mx-auto flex max-w-container flex-col gap-6 px-4 py-10">
       <header className="flex flex-col gap-2">
         <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-          Live · PostgreSQL-backed
+          Logistics Operations
         </span>
         <h1 className="text-headline-lg">Carrier &amp; Shipper Load Workspace</h1>
         <p className="max-w-2xl text-body-sm text-steel-gray">
