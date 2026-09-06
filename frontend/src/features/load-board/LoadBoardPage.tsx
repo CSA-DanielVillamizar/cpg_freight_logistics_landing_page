@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card } from '@/shared/ui';
+import { Card, EmptyState } from '@/shared/ui';
 import { LoadDataGrid } from './components/LoadDataGrid';
 import { LoadDetailsDrawer } from './components/LoadDetailsDrawer';
 import type { LoadFilters } from './components/LoadFiltersSidebar';
@@ -23,7 +23,7 @@ export function LoadBoardPage(): JSX.Element {
   return (
     <div className="mx-auto flex max-w-container flex-col gap-6 px-4 py-10">
       <header className="flex flex-col gap-2">
-        <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+        <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
           Live · PostgreSQL-backed
         </span>
         <h1 className="text-headline-lg">Carrier &amp; Shipper Load Workspace</h1>
@@ -41,9 +41,7 @@ export function LoadBoardPage(): JSX.Element {
             {errorMessage}
           </Card>
         ) : status === 'loading' ? (
-          <Card className="flex h-48 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-            Loading board…
-          </Card>
+          <EmptyState icon="progress_activity" title="Loading board…" />
         ) : (
           <LoadDataGrid loads={loads} onSelect={(load) => setSelectedLoadId(load.id)} />
         )}

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ApiError } from '@/shared/api/client';
-import { Badge, Button, Card } from '@/shared/ui';
+import { Badge, Button, Card, EmptyState } from '@/shared/ui';
 import type { BadgeTone } from '@/shared/ui';
 import { ShipperNav } from './ShipperNav';
 import { shipperApi } from './shipperApi';
@@ -73,7 +73,7 @@ export function ShipperBillingPage(): JSX.Element {
   return (
     <div className="mx-auto flex max-w-container flex-col gap-6 px-4 py-8">
       <header className="flex flex-col gap-2">
-        <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+        <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
           Shipper portal
         </span>
         <h1 className="text-headline-lg">Billing &amp; Payments</h1>
@@ -92,35 +92,35 @@ export function ShipperBillingPage(): JSX.Element {
           Unable to load your invoices right now.
         </Card>
       ) : status === 'loading' || !data ? (
-        <Card className="flex h-40 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-          Loading invoices…
-        </Card>
+        <EmptyState icon="progress_activity" title="Loading invoices…" />
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-[1.4fr_1fr]">
-            <Card anchored className="flex flex-col gap-1 p-5">
-              <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+            <Card raised className="flex flex-col gap-1 p-5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
                 Total outstanding
               </span>
-              <span className="font-heading text-display-lg leading-none text-primary">
+              <span className="font-heading text-display-lg leading-none tabular-nums text-primary">
                 {currency.format(data.totalOutstandingUsd)}
               </span>
               {data.overdueCount > 0 ? (
-                <span className="mt-1 font-mono text-label-sm uppercase text-error">
+                <span className="mt-1 text-xs font-semibold uppercase tracking-wider text-error">
                   {data.overdueCount} overdue
                 </span>
               ) : (
-                <span className="mt-1 font-mono text-label-sm uppercase text-success">All current</span>
+                <span className="mt-1 text-xs font-semibold uppercase tracking-wider text-success">
+                  All current
+                </span>
               )}
             </Card>
             <Card className="flex flex-col justify-center gap-1 p-5">
-              <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+              <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
                 Invoices
               </span>
               <span className="font-heading text-headline-lg tabular-nums text-fleet-blue">
                 {data.invoices.length}
               </span>
-              <span className="font-mono text-label-sm text-steel-gray">
+              <span className="text-body-sm tabular-nums text-steel-gray">
                 {data.invoices.filter((i) => i.status === 'Paid').length} paid ·{' '}
                 {data.invoices.filter((i) => i.payable).length} open
               </span>
@@ -128,25 +128,27 @@ export function ShipperBillingPage(): JSX.Element {
           </div>
 
           {data.invoices.length === 0 ? (
-            <Card className="flex h-40 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-              No invoices yet — they appear once your loads are delivered.
-            </Card>
+            <EmptyState
+              icon="receipt_long"
+              title="No invoices yet"
+              hint="Invoices are raised automatically once your loads are delivered."
+            />
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-outline bg-surface-card">
+            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-surface-card shadow-sm">
               <table className="w-full min-w-[720px] text-left">
                 <thead>
-                  <tr className="border-b border-outline bg-surface-muted">
+                  <tr className="border-b border-slate-200 bg-surface-muted">
                     {['Invoice', 'Load', 'Amount', 'Issued', 'Due', 'Status', ''].map((heading) => (
                       <th
                         key={heading}
-                        className="whitespace-nowrap px-3 py-2 font-mono text-label-sm uppercase tracking-wider text-steel-gray"
+                        className="whitespace-nowrap px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-steel-gray"
                       >
                         {heading}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline">
+                <tbody className="divide-y divide-slate-200">
                   {data.invoices.map((invoice) => (
                     <tr key={invoice.id}>
                       <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm font-semibold text-fleet-blue">
@@ -177,7 +179,7 @@ export function ShipperBillingPage(): JSX.Element {
                             {payingId === invoice.id ? 'Redirecting…' : 'Pay now'}
                           </Button>
                         ) : (
-                          <span className="font-mono text-label-sm uppercase tracking-wide text-steel-gray">
+                          <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
                             {invoice.paidAtUtc ? `Paid ${formatDate(invoice.paidAtUtc)}` : '—'}
                           </span>
                         )}

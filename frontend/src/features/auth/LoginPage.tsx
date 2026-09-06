@@ -55,13 +55,13 @@ export function LoginPage(): JSX.Element {
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
       <header className="flex flex-col gap-1">
-        <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+        <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
           Secure Access
         </span>
         <h1 className="text-headline-lg">Sign in to CPG Enterprises</h1>
       </header>
 
-      <Card anchored className="p-6">
+      <Card raised className="p-6">
         <form className="flex flex-col gap-4" onSubmit={(event) => void handleSubmit(event)}>
           <Input
             label="Email"
@@ -87,7 +87,7 @@ export function LoginPage(): JSX.Element {
       </Card>
 
       <Card className="p-4">
-        <p className="mb-2 font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-steel-gray">
           Development seed accounts — password <code>Passw0rd!</code>
         </p>
         <ul className="flex flex-col gap-1 font-mono text-body-sm text-on-surface-variant">
@@ -95,7 +95,7 @@ export function LoginPage(): JSX.Element {
             <li key={account.email}>
               <button
                 type="button"
-                className="text-hazard-orange hover:underline"
+                className="text-fleet-blue hover:underline"
                 onClick={() => {
                   setEmail(account.email);
                   setPassword('Passw0rd!');

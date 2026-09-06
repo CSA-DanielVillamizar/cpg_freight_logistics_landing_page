@@ -29,7 +29,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
 /** Purely decorative route sketch — no real geocoding backs this. */
 function StaticRouteMap({ load }: { load: Load }): JSX.Element {
   return (
-    <svg viewBox="0 0 400 160" className="h-40 w-full rounded-lg border border-outline bg-[#0E1C2F]">
+    <svg viewBox="0 0 400 160" className="h-40 w-full rounded-lg border border-slate-200 bg-[#0E1C2F]">
       <defs>
         <pattern id="load-map-grid" width="20" height="20" patternUnits="userSpaceOnUse">
           <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
@@ -103,7 +103,7 @@ export function LoadDetailsDrawer({ load, onClose, onAccepted }: LoadDetailsDraw
         aria-modal="true"
         aria-hidden={!isOpen}
         className={cn(
-          'fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col overflow-y-auto border-l border-outline bg-surface-card shadow-elevated transition-transform duration-300 ease-out',
+          'fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col overflow-y-auto border-l border-slate-200 bg-surface-card shadow-overlay transition-transform duration-300 ease-out',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >
@@ -121,65 +121,70 @@ export function LoadDetailsDrawer({ load, onClose, onAccepted }: LoadDetailsDraw
                 type="button"
                 onClick={onClose}
                 aria-label="Close load details"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-outline text-steel-gray hover:bg-surface-muted"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-steel-gray transition-colors hover:bg-surface-muted"
               >
-                ×
+                <span className="material-symbols-outlined text-[20px]" aria-hidden>
+                  close
+                </span>
               </button>
             </div>
 
             <StaticRouteMap load={load} />
 
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-body-sm">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-body-sm">
               <div className="col-span-2 flex flex-col gap-0.5">
-                <dt className="text-label-sm uppercase tracking-wide text-steel-gray">Route</dt>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Route</dt>
                 <dd className="text-on-surface">
                   {load.originCity}, {load.originState} {load.originZip} &rarr; {load.destinationCity},{' '}
                   {load.destinationState} {load.destinationZip}
                 </dd>
               </div>
               <div>
-                <dt className="text-label-sm uppercase tracking-wide text-steel-gray">Equipment</dt>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Equipment</dt>
                 <dd className="text-on-surface">{load.equipmentType}</dd>
               </div>
               <div>
-                <dt className="text-label-sm uppercase tracking-wide text-steel-gray">Distance</dt>
-                <dd className="tabular-nums text-on-surface">{load.distanceMiles.toLocaleString()} mi</dd>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Distance</dt>
+                <dd className="font-mono tabular-nums text-on-surface">{load.distanceMiles.toLocaleString()} mi</dd>
               </div>
               <div>
-                <dt className="text-label-sm uppercase tracking-wide text-steel-gray">Weight</dt>
-                <dd className="tabular-nums text-on-surface">{load.weightLbs.toLocaleString()} lb</dd>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Weight</dt>
+                <dd className="font-mono tabular-nums text-on-surface">{load.weightLbs.toLocaleString()} lb</dd>
               </div>
               <div>
-                <dt className="text-label-sm uppercase tracking-wide text-steel-gray">All-in rate</dt>
-                <dd className="tabular-nums font-semibold text-primary">{currency.format(load.rateUsd)}</dd>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">All-in rate</dt>
+                <dd className="font-mono font-semibold tabular-nums text-primary">{currency.format(load.rateUsd)}</dd>
               </div>
               <div>
-                <dt className="text-label-sm uppercase tracking-wide text-steel-gray">Pickup</dt>
-                <dd className="tabular-nums text-on-surface">
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Pickup</dt>
+                <dd className="font-mono tabular-nums text-on-surface">
                   {dateTimeFormatter.format(new Date(load.pickupAtUtc))}
                 </dd>
               </div>
               <div>
-                <dt className="text-label-sm uppercase tracking-wide text-steel-gray">Delivery</dt>
-                <dd className="tabular-nums text-on-surface">
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Delivery</dt>
+                <dd className="font-mono tabular-nums text-on-surface">
                   {dateTimeFormatter.format(new Date(load.deliveryAtUtc))}
                 </dd>
               </div>
               {load.targetTemperatureF !== null ? (
                 <div>
-                  <dt className="flex items-center gap-1 text-label-sm uppercase tracking-wide text-steel-gray">
-                    ❄ Target temp
+                  <dt className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-steel-gray">
+                    <span className="material-symbols-outlined text-[14px] text-fleet-blue" aria-hidden>
+                      ac_unit
+                    </span>
+                    Target temp
                   </dt>
-                  <dd className="tabular-nums text-on-surface">{load.targetTemperatureF}°F</dd>
+                  <dd className="font-mono tabular-nums text-on-surface">{load.targetTemperatureF}°F</dd>
                 </div>
               ) : null}
               <div>
-                <dt className="text-label-sm uppercase tracking-wide text-steel-gray">Shipper</dt>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Shipper</dt>
                 <dd className="text-on-surface">{load.shipperName}</dd>
               </div>
               {load.carrierName ? (
                 <div>
-                  <dt className="text-label-sm uppercase tracking-wide text-steel-gray">Carrier</dt>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Carrier</dt>
                   <dd className="text-on-surface">{load.carrierName}</dd>
                 </div>
               ) : null}
@@ -187,14 +192,14 @@ export function LoadDetailsDrawer({ load, onClose, onAccepted }: LoadDetailsDraw
 
             {load.specialInstructions ? (
               <div className="flex flex-col gap-2">
-                <h3 className="font-mono text-label-sm uppercase tracking-wide text-steel-gray">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">
                   Special instructions
                 </h3>
                 <p className="font-body text-body-sm text-on-surface-variant">{load.specialInstructions}</p>
               </div>
             ) : null}
 
-            <div className="mt-auto flex gap-3 border-t border-outline pt-5">
+            <div className="mt-auto flex gap-3 border-t border-slate-200 pt-5">
               <Button variant="outline" className="flex-1" onClick={handleBid} disabled={accepting}>
                 Bid
               </Button>

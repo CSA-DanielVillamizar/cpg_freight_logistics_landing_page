@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { ApiError } from '@/shared/api/client';
 import type { ComplianceDocumentType, ComplianceStatus } from '@/shared/api/types';
 import { cn } from '@/shared/lib/cn';
-import { Badge, Button, Card } from '@/shared/ui';
+import { Badge, Button, Card, EmptyState } from '@/shared/ui';
 import type { BadgeTone } from '@/shared/ui';
 import { adminApi } from './adminApi';
 import type { CarrierComplianceView, ReviewDecision } from './adminApi';
@@ -101,13 +101,13 @@ export function AdminDashboardPage(): JSX.Element {
   return (
     <div className="mx-auto flex max-w-container flex-col gap-5 px-4 py-8">
       <header className="flex flex-col gap-2">
-        <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+        <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
           Admin control tower · SPEC.md US-03
         </span>
         <h1 className="text-headline-lg">Carrier Compliance Review</h1>
         <p className="max-w-2xl text-body-sm text-steel-gray">
           Review the legal documents carriers filed through the compliance portal, then approve to
-          activate them (<span className="font-mono">Verified</span>) or reject.
+          activate them (<span className="font-medium text-on-surface">Verified</span>) or reject.
         </p>
       </header>
 
@@ -119,10 +119,10 @@ export function AdminDashboardPage(): JSX.Element {
             onClick={() => setFilter(entry.value)}
             aria-pressed={filter === entry.value}
             className={cn(
-              'rounded border px-3 py-1.5 font-mono text-label-sm uppercase tracking-wide transition-colors',
+              'rounded-full border px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors',
               filter === entry.value
-                ? 'border-primary bg-primary text-white'
-                : 'border-outline bg-surface-card text-steel-gray hover:bg-surface-muted',
+                ? 'border-fleet-blue bg-fleet-blue text-white'
+                : 'border-slate-200 bg-surface-card text-steel-gray hover:bg-surface-muted',
             )}
           >
             {entry.label}
@@ -137,13 +137,13 @@ export function AdminDashboardPage(): JSX.Element {
           Unable to load carriers.
         </Card>
       ) : status === 'loading' ? (
-        <Card className="flex h-40 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-          Loading carriers…
-        </Card>
+        <EmptyState icon="progress_activity" title="Loading carriers…" />
       ) : carriers.length === 0 ? (
-        <Card className="flex h-40 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-          No carriers in this state.
-        </Card>
+        <EmptyState
+          icon="verified_user"
+          title="No carriers in this state"
+          hint="Switch the filter above to review carriers at a different stage."
+        />
       ) : (
         <div className="flex flex-col gap-3">
           {carriers.map((carrier) => (
@@ -197,7 +197,7 @@ function CarrierRow({
   const canReview = carrier.documents.length > 0;
 
   return (
-    <Card anchored className="flex flex-col">
+    <Card className="flex flex-col">
       <div className="flex flex-wrap items-center justify-between gap-3 p-4">
         <button
           type="button"
@@ -208,10 +208,11 @@ function CarrierRow({
             <span className="font-heading text-headline-sm">{carrier.companyName}</span>
             <Badge tone={STATUS_TONE[carrier.status]}>{STATUS_LABEL[carrier.status]}</Badge>
           </span>
-          <span className="font-mono text-label-sm text-steel-gray">
-            DOT {carrier.dotNumber ?? '—'} · MC {carrier.mcNumber ?? '—'} · submitted{' '}
-            {formatDate(carrier.submittedAtUtc)} · {carrier.documents.length} doc
-            {carrier.documents.length === 1 ? '' : 's'}
+          <span className="text-body-sm text-steel-gray">
+            DOT <span className="font-mono tabular-nums">{carrier.dotNumber ?? '—'}</span> · MC{' '}
+            <span className="font-mono tabular-nums">{carrier.mcNumber ?? '—'}</span> · submitted{' '}
+            <span className="font-mono tabular-nums">{formatDate(carrier.submittedAtUtc)}</span> ·{' '}
+            {carrier.documents.length} doc{carrier.documents.length === 1 ? '' : 's'}
           </span>
         </button>
 
@@ -234,27 +235,27 @@ function CarrierRow({
       </div>
 
       {expanded ? (
-        <div className="border-t border-outline">
+        <div className="border-t border-slate-200">
           {carrier.documents.length === 0 ? (
-            <p className="p-4 font-mono text-label-sm text-steel-gray">No documents filed yet.</p>
+            <p className="p-4 text-body-sm text-steel-gray">No documents filed yet.</p>
           ) : (
             <table className="w-full min-w-[640px] text-left">
               <thead>
-                <tr className="border-b border-outline bg-surface-muted">
+                <tr className="border-b border-slate-200 bg-surface-muted">
                   {['Type', 'File', 'Size', 'Uploaded', 'Status', ''].map((heading) => (
                     <th
                       key={heading}
-                      className="whitespace-nowrap px-4 py-2 font-mono text-label-sm uppercase tracking-wider text-steel-gray"
+                      className="whitespace-nowrap px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-steel-gray"
                     >
                       {heading}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-outline">
+              <tbody className="divide-y divide-slate-200">
                 {carrier.documents.map((document) => (
                   <tr key={document.id}>
-                    <td className="whitespace-nowrap px-4 py-2 font-mono text-body-sm text-on-surface">
+                    <td className="whitespace-nowrap px-4 py-2 text-body-sm font-medium text-on-surface">
                       {DOC_TYPE_LABEL[document.documentType]}
                     </td>
                     <td className="max-w-[220px] truncate px-4 py-2 font-mono text-body-sm text-on-surface-variant">
@@ -273,7 +274,7 @@ function CarrierRow({
                       <button
                         type="button"
                         onClick={() => void openDocument(document.id)}
-                        className="font-mono text-label-sm uppercase tracking-wide text-hazard-orange hover:underline"
+                        className="text-xs font-semibold uppercase tracking-wider text-fleet-blue hover:underline"
                       >
                         View
                       </button>

@@ -43,13 +43,13 @@ export function ComplianceDropzone({ onUploaded }: ComplianceDropzoneProps): JSX
       <div className="flex flex-col gap-1">
         <label
           htmlFor="document-type"
-          className="font-mono text-label-sm uppercase tracking-wide text-steel-gray"
+          className="text-xs font-semibold uppercase tracking-wider text-steel-gray"
         >
           Document type
         </label>
         <select
           id="document-type"
-          className="h-12 rounded border border-outline bg-surface-card px-3 text-[16px]"
+          className="h-12 rounded border border-outline-strong bg-surface-card px-3 text-[16px] outline-none transition-colors focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/25"
           value={documentType}
           onChange={(event) => setDocumentType(event.target.value as ComplianceDocumentType)}
         >
@@ -70,21 +70,19 @@ export function ComplianceDropzone({ onUploaded }: ComplianceDropzoneProps): JSX
         onDrop={handleDrop}
         className={cn(
           'flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-8 text-center transition-colors',
-          dragging ? 'border-hazard-orange bg-warning-container' : 'border-outline bg-surface-muted',
+          dragging ? 'border-fleet-blue bg-fleet-blue-soft' : 'border-outline-strong bg-surface-muted',
         )}
       >
         <span className="material-symbols-outlined text-3xl text-steel-gray" aria-hidden>
           upload_file
         </span>
-        <p className="font-heading text-label-md uppercase tracking-wide">
+        <p className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
           Drag &amp; drop, or
         </p>
         <Button variant="outline" onClick={() => inputRef.current?.click()}>
           Choose file
         </Button>
-        <p className="font-mono text-label-sm text-steel-gray">
-          PDF or JPG · 5 MB max
-        </p>
+        <p className="text-body-sm text-steel-gray">PDF or JPG · 5 MB max</p>
         <input
           ref={inputRef}
           type="file"
@@ -95,7 +93,7 @@ export function ComplianceDropzone({ onUploaded }: ComplianceDropzoneProps): JSX
       </div>
 
       {selected ? (
-        <div className="flex items-center justify-between rounded border border-outline bg-surface-card p-3">
+        <div className="flex items-center justify-between rounded border border-slate-200 bg-surface-card p-3 shadow-sm">
           <span className="truncate font-mono text-body-sm">
             {selected.name} · {(selected.size / (1024 * 1024)).toFixed(2)} MB
           </span>
@@ -111,14 +109,14 @@ export function ComplianceDropzone({ onUploaded }: ComplianceDropzoneProps): JSX
       {phase === 'uploading' ? (
         <div className="h-2 overflow-hidden rounded-full bg-surface-muted">
           <div
-            className="h-full bg-hazard-orange transition-[width] duration-200"
+            className="h-full bg-fleet-blue transition-[width] duration-200"
             style={{ width: `${Math.round(progress * 100)}%` }}
           />
         </div>
       ) : null}
 
       {phase === 'error' && error ? (
-        <p className="font-mono text-body-sm text-error">{error}</p>
+        <p className="text-body-sm text-error">{error}</p>
       ) : null}
     </div>
   );

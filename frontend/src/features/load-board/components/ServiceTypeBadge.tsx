@@ -24,7 +24,7 @@ export function ServiceTypeBadge({ serviceType, className }: ServiceTypeBadgePro
   return (
     <span
       className={
-        'inline-flex items-center gap-1.5 rounded border border-outline bg-surface-muted px-2 py-1 font-mono text-label-sm uppercase tracking-wide text-on-surface-variant ' +
+        'inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-surface-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant ' +
         (className ?? '')
       }
     >

@@ -9,11 +9,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary:
-    'bg-hazard-orange text-white hover:bg-[#C2410C] border-b border-[#9A3412]',
-  fleet: 'bg-primary text-white border border-secondary hover:bg-secondary',
+  // Corporate action colour - fleet blue, never hazard orange.
+  primary: 'bg-fleet-blue text-white hover:bg-fleet-blue-hover shadow-sm',
+  fleet: 'bg-primary text-white hover:bg-secondary shadow-sm',
   outline:
-    'bg-transparent border-[1.5px] border-steel-gray text-primary hover:bg-surface-muted',
+    'bg-transparent border border-outline-strong text-primary hover:bg-surface-muted',
 };
 
 export function Button({
@@ -28,8 +28,9 @@ export function Button({
       type={type === 'submit' ? 'submit' : type === 'reset' ? 'reset' : 'button'}
       className={cn(
         'inline-flex h-12 items-center justify-center gap-2 rounded px-4',
-        'font-heading text-label-md uppercase tracking-wide',
-        'transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
+        'text-xs font-semibold uppercase tracking-wider',
+        'transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fleet-blue/40 focus-visible:ring-offset-1',
         VARIANT_CLASSES[variant],
         className,
       )}

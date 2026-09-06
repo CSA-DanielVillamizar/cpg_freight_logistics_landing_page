@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
-import { Button, Card, Input } from '@/shared/ui';
+import { Button, Card, EmptyState, Input } from '@/shared/ui';
 import { cn } from '@/shared/lib/cn';
 import type { RateCalculationRequest, ServiceType } from '@/shared/api/types';
 import { RateBreakdown } from './RateBreakdown';
@@ -47,7 +47,7 @@ export function RateCalculatorPage(): JSX.Element {
     <div className="mx-auto grid max-w-container gap-8 px-4 py-10 lg:grid-cols-[1.15fr_0.85fr]">
       <div className="flex flex-col gap-6">
         <header className="flex flex-col gap-2">
-          <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+          <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
             Precision Freight Quoting · SPEC.md US-02
           </span>
           <h1 className="text-headline-lg">Interactive Rate Calculator</h1>
@@ -57,9 +57,16 @@ export function RateCalculatorPage(): JSX.Element {
           </p>
           <dl className="mt-2 grid grid-cols-3 gap-2">
             {METRICS.map((metric) => (
-              <div key={metric.label} className="rounded border border-outline bg-surface-card p-3">
-                <dt className="font-mono text-label-md font-semibold text-fleet-blue">{metric.value}</dt>
-                <dd className="font-mono text-label-sm uppercase text-steel-gray">{metric.label}</dd>
+              <div
+                key={metric.label}
+                className="rounded-lg border border-slate-200 bg-surface-card p-3 shadow-sm"
+              >
+                <dt className="font-mono text-sm font-semibold tabular-nums text-fleet-blue">
+                  {metric.value}
+                </dt>
+                <dd className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">
+                  {metric.label}
+                </dd>
               </div>
             ))}
           </dl>
@@ -68,7 +75,7 @@ export function RateCalculatorPage(): JSX.Element {
         <Card className="p-6">
           <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             <fieldset className="flex flex-col gap-2">
-              <legend className="font-mono text-label-sm uppercase tracking-wide text-steel-gray">
+              <legend className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
                 Service line
               </legend>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -81,13 +88,13 @@ export function RateCalculatorPage(): JSX.Element {
                       aria-pressed={selected}
                       onClick={() => setServiceType(line.value)}
                       className={cn(
-                        'flex flex-col items-start gap-1 rounded border p-3 text-left transition-colors',
+                        'flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-colors',
                         selected
-                          ? 'border-primary bg-primary text-white'
-                          : 'border-outline bg-surface-card hover:bg-surface-muted',
+                          ? 'border-fleet-blue bg-fleet-blue text-white'
+                          : 'border-slate-200 bg-surface-card hover:bg-surface-muted',
                       )}
                     >
-                      <span className="font-heading text-label-md uppercase tracking-wide">
+                      <span className="text-xs font-semibold uppercase tracking-wider">
                         {line.label}
                       </span>
                       <span
@@ -153,7 +160,7 @@ export function RateCalculatorPage(): JSX.Element {
             </Button>
 
             {status === 'error' && errorMessage ? (
-              <p className="font-mono text-body-sm text-error">{errorMessage}</p>
+              <p className="text-body-sm text-error">{errorMessage}</p>
             ) : null}
           </form>
         </Card>
@@ -163,14 +170,11 @@ export function RateCalculatorPage(): JSX.Element {
         {status === 'success' && result ? (
           <RateBreakdown result={result} />
         ) : (
-          <Card className="flex h-full min-h-48 flex-col items-center justify-center gap-2 p-6 text-center">
-            <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
-              Quote breakdown
-            </span>
-            <p className="text-body-sm text-steel-gray">
-              Submit a lane to see the base rate, surcharges and all-inclusive total.
-            </p>
-          </Card>
+          <EmptyState
+            icon="calculate"
+            title="Quote breakdown"
+            hint="Submit a lane to see the base rate, surcharges and all-inclusive total."
+          />
         )}
       </div>
     </div>

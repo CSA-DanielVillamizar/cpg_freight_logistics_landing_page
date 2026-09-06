@@ -16,16 +16,16 @@ export function Input({ label, hint, error, className, id, ...rest }: InputProps
     <div className="flex flex-col gap-1">
       <label
         htmlFor={inputId}
-        className="font-mono text-label-sm uppercase tracking-wide text-steel-gray"
+        className="text-xs font-semibold uppercase tracking-wider text-steel-gray"
       >
         {label}
       </label>
       <input
         id={inputId}
         className={cn(
-          'h-12 rounded border border-outline bg-surface-card px-3 text-[16px] text-on-surface',
-          'outline-none focus:border-primary focus:ring-2 focus:ring-safety-amber/60',
-          error && 'border-error focus:border-error focus:ring-error/40',
+          'h-12 rounded border border-outline-strong bg-surface-card px-3 text-[16px] text-on-surface',
+          'outline-none transition-colors focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/25',
+          error && 'border-error focus:border-error focus:ring-error/30',
           className,
         )}
         aria-invalid={error ? true : undefined}

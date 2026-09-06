@@ -16,26 +16,28 @@ export function SensorCard({ telemetry, lastPingUtc }: SensorCardProps): JSX.Ele
   return (
     <div
       className={cn(
-        'flex flex-col gap-4 rounded-lg border bg-surface-card p-5',
-        breached ? 'border-2 border-signal-red' : 'border-outline',
+        'flex flex-col gap-4 rounded-lg border bg-surface-card p-5 shadow-sm',
+        breached ? 'border-2 border-signal-red' : 'border-slate-200',
       )}
     >
       <div className="flex items-start justify-between">
         <div className="flex flex-col">
-          <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+          <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
             Reefer temperature
           </span>
-          <span className="font-mono text-label-sm text-steel-gray">
-            Setpoint {telemetry.setpointCelsius.toFixed(1)}°C · band {telemetry.minCelsius}°C to{' '}
-            {telemetry.maxCelsius}°C
+          <span className="text-body-sm text-steel-gray">
+            Setpoint <span className="font-mono tabular-nums">{telemetry.setpointCelsius.toFixed(1)}°C</span> · band{' '}
+            <span className="font-mono tabular-nums">
+              {telemetry.minCelsius}°C to {telemetry.maxCelsius}°C
+            </span>
           </span>
         </div>
         {breached ? (
-          <span className="inline-flex animate-pulse items-center gap-1 rounded bg-signal-red px-2 py-1 font-mono text-label-sm uppercase tracking-wide text-white">
+          <span className="inline-flex animate-pulse items-center gap-1 rounded-full bg-signal-red px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
             ● Excursion
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 rounded bg-success-container px-2 py-1 font-mono text-label-sm uppercase tracking-wide text-success">
+          <span className="inline-flex items-center gap-1 rounded-full bg-success-container px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-success">
             ● In band
           </span>
         )}
@@ -44,7 +46,7 @@ export function SensorCard({ telemetry, lastPingUtc }: SensorCardProps): JSX.Ele
       <div className="flex items-end gap-2">
         <span
           className={cn(
-            'font-heading text-[3.25rem] leading-none tabular-nums',
+            'font-mono text-[3.25rem] font-semibold leading-none tabular-nums',
             breached ? 'text-signal-red' : 'text-primary',
           )}
         >
@@ -55,8 +57,12 @@ export function SensorCard({ telemetry, lastPingUtc }: SensorCardProps): JSX.Ele
 
       <Sparkline telemetry={telemetry} />
 
-      <span className="font-mono text-label-sm text-steel-gray">
-        Last telemetry {timeFormatter.format(new Date(lastPingUtc))} UTC · 15 min interval
+      <span className="text-body-sm text-steel-gray">
+        Last telemetry{' '}
+        <span className="font-mono tabular-nums">
+          {timeFormatter.format(new Date(lastPingUtc))} UTC
+        </span>{' '}
+        · 15 min interval
       </span>
     </div>
   );

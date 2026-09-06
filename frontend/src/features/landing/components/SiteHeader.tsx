@@ -21,13 +21,13 @@ export function SiteHeader(): JSX.Element {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-outline bg-surface/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-surface/90 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-container items-center justify-between gap-3 px-4">
         <Link to="/" className="flex min-w-0 items-center gap-3">
           <img src={cpgLogo} alt="CPG Enterprises" className="h-9 w-9 shrink-0 object-contain" />
           <span className="flex min-w-0 flex-col">
             <span className="font-heading text-headline-sm tracking-tight">CPG Enterprises</span>
-            <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">
               Heavy Haul &amp; Specialized Logistics
             </span>
           </span>
@@ -38,7 +38,7 @@ export function SiteHeader(): JSX.Element {
             <Link
               key={link.to}
               to={link.to}
-              className="font-mono text-label-sm uppercase tracking-wide text-steel-gray transition-colors hover:text-hazard-orange"
+              className="text-xs font-semibold uppercase tracking-wider text-steel-gray transition-colors hover:text-fleet-blue"
             >
               {link.label}
             </Link>
@@ -49,7 +49,7 @@ export function SiteHeader(): JSX.Element {
           {isAuthenticated ? (
             <Link
               to="/load-board"
-              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+              className="hidden text-xs font-semibold uppercase tracking-wider text-steel-gray hover:text-on-surface sm:inline"
             >
               Load board
             </Link>
@@ -57,7 +57,7 @@ export function SiteHeader(): JSX.Element {
           {isAuthenticated ? (
             <Link
               to="/tracking"
-              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+              className="hidden text-xs font-semibold uppercase tracking-wider text-steel-gray hover:text-on-surface sm:inline"
             >
               Live tracking
             </Link>
@@ -65,7 +65,7 @@ export function SiteHeader(): JSX.Element {
           {hasRole('Admin') ? (
             <Link
               to="/admin/carriers"
-              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+              className="hidden text-xs font-semibold uppercase tracking-wider text-steel-gray hover:text-on-surface sm:inline"
             >
               Carrier review
             </Link>
@@ -73,7 +73,7 @@ export function SiteHeader(): JSX.Element {
           {hasRole('Admin') ? (
             <Link
               to="/admin/audit-logs"
-              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+              className="hidden text-xs font-semibold uppercase tracking-wider text-steel-gray hover:text-on-surface sm:inline"
             >
               Audit log
             </Link>
@@ -81,7 +81,7 @@ export function SiteHeader(): JSX.Element {
           {hasRole('Shipper') ? (
             <Link
               to="/shipper/dashboard"
-              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+              className="hidden text-xs font-semibold uppercase tracking-wider text-steel-gray hover:text-on-surface sm:inline"
             >
               My shipments
             </Link>
@@ -89,7 +89,7 @@ export function SiteHeader(): JSX.Element {
           {hasRole('Carrier') ? (
             <Link
               to="/carrier"
-              className="hidden font-mono text-label-sm uppercase tracking-wide text-steel-gray hover:text-on-surface sm:inline"
+              className="hidden text-xs font-semibold uppercase tracking-wider text-steel-gray hover:text-on-surface sm:inline"
             >
               Carrier portal
             </Link>
@@ -97,9 +97,11 @@ export function SiteHeader(): JSX.Element {
 
           <a
             href={`tel:${DISPATCH_PHONE.replace(/[^\d]/g, '')}`}
-            className="flex h-11 items-center gap-2 rounded bg-surface-muted px-3 font-mono text-label-sm text-on-surface hover:bg-secondary-container"
+            className="flex h-11 items-center gap-1.5 rounded bg-surface-muted px-3 text-sm font-medium tabular-nums text-on-surface transition-colors hover:bg-secondary-container"
           >
-            <span className="text-hazard-orange">☎</span>
+            <span className="material-symbols-outlined text-[18px] text-fleet-blue" aria-hidden>
+              call
+            </span>
             <span className="hidden sm:inline">{DISPATCH_PHONE}</span>
           </a>
 
@@ -107,7 +109,7 @@ export function SiteHeader(): JSX.Element {
             <button
               type="button"
               onClick={handleLogout}
-              className="flex h-11 items-center gap-2 rounded border border-steel-gray px-3 font-mono text-label-sm uppercase tracking-wide text-primary hover:bg-surface-muted"
+              className="flex h-11 items-center gap-2 rounded border border-outline-strong px-3 text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-surface-muted"
             >
               <span className="hidden sm:inline">{user?.email}</span>
               <span>Sign out</span>
@@ -115,7 +117,7 @@ export function SiteHeader(): JSX.Element {
           ) : (
             <Link
               to="/login"
-              className="flex h-11 items-center rounded bg-primary px-4 font-mono text-label-sm uppercase tracking-wide text-white hover:bg-secondary"
+              className="flex h-11 items-center rounded bg-fleet-blue px-4 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-fleet-blue-hover"
             >
               Sign in
             </Link>

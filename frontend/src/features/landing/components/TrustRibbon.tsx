@@ -14,8 +14,13 @@ export function TrustRibbon(): JSX.Element {
   return (
     <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
       {METRICS.map((metric) => (
-        <div key={metric.value} className="rounded-lg border border-outline bg-surface-card p-4">
-          <dt className="font-mono text-label-md font-semibold text-fleet-blue">{metric.value}</dt>
+        <div
+          key={metric.value}
+          className="rounded-lg border border-slate-200 bg-surface-card p-4 shadow-sm"
+        >
+          <dt className="font-mono text-sm font-semibold tabular-nums text-fleet-blue">
+            {metric.value}
+          </dt>
           <dd className="text-body-sm text-steel-gray">{metric.label}</dd>
         </div>
       ))}

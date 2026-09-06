@@ -21,8 +21,8 @@ export function VerticalLandingPage(): JSX.Element {
         style={{ backgroundImage: `linear-gradient(100deg, rgba(11,25,44,0.94) 35%, rgba(11,25,44,0.6) 100%), url(${heroPhoto})` }}
       >
         <div className="mx-auto flex max-w-container flex-col gap-5 px-4 py-14">
-          <VerticalIcon slug={content.slug} className="h-10 w-10 text-hazard-orange" />
-          <span className="font-mono text-label-sm uppercase tracking-wider text-hazard-orange">
+          <VerticalIcon slug={content.slug} className="h-10 w-10 text-fleet-blue" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
             {content.eyebrow}
           </span>
           <h1 className="max-w-3xl text-headline-xl text-white sm:text-display-lg">
@@ -33,7 +33,7 @@ export function VerticalLandingPage(): JSX.Element {
             {content.badges.map((badge) => (
               <span
                 key={badge}
-                className="rounded border border-white/20 px-3 py-1 font-mono text-label-sm uppercase tracking-wide text-white/80"
+                className="rounded-full border border-white/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white/80"
               >
                 {badge}
               </span>
@@ -41,7 +41,7 @@ export function VerticalLandingPage(): JSX.Element {
           </div>
           <a
             href="#request-quote"
-            className="mt-2 inline-flex h-12 w-fit items-center rounded bg-hazard-orange px-6 font-heading text-label-md uppercase tracking-wide text-white"
+            className="mt-2 inline-flex h-12 w-fit items-center rounded bg-fleet-blue px-6 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-fleet-blue-hover"
           >
             Request a quote
           </a>
@@ -49,12 +49,14 @@ export function VerticalLandingPage(): JSX.Element {
       </section>
 
       {/* Metrics ribbon */}
-      <section className="border-b border-outline bg-surface-card">
+      <section className="border-b border-slate-200 bg-surface-card">
         <dl className="mx-auto grid max-w-container grid-cols-2 gap-px overflow-hidden px-4 py-6 sm:grid-cols-4">
           {content.metrics.map((metric) => (
             <div key={metric.label} className="flex flex-col px-2">
-              <dt className="font-mono text-headline-sm text-fleet-blue">{metric.value}</dt>
-              <dd className="font-mono text-label-sm uppercase text-steel-gray">{metric.label}</dd>
+              <dt className="font-mono text-headline-sm tabular-nums text-fleet-blue">{metric.value}</dt>
+              <dd className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">
+                {metric.label}
+              </dd>
             </div>
           ))}
         </dl>
@@ -65,13 +67,13 @@ export function VerticalLandingPage(): JSX.Element {
         <h2 className="text-headline-md">Equipment &amp; service catalog</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {content.serviceCards.map((card) => (
-            <Card key={card.title} anchored className="flex flex-col gap-2 p-5">
-              <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+            <Card key={card.title} className="flex flex-col gap-2 p-5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
                 {card.tag}
               </span>
               <h3 className="text-headline-sm">{card.title}</h3>
               <p className="text-body-sm text-steel-gray">{card.detail}</p>
-              <p className="mt-1 font-mono text-label-sm text-fleet-blue">{card.spec}</p>
+              <p className="mt-1 font-mono text-[13px] tabular-nums text-fleet-blue">{card.spec}</p>
             </Card>
           ))}
         </div>
@@ -84,7 +86,7 @@ export function VerticalLandingPage(): JSX.Element {
             <h2 className="text-headline-md">Engineered for enterprise contractors</h2>
             {content.proofPoints.map((point) => (
               <div key={point.title} className="flex flex-col gap-1">
-                <h3 className="font-heading text-label-md uppercase tracking-wide text-on-surface">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-on-surface">
                   {point.title}
                 </h3>
                 <p className="text-body-sm text-steel-gray">{point.body}</p>
@@ -92,7 +94,7 @@ export function VerticalLandingPage(): JSX.Element {
             ))}
           </div>
 
-          <Card anchored className="flex flex-col gap-4 p-6">
+          <Card raised className="flex flex-col gap-4 p-6">
             <h2 className="text-headline-sm">{content.formHeading}</h2>
             <LeadCaptureForm
               verticalSlug={content.slug}
@@ -120,12 +122,10 @@ export function VerticalLandingPage(): JSX.Element {
                 .join('')}
             </div>
             <div className="flex flex-col">
-              <span className="font-mono text-label-md text-on-surface">
+              <span className="text-sm font-semibold text-on-surface">
                 {content.testimonial.author}
               </span>
-              <span className="font-mono text-label-sm text-steel-gray">
-                {content.testimonial.role}
-              </span>
+              <span className="text-body-sm text-steel-gray">{content.testimonial.role}</span>
             </div>
           </div>
         </Card>

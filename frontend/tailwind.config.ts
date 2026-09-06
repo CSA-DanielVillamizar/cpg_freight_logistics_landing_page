@@ -22,14 +22,19 @@ const config: Config = {
           container: '#D5E0F8',
         },
         tertiary: {
-          DEFAULT: '#EA580C', // safety amber-orange (critical CTA)
+          DEFAULT: '#EA580C', // hazard orange - operational alerts only, never CTAs
         },
         neutral: '#64748B',
 
         // Named functional colors
         'safety-amber': '#F59E0B',
         'hazard-orange': '#EA580C',
-        'fleet-blue': '#1C3766',
+        // Corporate action colour - primary CTAs and interactive accents.
+        'fleet-blue': {
+          DEFAULT: '#1C3766',
+          hover: '#24467F',
+          soft: '#E8EEF9',
+        },
         'signal-red': '#DD1A1A',
         'steel-gray': '#334155',
 
@@ -69,13 +74,19 @@ const config: Config = {
         'label-sm': ['0.6875rem', { lineHeight: '0.875rem', letterSpacing: '0.06em', fontWeight: '500' }],
       },
       borderRadius: {
-        DEFAULT: '0.25rem', // 4px - standard elements
-        lg: '0.5rem', // 8px - panels & cards
+        DEFAULT: '0.5rem', // 8px - buttons & inputs
+        md: '0.625rem', // 10px
+        lg: '0.75rem', // 12px - cards & panels
+        xl: '1rem', // 16px - large surfaces
       },
       maxWidth: {
         container: '80rem',
       },
       boxShadow: {
+        // Soft, low-contrast elevation for the premium card system.
+        sm: '0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06)',
+        DEFAULT: '0 1px 2px rgba(15, 23, 42, 0.05), 0 2px 6px rgba(15, 23, 42, 0.07)',
+        md: '0 2px 4px rgba(15, 23, 42, 0.05), 0 6px 16px rgba(15, 23, 42, 0.08)',
         elevated:
           '0 4px 6px -1px rgba(11, 25, 44, 0.08), 0 2px 4px -2px rgba(11, 25, 44, 0.06)',
         overlay:

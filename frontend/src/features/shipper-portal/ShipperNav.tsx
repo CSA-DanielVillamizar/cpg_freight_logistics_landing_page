@@ -9,16 +9,16 @@ const TABS = [
 /** Sub-navigation shared by the shipper portal pages. */
 export function ShipperNav(): JSX.Element {
   return (
-    <nav className="flex gap-2 border-b border-outline">
+    <nav className="flex gap-2 border-b border-slate-200">
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}
           to={tab.to}
           className={({ isActive }) =>
             cn(
-              '-mb-px border-b-2 px-3 py-2 font-mono text-label-sm uppercase tracking-wide transition-colors',
+              '-mb-px border-b-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors',
               isActive
-                ? 'border-hazard-orange text-on-surface'
+                ? 'border-fleet-blue text-on-surface'
                 : 'border-transparent text-steel-gray hover:text-on-surface',
             )
           }

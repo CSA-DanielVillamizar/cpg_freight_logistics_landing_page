@@ -71,7 +71,7 @@ export function LeadCaptureForm({
   if (status === 'submitted') {
     return (
       <div className="rounded-lg border border-success bg-success-container p-5 text-body-sm text-success">
-        <p className="font-heading text-label-md uppercase tracking-wide">Thank you</p>
+        <p className="text-xs font-semibold uppercase tracking-wider">Thank you</p>
         <p className="mt-1">
           Our commercial team has your inquiry and a dispatcher will reach out within one business
           hour.
@@ -120,13 +120,13 @@ export function LeadCaptureForm({
       <div className="flex flex-col gap-1">
         <label
           htmlFor="cargo-details"
-          className="font-mono text-label-sm uppercase tracking-wide text-steel-gray"
+          className="text-xs font-semibold uppercase tracking-wider text-steel-gray"
         >
           Cargo &amp; service details
         </label>
         <textarea
           id="cargo-details"
-          className="min-h-24 rounded border border-outline bg-surface-card p-3 text-[16px] outline-none focus:border-primary focus:ring-2 focus:ring-safety-amber/60"
+          className="min-h-24 rounded border border-outline-strong bg-surface-card p-3 text-[16px] outline-none transition-colors focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/25"
           value={cargoDetails}
           onChange={(event) => setCargoDetails(event.target.value)}
           placeholder={cargoPlaceholder}
@@ -139,7 +139,7 @@ export function LeadCaptureForm({
       <Button type="submit" disabled={status === 'submitting'}>
         {status === 'submitting' ? 'Sending…' : 'Request enterprise quote'}
       </Button>
-      <p className="font-mono text-label-sm text-steel-gray">
+      <p className="text-xs text-steel-gray">
         100% free spec · zero obligation · DOT verified
       </p>
     </form>

@@ -29,8 +29,8 @@ export function Badge({ tone = 'neutral', children }: BadgeProps): JSX.Element {
   return (
     <span
       className={cn(
-        'inline-flex h-6 items-center rounded px-2',
-        'font-mono text-label-sm uppercase',
+        'inline-flex h-6 items-center rounded-full px-2.5',
+        'text-[11px] font-semibold uppercase tracking-wider',
         TONE_CLASSES[tone],
       )}
     >

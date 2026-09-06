@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { loadsApi } from '@/features/load-board/api/loadsApi';
 import { cn } from '@/shared/lib/cn';
-import { Card } from '@/shared/ui';
+import { Card, EmptyState } from '@/shared/ui';
 import { EventTimeline } from './components/EventTimeline';
 import { SensorCard } from './components/SensorCard';
 import { SimulatedMap } from './components/SimulatedMap';
@@ -111,16 +111,16 @@ export function LiveTrackingPage(): JSX.Element {
     <div className="mx-auto flex max-w-container flex-col gap-5 px-4 py-8">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+          <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
             Real-time · SignalR / WebSockets
           </span>
           <h1 className="text-headline-lg">Live Tracking &amp; Telemetry</h1>
           <p className="max-w-2xl text-body-sm text-steel-gray">
             Position, cold-chain sensor health and milestone timeline for freight currently
-            <span className="font-mono"> InTransit</span>. Updates stream in every few seconds — no reload.
+            <span> in transit</span>. Updates stream in every few seconds — no reload.
           </p>
         </div>
-        <span className="inline-flex items-center gap-2 rounded border border-outline bg-surface-card px-3 py-1.5 font-mono text-label-sm uppercase tracking-wide text-steel-gray">
+        <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-surface-card px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-steel-gray">
           <span className={cn('h-2 w-2 rounded-full', connection.dot)} />
           {connection.label}
         </span>
@@ -131,13 +131,13 @@ export function LiveTrackingPage(): JSX.Element {
           Unable to load the tracking board — check that you are signed in.
         </Card>
       ) : status === 'loading' ? (
-        <Card className="flex h-48 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-          Loading fleet…
-        </Card>
+        <EmptyState icon="progress_activity" title="Loading fleet…" />
       ) : !selected ? (
-        <Card className="flex h-48 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-          No freight is currently in transit.
-        </Card>
+        <EmptyState
+          icon="satellite_alt"
+          title="No freight is currently in transit"
+          hint="Live position and sensor telemetry appear here once a carrier marks a load in transit."
+        />
       ) : (
         <>
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -150,18 +150,19 @@ export function LiveTrackingPage(): JSX.Element {
                   type="button"
                   onClick={() => setSelectedId(entry.id)}
                   className={cn(
-                    'flex shrink-0 flex-col items-start gap-1 rounded border px-4 py-2 text-left transition-colors',
+                    'flex shrink-0 flex-col items-start gap-1 rounded-lg border px-4 py-2 text-left transition-colors',
                     active
-                      ? 'border-primary bg-primary text-white'
-                      : 'border-outline bg-surface-card hover:bg-surface-muted',
+                      ? 'border-fleet-blue bg-fleet-blue text-white'
+                      : 'border-slate-200 bg-surface-card hover:bg-surface-muted',
                   )}
                 >
-                  <span className="flex items-center gap-2 font-mono text-label-md">
+                  <span className="flex items-center gap-2 font-mono text-sm font-semibold">
                     {entry.reference}
                     {alert ? <span className="h-2 w-2 rounded-full bg-signal-red" aria-label="alert" /> : null}
                   </span>
-                  <span className={cn('font-mono text-label-sm', active ? 'text-white/70' : 'text-steel-gray')}>
-                    {SERVICE_LABEL[entry.serviceType] ?? entry.serviceType} · {entry.speedMph} mph
+                  <span className={cn('text-xs', active ? 'text-white/70' : 'text-steel-gray')}>
+                    {SERVICE_LABEL[entry.serviceType] ?? entry.serviceType} ·{' '}
+                    <span className="font-mono tabular-nums">{entry.speedMph} mph</span>
                   </span>
                 </button>
               );
@@ -170,7 +171,7 @@ export function LiveTrackingPage(): JSX.Element {
 
           <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
             <div className="flex flex-col gap-3">
-              <Card anchored className="overflow-hidden">
+              <Card raised className="overflow-hidden">
                 <div className="aspect-[4/3] w-full sm:aspect-[16/10]">
                   <SimulatedMap load={selected} />
                 </div>
@@ -185,23 +186,26 @@ export function LiveTrackingPage(): JSX.Element {
             </div>
 
             <div className="flex flex-col gap-4">
-              <Card anchored className="flex flex-col gap-2 p-5">
-                <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
-                  {SERVICE_LABEL[selected.serviceType] ?? selected.serviceType} · {selected.reference}
+              <Card className="flex flex-col gap-2 p-5">
+                <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
+                  {SERVICE_LABEL[selected.serviceType] ?? selected.serviceType} ·{' '}
+                  <span className="font-mono normal-case tracking-normal">{selected.reference}</span>
                 </span>
                 <h2 className="text-headline-sm">
                   {selected.originLabel} &rarr; {selected.destinationLabel}
                 </h2>
-                <dl className="mt-1 grid grid-cols-2 gap-x-4 gap-y-2 font-mono text-body-sm">
+                <dl className="mt-1 grid grid-cols-2 gap-x-4 gap-y-2 text-body-sm">
                   <Detail term="Driver" value={selected.driver} />
-                  <Detail term="Unit" value={selected.tractorUnit} />
+                  <Detail term="Unit" value={selected.tractorUnit} mono />
                   <Detail
                     term="Position"
                     value={`${selected.currentPosition.lat.toFixed(3)}, ${selected.currentPosition.lng.toFixed(3)}`}
+                    mono
                   />
                   <Detail
                     term="Last ping"
                     value={`${etaFormatter.format(new Date(selected.lastPingUtc))} UTC`}
+                    mono
                   />
                 </dl>
               </Card>
@@ -210,7 +214,7 @@ export function LiveTrackingPage(): JSX.Element {
                 <SensorCard telemetry={selected.temperature} lastPingUtc={selected.lastPingUtc} />
               ) : (
                 <Card className="flex flex-col gap-1 p-5">
-                  <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
                     Sensors
                   </span>
                   <p className="text-body-sm text-steel-gray">
@@ -221,7 +225,7 @@ export function LiveTrackingPage(): JSX.Element {
               )}
 
               <Card className="flex flex-col gap-3 p-5">
-                <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+                <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
                   Event timeline
                 </span>
                 <EventTimeline events={selected.timeline} />
@@ -236,18 +240,18 @@ export function LiveTrackingPage(): JSX.Element {
 
 function Metric({ label, value }: { label: string; value: string }): JSX.Element {
   return (
-    <div className="rounded border border-outline bg-surface-card p-3">
-      <div className="font-mono text-label-md font-semibold tabular-nums text-fleet-blue">{value}</div>
-      <div className="font-mono text-label-sm uppercase text-steel-gray">{label}</div>
+    <div className="rounded-lg border border-slate-200 bg-surface-card p-3 shadow-sm">
+      <div className="font-mono text-sm font-semibold tabular-nums text-fleet-blue">{value}</div>
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">{label}</div>
     </div>
   );
 }
 
-function Detail({ term, value }: { term: string; value: string }): JSX.Element {
+function Detail({ term, value, mono = false }: { term: string; value: string; mono?: boolean }): JSX.Element {
   return (
     <div className="flex flex-col">
-      <dt className="text-label-sm uppercase tracking-wide text-steel-gray">{term}</dt>
-      <dd className="text-on-surface">{value}</dd>
+      <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">{term}</dt>
+      <dd className={cn('text-on-surface', mono && 'font-mono tabular-nums')}>{value}</dd>
     </div>
   );
 }

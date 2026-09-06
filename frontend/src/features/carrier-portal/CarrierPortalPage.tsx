@@ -46,7 +46,7 @@ export function CarrierPortalPage(): JSX.Element {
   return (
     <div className="mx-auto flex max-w-container flex-col gap-8 px-4 py-10">
       <header className="flex flex-col gap-2">
-        <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+        <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
           Carrier Portal · SPEC.md US-03
         </span>
         <h1 className="text-headline-lg">Compliance &amp; Verification</h1>
@@ -62,11 +62,14 @@ export function CarrierPortalPage(): JSX.Element {
 
       {status ? (
         <>
-          <Card anchored className="flex flex-wrap items-center justify-between gap-3 p-5">
+          <Card raised className="flex flex-wrap items-center justify-between gap-3 p-5">
             <div className="flex flex-col">
               <span className="font-heading text-headline-sm">{status.companyName}</span>
-              <span className="font-mono text-label-sm text-steel-gray">
-                Carrier ID {status.carrierId.slice(0, 8).toUpperCase()}
+              <span className="text-body-sm text-steel-gray">
+                Carrier ID{' '}
+                <span className="font-mono tabular-nums">
+                  {status.carrierId.slice(0, 8).toUpperCase()}
+                </span>
               </span>
             </div>
             <Badge tone={STATUS_TONE[status.status]}>{STATUS_LABEL[status.status]}</Badge>
@@ -83,14 +86,17 @@ export function CarrierPortalPage(): JSX.Element {
               {status.documents.length === 0 ? (
                 <p className="text-body-sm text-steel-gray">Nothing filed yet.</p>
               ) : (
-                <ul className="flex flex-col divide-y divide-outline">
+                <ul className="flex flex-col divide-y divide-slate-200">
                   {status.documents.map((doc) => (
                     <li key={doc.id} className="flex items-center justify-between gap-3 py-3">
                       <div className="flex min-w-0 flex-col">
                         <span className="truncate font-mono text-body-sm">{doc.originalFileName}</span>
-                        <span className="font-mono text-label-sm text-steel-gray">
-                          {doc.documentType} · {bytesToMb(doc.sizeBytes)} ·{' '}
-                          {new Date(doc.uploadedAtUtc).toLocaleDateString()}
+                        <span className="text-body-sm text-steel-gray">
+                          {doc.documentType} ·{' '}
+                          <span className="font-mono tabular-nums">
+                            {bytesToMb(doc.sizeBytes)} ·{' '}
+                            {new Date(doc.uploadedAtUtc).toLocaleDateString()}
+                          </span>
                         </span>
                       </div>
                       <Badge tone={STATUS_TONE[doc.status]}>{STATUS_LABEL[doc.status]}</Badge>

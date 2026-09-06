@@ -5,7 +5,7 @@ import { ServiceTypeBadge } from '@/features/load-board/components/ServiceTypeBa
 import { STATUS_TONE } from '@/features/load-board/types';
 import { ApiError } from '@/shared/api/client';
 import { cn } from '@/shared/lib/cn';
-import { Badge, Button, Card } from '@/shared/ui';
+import { Badge, Button, Card, EmptyState } from '@/shared/ui';
 import { ShipperNav } from './ShipperNav';
 import { shipperApi } from './shipperApi';
 import type { ShipperLoadView, ShipperLoadsResponse } from './shipperApi';
@@ -69,9 +69,7 @@ export function ShipperDashboardPage(): JSX.Element {
   if (status === 'loading' || !data) {
     return (
       <div className="mx-auto max-w-container px-4 py-10">
-        <Card className="flex h-40 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-          Loading your shipments…
-        </Card>
+        <EmptyState icon="progress_activity" title="Loading your shipments…" />
       </div>
     );
   }
@@ -81,7 +79,7 @@ export function ShipperDashboardPage(): JSX.Element {
   return (
     <div className="mx-auto flex max-w-container flex-col gap-6 px-4 py-8">
       <header className="flex flex-col gap-2">
-        <span className="font-mono text-label-sm uppercase tracking-wider text-steel-gray">
+        <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
           Shipper portal
         </span>
         <h1 className="text-headline-lg">Your Shipments</h1>
@@ -108,10 +106,10 @@ export function ShipperDashboardPage(): JSX.Element {
             onClick={() => setTab(value)}
             aria-pressed={tab === value}
             className={cn(
-              'rounded border px-3 py-1.5 font-mono text-label-sm uppercase tracking-wide transition-colors',
+              'rounded-full border px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors',
               tab === value
-                ? 'border-primary bg-primary text-white'
-                : 'border-outline bg-surface-card text-steel-gray hover:bg-surface-muted',
+                ? 'border-fleet-blue bg-fleet-blue text-white'
+                : 'border-slate-200 bg-surface-card text-steel-gray hover:bg-surface-muted',
             )}
           >
             {value === 'active' ? `Active shipments (${data.active.length})` : `History (${data.history.length})`}
@@ -120,19 +118,25 @@ export function ShipperDashboardPage(): JSX.Element {
       </div>
 
       {rows.length === 0 ? (
-        <Card className="flex h-40 items-center justify-center p-6 font-mono text-body-sm text-steel-gray">
-          {tab === 'active' ? 'No active shipments right now.' : 'No delivered shipments yet.'}
-        </Card>
+        <EmptyState
+          icon="inventory_2"
+          title={tab === 'active' ? 'No active shipments right now' : 'No delivered shipments yet'}
+          hint={
+            tab === 'active'
+              ? 'Freight you have moving through the network will appear here.'
+              : 'Completed loads and their proof of delivery show up here.'
+          }
+        />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-outline bg-surface-card">
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-surface-card shadow-sm">
           <table className="w-full min-w-[820px] text-left">
             <thead>
-              <tr className="border-b border-outline bg-surface-muted">
+              <tr className="border-b border-slate-200 bg-surface-muted">
                 {['Load', 'Service', 'Lane', 'Carrier', tab === 'active' ? 'Window' : 'Delivered', 'Status', ''].map(
                   (heading) => (
                     <th
                       key={heading}
-                      className="whitespace-nowrap px-3 py-2 font-mono text-label-sm uppercase tracking-wider text-steel-gray"
+                      className="whitespace-nowrap px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-steel-gray"
                     >
                       {heading}
                     </th>
@@ -140,7 +144,7 @@ export function ShipperDashboardPage(): JSX.Element {
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-outline">
+            <tbody className="divide-y divide-slate-200">
               {rows.map((load) => (
                 <tr key={load.id}>
                   <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm font-semibold text-fleet-blue">
@@ -149,10 +153,10 @@ export function ShipperDashboardPage(): JSX.Element {
                   <td className="whitespace-nowrap px-3 py-3">
                     <ServiceTypeBadge serviceType={load.serviceType} />
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm text-on-surface-variant">
+                  <td className="whitespace-nowrap px-3 py-3 text-body-sm text-on-surface-variant">
                     {load.originCity}, {load.originState} &rarr; {load.destinationCity}, {load.destinationState}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm text-steel-gray">
+                  <td className="whitespace-nowrap px-3 py-3 text-body-sm text-steel-gray">
                     {load.carrierName ?? '—'}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm tabular-nums text-steel-gray">
@@ -167,7 +171,7 @@ export function ShipperDashboardPage(): JSX.Element {
                     {tab === 'active' ? (
                       <Link
                         to="/tracking"
-                        className="font-mono text-label-sm uppercase tracking-wide text-hazard-orange hover:underline"
+                        className="text-xs font-semibold uppercase tracking-wider text-fleet-blue hover:underline"
                       >
                         Track live
                       </Link>
@@ -200,7 +204,7 @@ function PodButton({ load }: { load: ShipperLoadView }): JSX.Element {
   }
 
   if (!load.podAvailable) {
-    return <span className="font-mono text-label-sm uppercase tracking-wide text-steel-gray">POD pending</span>;
+    return <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">POD pending</span>;
   }
 
   return (
@@ -212,9 +216,9 @@ function PodButton({ load }: { load: ShipperLoadView }): JSX.Element {
 
 function Metric({ label, value }: { label: string; value: string }): JSX.Element {
   return (
-    <Card anchored className="p-3">
+    <Card className="p-3">
       <div className="font-heading text-headline-sm tabular-nums text-fleet-blue">{value}</div>
-      <div className="font-mono text-label-sm uppercase text-steel-gray">{label}</div>
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">{label}</div>
     </Card>
   );
 }

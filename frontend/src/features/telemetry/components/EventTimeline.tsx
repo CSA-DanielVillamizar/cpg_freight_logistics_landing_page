@@ -44,14 +44,14 @@ export function EventTimeline({ events }: EventTimelineProps): JSX.Element {
             <div className={cn('flex flex-col gap-0.5 pb-6', isLast && 'pb-0')}>
               <span
                 className={cn(
-                  'font-heading text-label-md uppercase tracking-wide',
+                  'text-xs font-semibold uppercase tracking-wider',
                   event.kind === 'delay' ? 'text-signal-red' : 'text-on-surface',
                   !event.complete && 'text-steel-gray',
                 )}
               >
                 {event.label}
               </span>
-              <span className="font-mono text-label-sm text-steel-gray">
+              <span className="font-mono text-[11px] tabular-nums text-steel-gray">
                 {dateTimeFormatter.format(new Date(event.atUtc))} UTC
                 {!event.complete ? ' · projected' : ''}
               </span>
