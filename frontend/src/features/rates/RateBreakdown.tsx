@@ -1,6 +1,5 @@
 import type { RateCalculationResponse } from '@/shared/api/types';
 import { cn } from '@/shared/lib/cn';
-import { Card } from '@/shared/ui';
 
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
@@ -8,7 +7,13 @@ interface RateBreakdownProps {
   result: RateCalculationResponse;
 }
 
-/** Detailed quote breakdown: base rate, cold-chain surcharge, fuel surcharge, total (SPEC.md US-02). */
+/**
+ * Detailed quote breakdown: base rate, cold-chain surcharge, fuel surcharge, total (SPEC.md US-02).
+ *
+ * A plain <div>, not <Card>: `cn` is a bare joiner (no tailwind-merge), so a `bg-*` override
+ * passed to Card fights Card's own `bg-surface-card` and CSS source order decides the winner —
+ * which previously rendered this panel white-on-white.
+ */
 export function RateBreakdown({ result }: RateBreakdownProps): JSX.Element {
   const rows: { label: string; value: number; muted?: boolean }[] = [
     { label: 'Base linehaul rate', value: result.baseRate },
@@ -17,7 +22,7 @@ export function RateBreakdown({ result }: RateBreakdownProps): JSX.Element {
   ];
 
   return (
-    <Card className="flex flex-col gap-4 border-transparent bg-primary-container p-6 text-white shadow-md">
+    <div className="flex flex-col gap-4 rounded-lg bg-primary-container p-6 text-white shadow-md">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
           Lane estimate confirmed
@@ -35,10 +40,7 @@ export function RateBreakdown({ result }: RateBreakdownProps): JSX.Element {
           >
             <dt className={row.muted ? 'text-white/40' : 'text-white/70'}>{row.label}</dt>
             <dd
-              className={cn(
-                'font-mono tabular-nums',
-                row.muted ? 'text-white/40' : 'text-white',
-              )}
+              className={cn('font-mono tabular-nums', row.muted ? 'text-white/40' : 'text-white')}
             >
               {currency.format(row.value)}
             </dd>
@@ -56,6 +58,6 @@ export function RateBreakdown({ result }: RateBreakdownProps): JSX.Element {
       <p className="text-xs text-white/60">
         {result.currency} · all-inclusive (fuel &amp; specialized surcharges)
       </p>
-    </Card>
+    </div>
   );
 }
