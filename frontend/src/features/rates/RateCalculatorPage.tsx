@@ -20,7 +20,7 @@ export function RateCalculatorPage(): JSX.Element {
   const [weightLbs, setWeightLbs] = useState('35000');
   const [targetTemp, setTargetTemp] = useState('-20');
 
-  const { status, result, fieldErrors, errorMessage, calculate } = useRateCalculator();
+  const { status, slow, result, fieldErrors, errorMessage, calculate } = useRateCalculator();
 
   const activeLine = useMemo(() => getServiceLine(serviceType), [serviceType]);
 
@@ -156,8 +156,19 @@ export function RateCalculatorPage(): JSX.Element {
             </div>
 
             <Button type="submit" disabled={status === 'loading'}>
-              {status === 'loading' ? 'Calculating…' : 'Calculate rate'}
+              {status === 'loading'
+                ? slow
+                  ? 'Waking the engine…'
+                  : 'Calculating…'
+                : 'Calculate rate'}
             </Button>
+
+            {status === 'loading' && slow ? (
+              <p className="text-body-sm text-steel-gray">
+                First quote after a quiet spell takes ~20&#160;s while the engine spins up — after
+                that it is under 500&#160;ms.
+              </p>
+            ) : null}
 
             {status === 'error' && errorMessage ? (
               <p className="text-body-sm text-error">{errorMessage}</p>
