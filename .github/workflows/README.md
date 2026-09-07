@@ -9,23 +9,38 @@ Both run in resource group `rg-cpgorlando-prd-cus-01`. Images are tagged with th
 commit SHA (`github.sha`) **and** `latest`; the Container App is pointed at the
 immutable SHA tag so every run produces a new revision.
 
-## Required repository secret: `AZURE_CREDENTIALS`
+## Authentication — OIDC, no stored secret
 
-Create a service principal scoped to the production resource group and store its
-JSON output as the `AZURE_CREDENTIALS` repository secret
-(`Settings → Secrets and variables → Actions → New repository secret`):
+`azure/login@v2` logs in with a short-lived GitHub OIDC token. Azure trusts it via
+a **federated credential** on the service principal `cpg-github-actions-sp`
+(`Contributor` on `rg-cpgorlando-prd-cus-01`). The workflows carry only non-secret
+identifiers in `env:` — `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`,
+`AZURE_SUBSCRIPTION_ID`. There is nothing to rotate and no `AZURE_CREDENTIALS`
+secret.
+
+### The federated credential (one-time, already created)
 
 ```bash
-az ad sp create-for-rbac \
-  --name "gha-cpgorlando-deployer" \
-  --role "Contributor" \
-  --scopes "/subscriptions/2f5d85ee-0256-4e8e-9e1a-2c7c87563cb8/resourceGroups/rg-cpgorlando-prd-cus-01" \
-  --sdk-auth
+az ad app federated-credential create \
+  --id fcdbbfab-5dcf-407a-800e-67360eb4ad1f \
+  --parameters '{
+    "name": "github-actions-main",
+    "issuer": "https://token.actions.githubusercontent.com",
+    "subject": "repo:CSA-DanielVillamizar/cpg_freight_logistics_landing_page:ref:refs/heads/main",
+    "audiences": ["api://AzureADTokenExchange"]
+  }'
 ```
 
-The `--sdk-auth` JSON (`clientId` / `clientSecret` / `subscriptionId` / `tenantId` …)
-is the exact value to paste into the secret. `azure/login@v2` consumes it directly.
+The `subject` pins trust to this repo on the `main` branch. Workflows that run from
+any other ref (a tag, a PR, another branch) will not authenticate — add another
+federated credential with the matching subject if that is ever needed.
 
-`Contributor` on the resource group is enough for `az acr build` (push to ACR) and
-`az containerapp update`. To tighten later, replace it with `AcrPush` on the
-registry + `Contributor` on each Container App.
+### If the service principal is ever recreated
+
+Re-run the `federated-credential create` above against the new app id and update
+`AZURE_CLIENT_ID` in both workflows. The SP still needs `Contributor` on the RG:
+
+```bash
+az ad sp create-for-rbac --name "cpg-github-actions-sp" --role Contributor \
+  --scopes "/subscriptions/2f5d85ee-0256-4e8e-9e1a-2c7c87563cb8/resourceGroups/rg-cpgorlando-prd-cus-01"
+```
