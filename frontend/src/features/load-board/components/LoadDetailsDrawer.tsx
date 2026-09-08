@@ -19,6 +19,12 @@ const currency = new Intl.NumberFormat('en-US', {
   currency: 'USD',
   maximumFractionDigits: 0,
 });
+const perMileCurrency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: '2-digit',
@@ -162,7 +168,7 @@ export function LoadDetailsDrawer({ load, onClose, onAccepted }: LoadDetailsDraw
                 <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Rate / mile</dt>
                 <dd className="font-mono tabular-nums text-on-surface">
                   {load.distanceMiles > 0
-                    ? `$${(load.rateUsd / load.distanceMiles).toFixed(2)}`
+                    ? `${perMileCurrency.format(load.rateUsd / load.distanceMiles)}/mi`
                     : '—'}
                 </dd>
               </div>
