@@ -85,6 +85,93 @@ public sealed class ApplicationDbContextInitialiser(
         await SeedLoadsAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Seeds a minimal starter board for a fresh production database: one <c>Available</c> load per
+    /// service line, no carrier assignment, no invoices. Skipped the moment any real load exists, so
+    /// it never competes with freight posted through <c>POST /api/loads</c>. Idempotent.
+    /// </summary>
+    public async Task SeedStarterBoardAsync(CancellationToken cancellationToken = default)
+    {
+        var boardHasLoads = await dbContext.Loads
+            .IgnoreQueryFilters()
+            .AnyAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (boardHasLoads)
+        {
+            return;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+
+        var loads = new List<Load>
+        {
+            new()
+            {
+                Reference = "CPG-20101", ServiceType = ServiceType.ColdChain,
+                EquipmentType = "53' Dual-Temp Reefer",
+                OriginCity = "Orlando", OriginState = "FL", OriginZip = "32801",
+                DestinationCity = "Atlanta", DestinationState = "GA", DestinationZip = "30301",
+                DistanceMiles = 438, WeightLbs = 39200, RateUsd = 2180m,
+                ShipperName = "Sunbelt Produce Cooperative",
+                PickupAtUtc = now.AddDays(2), DeliveryAtUtc = now.AddDays(3),
+                TargetTemperatureF = -10, Status = LoadStatus.Available,
+                SpecialInstructions = "Continuous temp logging; pre-cooled trailer required.",
+            },
+            new()
+            {
+                Reference = "CPG-20102", ServiceType = ServiceType.HeavyHaul,
+                EquipmentType = "RGN Multi-Axle",
+                OriginCity = "Tampa", OriginState = "FL", OriginZip = "33602",
+                DestinationCity = "Savannah", DestinationState = "GA", DestinationZip = "31401",
+                DistanceMiles = 412, WeightLbs = 96500, RateUsd = 4870m,
+                ShipperName = "Gulf Coast Marine & Heavy Civil",
+                PickupAtUtc = now.AddDays(1), DeliveryAtUtc = now.AddDays(2),
+                Status = LoadStatus.Available,
+                SpecialInstructions = "Superload permit escort; pole car front & rear.",
+            },
+            new()
+            {
+                Reference = "CPG-20103", ServiceType = ServiceType.Flatbed,
+                EquipmentType = "48' Flatbed",
+                OriginCity = "Jacksonville", OriginState = "FL", OriginZip = "32202",
+                DestinationCity = "Charlotte", DestinationState = "NC", DestinationZip = "28202",
+                DistanceMiles = 386, WeightLbs = 44100, RateUsd = 1690m,
+                ShipperName = "Meridian Structural Steel",
+                PickupAtUtc = now.AddDays(3), DeliveryAtUtc = now.AddDays(4),
+                Status = LoadStatus.Available,
+                SpecialInstructions = "Grade 100 chains; tarped load.",
+            },
+            new()
+            {
+                Reference = "CPG-20104", ServiceType = ServiceType.FdotConcrete,
+                EquipmentType = "Self-Offloading Flatbed",
+                OriginCity = "Ocala", OriginState = "FL", OriginZip = "34470",
+                DestinationCity = "Gainesville", DestinationState = "FL", DestinationZip = "32601",
+                DistanceMiles = 41, WeightLbs = 40000, RateUsd = 620m,
+                ShipperName = "Florida Infrastructure Corp",
+                PickupAtUtc = now.AddDays(4), DeliveryAtUtc = now.AddDays(4).AddHours(6),
+                Status = LoadStatus.Available,
+                SpecialInstructions = "MASH TL-3 crash-rated units only; night MOT window.",
+            },
+            new()
+            {
+                Reference = "CPG-20105", ServiceType = ServiceType.StandardDryVan,
+                EquipmentType = "53' Dry Van",
+                OriginCity = "Kissimmee", OriginState = "FL", OriginZip = "34741",
+                DestinationCity = "Charleston", DestinationState = "SC", DestinationZip = "29401",
+                DistanceMiles = 487, WeightLbs = 29900, RateUsd = 1470m,
+                ShipperName = "Apex Construction",
+                PickupAtUtc = now.AddDays(5), DeliveryAtUtc = now.AddDays(6),
+                Status = LoadStatus.Available,
+            },
+        };
+
+        dbContext.Loads.AddRange(loads);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        logger.LogInformation("Seeded {Count} starter load board rows", loads.Count);
+    }
+
     private async Task SeedCarrierAsync(CancellationToken cancellationToken)
     {
         const string carrierEmail = "carrier@cpgorlando.com";
@@ -444,6 +531,12 @@ public static class InitialiserExtensions
         if (seedDemoData)
         {
             await initialiser.SeedDemoDataAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            // Production: no demo carrier / invoices / PODs, but give the board a starter set so
+            // the workspace is not empty before the first load is posted through the API.
+            await initialiser.SeedStarterBoardAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }
