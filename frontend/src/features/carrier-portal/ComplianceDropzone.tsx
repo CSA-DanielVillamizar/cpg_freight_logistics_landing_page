@@ -3,24 +3,21 @@ import type { DragEvent } from 'react';
 import { cn } from '@/shared/lib/cn';
 import type { ComplianceDocumentType, ComplianceStatusResponse } from '@/shared/api/types';
 import { Button } from '@/shared/ui';
-import { ACCEPTED_EXTENSIONS } from './complianceApi';
+import { ACCEPTED_EXTENSIONS, COMPLIANCE_DOCUMENTS } from './complianceApi';
 import { useComplianceUpload } from './useComplianceUpload';
-
-const DOCUMENT_TYPES: { value: ComplianceDocumentType; label: string }[] = [
-  { value: 'CertificateOfInsurance', label: 'Certificate of Insurance (COI)' },
-  { value: 'GeneralLiabilityInsurance', label: 'General Liability Insurance' },
-  { value: 'FdotPermit', label: 'FDOT Permit' },
-  { value: 'OperatingAuthority', label: 'Operating Authority' },
-  { value: 'W9', label: 'W-9' },
-];
 
 interface ComplianceDropzoneProps {
   onUploaded: (status: ComplianceStatusResponse) => void;
+  /** Preselect the document type (e.g. when the carrier clicks a missing item in the checklist). */
+  initialDocumentType?: ComplianceDocumentType;
 }
 
-export function ComplianceDropzone({ onUploaded }: ComplianceDropzoneProps): JSX.Element {
+export function ComplianceDropzone({
+  onUploaded,
+  initialDocumentType = 'OperatingAuthority',
+}: ComplianceDropzoneProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [documentType, setDocumentType] = useState<ComplianceDocumentType>('CertificateOfInsurance');
+  const [documentType, setDocumentType] = useState<ComplianceDocumentType>(initialDocumentType);
   const [dragging, setDragging] = useState(false);
   const [selected, setSelected] = useState<File | null>(null);
   const { phase, progress, error, upload } = useComplianceUpload(onUploaded);
@@ -53,7 +50,7 @@ export function ComplianceDropzone({ onUploaded }: ComplianceDropzoneProps): JSX
           value={documentType}
           onChange={(event) => setDocumentType(event.target.value as ComplianceDocumentType)}
         >
-          {DOCUMENT_TYPES.map((type) => (
+          {COMPLIANCE_DOCUMENTS.map((type) => (
             <option key={type.value} value={type.value}>
               {type.label}
             </option>
