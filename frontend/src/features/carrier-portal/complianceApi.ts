@@ -9,6 +9,39 @@ import type {
 /** 5 MB, matching the server-side cap (SPEC.md US-03). */
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
+/** The compliance packet a carrier files, in the order dispatch reviews it. */
+export const COMPLIANCE_DOCUMENTS: readonly {
+  value: ComplianceDocumentType;
+  label: string;
+  hint: string;
+}[] = [
+  {
+    value: 'OperatingAuthority',
+    label: 'Operating Authority',
+    hint: 'Active FMCSA / USDOT operating authority letter',
+  },
+  {
+    value: 'CertificateOfInsurance',
+    label: 'Certificate of Insurance (COI)',
+    hint: '$1M auto · $100K+ cargo · CPG listed as certificate holder',
+  },
+  {
+    value: 'GeneralLiabilityInsurance',
+    label: 'General Liability Insurance',
+    hint: 'Current general liability coverage declaration',
+  },
+  {
+    value: 'FdotPermit',
+    label: 'FDOT Permit',
+    hint: 'Required for over-dimensional and superload corridors',
+  },
+  {
+    value: 'W9',
+    label: 'W-9',
+    hint: 'Current tax-year W-9 for direct ACH settlement',
+  },
+];
+
 export const ACCEPTED_MIME = ['application/pdf', 'image/jpeg'] as const;
 export const ACCEPTED_EXTENSIONS = ['.pdf', '.jpg', '.jpeg'] as const;
 
