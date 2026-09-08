@@ -3,6 +3,7 @@ import { cn } from '@/shared/lib/cn';
 
 const TABS = [
   { to: '/shipper/dashboard', label: 'Shipments' },
+  { to: '/shipper/loads/new', label: 'Post a load' },
   { to: '/shipper/billing', label: 'Billing' },
 ];
 

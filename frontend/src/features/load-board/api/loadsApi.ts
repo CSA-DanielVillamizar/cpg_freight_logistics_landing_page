@@ -1,5 +1,5 @@
 import { apiClient } from '@/shared/api/client';
-import type { Load, LoadServiceType, LoadStatus } from '../types';
+import type { CreateLoadInput, Load, LoadServiceType, LoadStatus } from '../types';
 
 export interface LoadQueryFilters {
   statuses?: LoadStatus[];
@@ -28,4 +28,7 @@ export const loadsApi = {
 
   accept: (loadId: string): Promise<Load> =>
     apiClient.post<Load>(`/loads/${loadId}/accept`, undefined),
+
+  /** POST /api/loads — a shipper posts their own freight; it lands on the board as Available. */
+  create: (input: CreateLoadInput): Promise<Load> => apiClient.post<Load>('/loads', input),
 };

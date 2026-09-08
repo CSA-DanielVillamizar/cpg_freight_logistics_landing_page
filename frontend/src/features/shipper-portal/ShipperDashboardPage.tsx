@@ -78,15 +78,26 @@ export function ShipperDashboardPage(): JSX.Element {
 
   return (
     <div className="mx-auto flex max-w-container flex-col gap-6 px-4 py-8">
-      <header className="flex flex-col gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-          Shipper portal
-        </span>
-        <h1 className="text-headline-lg">Your Shipments</h1>
-        <p className="max-w-2xl text-body-sm text-steel-gray">
-          Track the freight you have moving through the CPG Orlando network and pull proof of
-          delivery for completed loads.
-        </p>
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
+            Shipper portal
+          </span>
+          <h1 className="text-headline-lg">Your Shipments</h1>
+          <p className="max-w-2xl text-body-sm text-steel-gray">
+            Track the freight you have moving through the CPG Orlando network and pull proof of
+            delivery for completed loads.
+          </p>
+        </div>
+        <Link
+          to="/shipper/loads/new"
+          className="inline-flex h-12 shrink-0 items-center gap-2 rounded bg-fleet-blue px-4 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-fleet-blue-hover"
+        >
+          <span className="material-symbols-outlined text-[18px]" aria-hidden>
+            add
+          </span>
+          Post a load
+        </Link>
       </header>
 
       <ShipperNav />
