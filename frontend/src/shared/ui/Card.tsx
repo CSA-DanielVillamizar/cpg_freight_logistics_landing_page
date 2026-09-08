@@ -8,8 +8,8 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
    */
   raised?: boolean;
   /**
-   * Adds a hover lift + shadow. Use for cards that are (or contain) a link —
-   * signals the whole card is a target.
+   * Adds a lift + shadow on hover and on `focus-within`, so a keyboard user
+   * tabbing to a link inside the card gets the same "whole card is a target" cue.
    */
   interactive?: boolean;
   children: ReactNode;
@@ -28,7 +28,7 @@ export function Card({
         'rounded-lg border border-slate-200 bg-surface-card',
         raised ? 'shadow-md' : 'shadow-sm',
         interactive &&
-          'transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+          'transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus-within:-translate-y-0.5 focus-within:border-slate-300 focus-within:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-within:translate-y-0',
         className,
       )}
       {...rest}

@@ -66,11 +66,11 @@ export function VerticalLandingPage(): JSX.Element {
       <section className="border-b border-slate-200 bg-surface-card">
         <dl className="mx-auto grid max-w-container grid-cols-2 gap-px overflow-hidden px-4 py-6 sm:grid-cols-4">
           {content.metrics.map((metric) => (
-            <div key={metric.label} className="flex flex-col px-2">
-              <dt className="font-mono text-headline-sm tabular-nums text-fleet-blue">{metric.value}</dt>
-              <dd className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">
+            <div key={metric.label} className="flex flex-col-reverse px-2">
+              <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">
                 {metric.label}
-              </dd>
+              </dt>
+              <dd className="font-mono text-headline-sm tabular-nums text-fleet-blue">{metric.value}</dd>
             </div>
           ))}
         </dl>
@@ -113,12 +113,15 @@ export function VerticalLandingPage(): JSX.Element {
             <h2 className="text-headline-md">Engineered for enterprise contractors</h2>
             <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-lg bg-fleet-blue/20">
               {content.metrics.slice(0, 3).map((metric) => (
-                <div key={metric.label} className="flex flex-col gap-1 bg-primary-container p-4">
-                  <dt className="font-mono text-headline-sm tabular-nums text-safety-amber">
-                    {metric.value}
-                  </dt>
-                  <dd className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
+                <div
+                  key={metric.label}
+                  className="flex flex-col-reverse gap-1 bg-primary-container p-4"
+                >
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
                     {metric.label}
+                  </dt>
+                  <dd className="font-mono text-headline-sm tabular-nums text-safety-amber">
+                    {metric.value}
                   </dd>
                 </div>
               ))}

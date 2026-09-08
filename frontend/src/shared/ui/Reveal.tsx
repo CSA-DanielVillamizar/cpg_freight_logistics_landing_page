@@ -12,8 +12,9 @@ interface RevealProps {
 /**
  * Fades and lifts its children in as they scroll into view. The resting state is
  * fully visible: it only starts hidden for `motion-safe` users, a 600 ms timer
- * guarantees it appears even if the observer never fires, and `motion-reduce`
- * users get no animation at all.
+ * reveals it if the observer never fires *for content already in view*, and
+ * `motion-reduce` users get no animation at all. Content still below the fold
+ * keeps waiting on the observer so its scroll-in is preserved.
  */
 export function Reveal({ children, className, delayMs = 0 }: RevealProps): JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
@@ -32,7 +33,15 @@ export function Reveal({ children, className, delayMs = 0 }: RevealProps): JSX.E
       return;
     }
 
-    const safety = window.setTimeout(() => setShown(true), 600);
+    // Fallback for a stuck observer, but only for content that is already on
+    // screen — a below-the-fold section keeps waiting so its scroll-in survives.
+    const safety = window.setTimeout(() => {
+      const rect = el.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      if (rect.top < viewportHeight && rect.bottom > 0) {
+        setShown(true);
+      }
+    }, 600);
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {

@@ -34,7 +34,7 @@ export function BoardSummary({ loads }: BoardSummaryProps): JSX.Element | null {
   return (
     <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-3 lg:grid-cols-5">
       {tiles.map((tile) => (
-        <div key={tile.label} className="flex flex-col gap-1 bg-surface-card p-4">
+        <div key={tile.label} className="flex flex-col-reverse gap-1 bg-surface-card p-4">
           <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">
             {tile.label}
           </dt>

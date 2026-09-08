@@ -13,6 +13,12 @@ const currency = new Intl.NumberFormat('en-US', {
   currency: 'USD',
   maximumFractionDigits: 0,
 });
+const perMileCurrency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit' });
 
 export function LoadDataGrid({ loads, onSelect }: LoadDataGridProps): JSX.Element {
@@ -79,7 +85,7 @@ export function LoadDataGrid({ loads, onSelect }: LoadDataGridProps): JSX.Elemen
                 </div>
                 <div className="font-mono text-[11px] tabular-nums text-steel-gray">
                   {load.distanceMiles > 0
-                    ? `$${(load.rateUsd / load.distanceMiles).toFixed(2)}/mi`
+                    ? `${perMileCurrency.format(load.rateUsd / load.distanceMiles)}/mi`
                     : '—'}
                 </div>
               </td>

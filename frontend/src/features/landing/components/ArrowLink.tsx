@@ -7,7 +7,7 @@ interface ArrowLinkProps {
   className?: string;
 }
 
-/** Text link with an arrow that nudges right on hover / group-hover. */
+/** Text link with an arrow that nudges right when the link (its own `group/arrow`) is hovered. */
 export function ArrowLink({ to, children, className }: ArrowLinkProps): JSX.Element {
   return (
     <Link
@@ -21,7 +21,7 @@ export function ArrowLink({ to, children, className }: ArrowLinkProps): JSX.Elem
       {children}
       <span
         aria-hidden
-        className="transition-transform duration-200 group-hover/arrow:translate-x-0.5 group-hover:translate-x-0.5 motion-reduce:transition-none"
+        className="transition-transform duration-200 group-hover/arrow:translate-x-0.5 group-focus-visible/arrow:translate-x-0.5 motion-reduce:transition-none"
       >
         &rarr;
       </span>
