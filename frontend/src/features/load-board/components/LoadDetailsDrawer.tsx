@@ -26,7 +26,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
   minute: '2-digit',
 });
 
-/** Purely decorative route sketch — no real geocoding backs this. */
+/** Schematic lane sketch — labels the real endpoints; no true geocoding backs the curve. */
 function StaticRouteMap({ load }: { load: Load }): JSX.Element {
   return (
     <svg viewBox="0 0 400 160" className="h-40 w-full rounded-lg border border-slate-200 bg-[#0E1C2F]">
@@ -37,20 +37,23 @@ function StaticRouteMap({ load }: { load: Load }): JSX.Element {
       </defs>
       <rect width="400" height="160" fill="url(#load-map-grid)" />
       <path
-        d="M 48 118 C 140 60, 240 132, 352 46"
+        d="M 48 116 C 140 64, 240 128, 352 48"
         fill="none"
         stroke="#EA580C"
         strokeWidth="2.5"
         strokeDasharray="7 6"
         strokeLinecap="round"
       />
-      <circle cx="48" cy="118" r="6" fill="#1C3766" stroke="white" strokeWidth="2" />
-      <circle cx="352" cy="46" r="6" fill="#EA580C" stroke="white" strokeWidth="2" />
-      <text x="48" y="138" textAnchor="middle" fontSize="9" fill="#CBD5E1">
-        {load.originState}
+      <circle cx="48" cy="116" r="6" fill="#1C3766" stroke="white" strokeWidth="2" />
+      <circle cx="352" cy="48" r="6" fill="#EA580C" stroke="white" strokeWidth="2" />
+      <text x="48" y="136" textAnchor="middle" fontSize="10" fontWeight="600" fill="#E2E8F0">
+        {load.originCity}, {load.originState}
       </text>
-      <text x="352" y="34" textAnchor="middle" fontSize="9" fill="#CBD5E1">
-        {load.destinationState}
+      <text x="352" y="36" textAnchor="middle" fontSize="10" fontWeight="600" fill="#E2E8F0">
+        {load.destinationCity}, {load.destinationState}
+      </text>
+      <text x="200" y="92" textAnchor="middle" fontSize="10" fill="#F59E0B" letterSpacing="1">
+        {load.distanceMiles.toLocaleString()} MI
       </text>
     </svg>
   );
@@ -154,6 +157,14 @@ export function LoadDetailsDrawer({ load, onClose, onAccepted }: LoadDetailsDraw
               <div>
                 <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">All-in rate</dt>
                 <dd className="font-mono font-semibold tabular-nums text-primary">{currency.format(load.rateUsd)}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Rate / mile</dt>
+                <dd className="font-mono tabular-nums text-on-surface">
+                  {load.distanceMiles > 0
+                    ? `$${(load.rateUsd / load.distanceMiles).toFixed(2)}`
+                    : '—'}
+                </dd>
               </div>
               <div>
                 <dt className="text-[11px] font-semibold uppercase tracking-wider text-steel-gray">Pickup</dt>

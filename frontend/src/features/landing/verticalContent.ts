@@ -5,11 +5,16 @@ export interface Metric {
   label: string;
 }
 
+export interface SpecRow {
+  label: string;
+  value: string;
+}
+
 export interface ServiceCard {
   tag: string;
   title: string;
   detail: string;
-  spec: string;
+  specs: readonly SpecRow[];
 }
 
 export interface VerticalContent {
@@ -52,28 +57,44 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
         title: 'Type K-Rail & F-Shape Barriers',
         detail:
           '10-ft & 12-ft precast reinforced Jersey barriers with integrated heavy-gauge steel pin-and-loop stock connections.',
-        spec: 'Weight ≈ 4,000 lb (12ft) / 4,800 lb (10ft)',
+        specs: [
+          { label: 'Unit weight', value: '4,000 lb (12 ft) · 4,800 lb (10 ft)' },
+          { label: 'Connection', value: 'Steel pin-and-loop' },
+          { label: 'Standard', value: 'FDOT Index 102-100' },
+        ],
       },
       {
         tag: 'Self-offloading trucks',
         title: 'Hydraulic Boom Placement',
         detail:
-          'Direct boom positioning over curbs, guardrails and trenches — eliminates second the mobile crane lease on civil jobs.',
-        spec: 'Up to 40-ft reach · certified riggers on board',
+          'Direct boom positioning over curbs, guardrails and trenches — eliminates the second mobile crane lease on civil jobs.',
+        specs: [
+          { label: 'Boom reach', value: 'Up to 40 ft' },
+          { label: 'Offload', value: 'Self-erecting, no crane lease' },
+          { label: 'Crew', value: 'Certified riggers on board' },
+        ],
       },
       {
         tag: 'FAA & city compliance',
         title: 'Low-Profile Airport & Urban',
         detail:
           'Designed for tarmac perimeter work, airport taxiway realignments and pedestrian-density civil construction.',
-        spec: 'Low-height 10" and 18" F-shape profiles',
+        specs: [
+          { label: 'Profiles', value: '10 in · 18 in F-shape' },
+          { label: 'Use case', value: 'Tarmac & pedestrian zones' },
+          { label: 'Compliance', value: 'FAA & municipal' },
+        ],
       },
       {
         tag: 'Crash rated TL-3',
         title: 'Attenuators & End Cushions',
         detail:
           'Trailer-mounted attenuators (TMA) and stationary energy-absorbing end treatments with certified transition hardware.',
-        spec: 'MASH TL-3 · 8mph crash validation',
+        specs: [
+          { label: 'Crash rating', value: 'MASH TL-3' },
+          { label: 'Validation', value: '8 mph impact' },
+          { label: 'Types', value: 'Trailer-mounted & stationary' },
+        ],
       },
     ],
     proofPoints: [
@@ -121,28 +142,44 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
         title: "53' Dual-Temp High-Cube Reefer",
         detail:
           'Thermo King Precedent and Carrier Vector hybrid refrigeration units, moveable insulated bulkheads and dual evaporation systems for segregated frozen/fresh transit.',
-        spec: 'Temp capability -10°F to 65°F (dual zone)',
+        specs: [
+          { label: 'Temp range', value: '-10°F to 65°F' },
+          { label: 'Zones', value: 'Dual, movable bulkhead' },
+          { label: 'Units', value: 'Thermo King / Carrier hybrid' },
+        ],
       },
       {
         tag: 'Sub-zero specialty',
         title: 'Deep-Freeze Flash Trailers',
         detail:
           'High-output cryogenic evaporator fans designed to hold steady sub-zero temperatures for ice cream, biologics and frozen seafood.',
-        spec: 'Compliance -20°F steady pull-down',
+        specs: [
+          { label: 'Set point', value: '-20°F steady pull-down' },
+          { label: 'Airflow', value: 'High-output cryo evaporators' },
+          { label: 'Cargo', value: 'Ice cream · biologics · seafood' },
+        ],
       },
       {
         tag: 'Agricultural fresh',
         title: 'Chilled Citrus, Produce & Floral',
         detail:
           'Optimized for Florida growers with high-velocity airflow chutes, humidity management and micro-climate controls that prevent cellular freezing.',
-        spec: 'Air circulation 3,200 CFM continuous',
+        specs: [
+          { label: 'Air circulation', value: '3,200 CFM continuous' },
+          { label: 'Controls', value: 'Humidity & micro-climate' },
+          { label: 'Corridors', value: 'Florida grower lanes' },
+        ],
       },
       {
         tag: 'Security & bio-pharma',
         title: 'Life Science Transporters',
         detail:
           'Precision thermal containment with geofenced deadbolts, door-break-in sensors, remote satellite re-arming and automatic temperature-breach dispatch.',
-        spec: 'GDP / 21 CFR Part 11 aligned',
+        specs: [
+          { label: 'Standards', value: 'GDP · 21 CFR Part 11' },
+          { label: 'Security', value: 'Geofenced deadbolts, breach alerts' },
+          { label: 'Dispatch', value: 'Auto temp-breach escalation' },
+        ],
       },
     ],
     proofPoints: [
@@ -190,28 +227,44 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
         title: 'Flatbed & Structural Steel',
         detail:
           'Precision tie-down arrays for bridge beams, heavy pipe, structural rebar cages and bulk industrial fabrication.',
-        spec: '1/2" Grade 100 transport chains · max 48,000 lb',
+        specs: [
+          { label: 'Max payload', value: '48,000 lb' },
+          { label: 'Securement', value: '1/2 in Grade 100 chains' },
+          { label: 'Cargo', value: 'Beams · pipe · rebar cages' },
+        ],
       },
       {
         tag: 'Taller clearances',
         title: 'Step-Deck / Drop-Deck',
         detail:
           'Lowered deck height for over-height machinery, tanks and pre-assembled modules that exceed standard flatbed clearance.',
-        spec: 'Deck height 42" · legal to 10\'2" cargo',
+        specs: [
+          { label: 'Deck height', value: '42 in' },
+          { label: 'Legal cargo height', value: '10 ft 2 in' },
+          { label: 'Max payload', value: '45,000 lb' },
+        ],
       },
       {
         tag: '120,000+ lbs',
         title: 'RGN Multi-Axle / Superload',
         detail:
           'Removable gooseneck multi-axle configurations for extreme-height industrial turbines, pre-stressed bridge segments and high-center-of-gravity civil assets.',
-        spec: 'Escort & pole cars available · pre-cleared corridor permits',
+        specs: [
+          { label: 'Max payload', value: '120,000+ lb' },
+          { label: 'Loading', value: 'Ground-level drive-on' },
+          { label: 'Support', value: 'Escort & pole cars, permits pre-cleared' },
+        ],
       },
       {
         tag: 'Specialty haul',
         title: 'Commercial Fleet & Auto Transport',
         detail:
           'Enclosed and hydraulic multi-level transport for municipal trucks, utility rolling stock and commercial fleets.',
-        spec: 'Soft-tie pneumatic ramps · insured to $1M',
+        specs: [
+          { label: 'Loading', value: 'Soft-tie pneumatic ramps' },
+          { label: 'Coverage', value: 'Insured to $1M' },
+          { label: 'Cargo', value: 'Municipal trucks · utility rolling stock' },
+        ],
       },
     ],
     proofPoints: [
@@ -258,25 +311,37 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
         tag: 'Step 1',
         title: 'Cargo & Class',
         detail: 'Pick the trailer / bed specification and enter estimated gross freight weight.',
-        spec: 'Flatbed · step-deck · RGN superload',
+        specs: [
+          { label: 'Equipment', value: 'Flatbed · step-deck · RGN' },
+          { label: 'Input', value: 'Estimated gross weight' },
+        ],
       },
       {
         tag: 'Step 2',
         title: 'Route Specs',
         detail: 'Origin and destination ZIP or city, plus any specialized haul adders (tarping, permits, crane offload).',
-        spec: 'Full tarping · wide/DOT permit · job-site crane',
+        specs: [
+          { label: 'Lane', value: 'Origin & destination ZIP' },
+          { label: 'Adders', value: 'Tarping · permit · crane offload' },
+        ],
       },
       {
         tag: 'Step 3',
         title: 'Instant Dispatch',
         detail: 'Receive an all-inclusive rate band with fuel surcharge and over-dimension escort baked in.',
-        spec: 'Lock rate · confirm dispatch by phone',
+        specs: [
+          { label: 'Output', value: 'All-in rate band' },
+          { label: 'Includes', value: 'Fuel surcharge & escort' },
+        ],
       },
       {
         tag: 'Live desk',
         title: 'Direct Dispatch Routing',
         detail: 'Every quote routes to a named Central Florida dispatcher for same-day heavy-haul or hotshot.',
-        spec: 'Orlando yard: 2824 S. Orange Ave',
+        specs: [
+          { label: 'Desk', value: 'Named Central Florida dispatcher' },
+          { label: 'Yard', value: '2824 S. Orange Ave, Orlando' },
+        ],
       },
     ],
     proofPoints: [

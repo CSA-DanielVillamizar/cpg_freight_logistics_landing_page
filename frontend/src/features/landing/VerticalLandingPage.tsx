@@ -17,9 +17,17 @@ export function VerticalLandingPage(): JSX.Element {
     <div className="flex flex-col">
       {/* Hero */}
       <section
-        className="bg-primary-container bg-cover bg-center text-white"
+        className="relative isolate overflow-hidden bg-primary-container bg-cover bg-center text-white"
         style={{ backgroundImage: `linear-gradient(100deg, rgba(11,25,44,0.94) 35%, rgba(11,25,44,0.6) 100%), url(${heroPhoto})` }}
       >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 opacity-[0.15] [background-image:radial-gradient(rgba(255,255,255,0.9)_1px,transparent_1px)] [background-size:22px_22px]"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full bg-hazard-orange/15 blur-3xl"
+        />
         <div className="mx-auto flex max-w-container flex-col gap-5 px-4 py-14">
           <VerticalIcon slug={content.slug} className="h-10 w-10 text-fleet-blue" />
           <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
@@ -81,7 +89,16 @@ export function VerticalLandingPage(): JSX.Element {
                   </span>
                   <h3 className="text-headline-sm">{card.title}</h3>
                   <p className="flex-1 text-body-sm text-steel-gray">{card.detail}</p>
-                  <p className="mt-1 font-mono text-[13px] tabular-nums text-fleet-blue">{card.spec}</p>
+                  <dl className="mt-2 flex flex-col divide-y divide-slate-100 border-t border-slate-200 text-body-sm">
+                    {card.specs.map((row) => (
+                      <div key={row.label} className="flex items-baseline justify-between gap-4 py-1.5">
+                        <dt className="shrink-0 text-xs font-semibold uppercase tracking-wider text-steel-gray">
+                          {row.label}
+                        </dt>
+                        <dd className="text-right font-medium text-on-surface">{row.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 </Card>
               </Reveal>
             ))}
@@ -94,6 +111,18 @@ export function VerticalLandingPage(): JSX.Element {
         <div className="mx-auto grid max-w-container gap-8 px-4 py-14 md:grid-cols-[1fr_1fr]">
           <div className="flex flex-col gap-4">
             <h2 className="text-headline-md">Engineered for enterprise contractors</h2>
+            <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-lg bg-fleet-blue/20">
+              {content.metrics.slice(0, 3).map((metric) => (
+                <div key={metric.label} className="flex flex-col gap-1 bg-primary-container p-4">
+                  <dt className="font-mono text-headline-sm tabular-nums text-safety-amber">
+                    {metric.value}
+                  </dt>
+                  <dd className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
+                    {metric.label}
+                  </dd>
+                </div>
+              ))}
+            </dl>
             {content.proofPoints.map((point) => (
               <div key={point.title} className="flex flex-col gap-1">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-on-surface">
@@ -106,6 +135,18 @@ export function VerticalLandingPage(): JSX.Element {
 
           <Card raised className="flex flex-col gap-4 p-6">
             <h2 className="text-headline-sm">{content.formHeading}</h2>
+            <ol className="flex flex-col gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:gap-4">
+              {['Cargo & equipment', 'Lane & dimensions', 'Guaranteed rate'].map((step, index) => (
+                <li key={step} className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-fleet-blue font-mono text-[11px] font-semibold tabular-nums text-white">
+                    {index + 1}
+                  </span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
+                    {step}
+                  </span>
+                </li>
+              ))}
+            </ol>
             <LeadCaptureForm
               verticalSlug={content.slug}
               serviceType={content.serviceType}
