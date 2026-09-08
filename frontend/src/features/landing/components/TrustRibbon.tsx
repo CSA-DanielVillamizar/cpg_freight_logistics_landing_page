@@ -16,8 +16,12 @@ export function TrustRibbon(): JSX.Element {
       {METRICS.map((metric) => (
         <div
           key={metric.value}
-          className="rounded-lg border border-slate-200 bg-surface-card p-4 shadow-sm"
+          className="group relative overflow-hidden rounded-lg border border-slate-200 bg-surface-card p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0"
         >
+          <span
+            className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-hazard-orange transition-transform duration-200 group-hover:scale-x-100 motion-reduce:transition-none"
+            aria-hidden
+          />
           <dt className="font-mono text-sm font-semibold tabular-nums text-fleet-blue">
             {metric.value}
           </dt>

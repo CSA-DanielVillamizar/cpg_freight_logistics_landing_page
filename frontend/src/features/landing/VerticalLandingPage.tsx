@@ -1,5 +1,5 @@
 import { Navigate, useParams } from 'react-router-dom';
-import { Card } from '@/shared/ui';
+import { Card, Reveal } from '@/shared/ui';
 import { LeadCaptureForm } from '@/features/leads/LeadCaptureForm';
 import { VerticalIcon } from './components/VerticalIcon';
 import { getVerticalContent } from './verticalContent';
@@ -41,9 +41,15 @@ export function VerticalLandingPage(): JSX.Element {
           </div>
           <a
             href="#request-quote"
-            className="mt-2 inline-flex h-12 w-fit items-center rounded bg-fleet-blue px-6 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition-colors hover:bg-fleet-blue-hover"
+            className="group mt-2 inline-flex h-12 w-fit items-center gap-2 rounded bg-fleet-blue px-6 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-fleet-blue-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           >
             Request a quote
+            <span
+              aria-hidden
+              className="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none"
+            >
+              &rarr;
+            </span>
           </a>
         </div>
       </section>
@@ -63,21 +69,25 @@ export function VerticalLandingPage(): JSX.Element {
       </section>
 
       {/* Service catalog */}
-      <section className="mx-auto flex w-full max-w-container flex-col gap-6 px-4 py-12">
-        <h2 className="text-headline-md">Equipment &amp; service catalog</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {content.serviceCards.map((card) => (
-            <Card key={card.title} className="flex flex-col gap-2 p-5">
-              <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
-                {card.tag}
-              </span>
-              <h3 className="text-headline-sm">{card.title}</h3>
-              <p className="text-body-sm text-steel-gray">{card.detail}</p>
-              <p className="mt-1 font-mono text-[13px] tabular-nums text-fleet-blue">{card.spec}</p>
-            </Card>
-          ))}
-        </div>
-      </section>
+      <Reveal>
+        <section className="mx-auto flex w-full max-w-container flex-col gap-6 px-4 py-12">
+          <h2 className="text-headline-md">Equipment &amp; service catalog</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {content.serviceCards.map((card, index) => (
+              <Reveal key={card.title} delayMs={index * 70}>
+                <Card interactive className="flex h-full flex-col gap-2 p-5">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
+                    {card.tag}
+                  </span>
+                  <h3 className="text-headline-sm">{card.title}</h3>
+                  <p className="flex-1 text-body-sm text-steel-gray">{card.detail}</p>
+                  <p className="mt-1 font-mono text-[13px] tabular-nums text-fleet-blue">{card.spec}</p>
+                </Card>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      </Reveal>
 
       {/* Proof points + quote form */}
       <section id="request-quote" className="bg-surface-muted">
@@ -106,6 +116,7 @@ export function VerticalLandingPage(): JSX.Element {
       </section>
 
       {/* Testimonial */}
+      <Reveal>
       <section className="mx-auto w-full max-w-container px-4 py-12">
         <Card className="flex flex-col gap-3 p-8">
           <div className="flex gap-1 text-safety-amber" aria-hidden>
@@ -130,6 +141,7 @@ export function VerticalLandingPage(): JSX.Element {
           </div>
         </Card>
       </section>
+      </Reveal>
     </div>
   );
 }
