@@ -1,7 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ApiError } from '@/shared/api/client';
 import { cn } from '@/shared/lib/cn';
-import type { ComplianceStatus, ComplianceStatusResponse } from '@/shared/api/types';
+import type {
+  ComplianceDocumentType,
+  ComplianceStatus,
+  ComplianceStatusResponse,
+} from '@/shared/api/types';
 import { formatEnum } from '@/shared/lib/formatEnum';
 import { Badge, Card } from '@/shared/ui';
 import type { BadgeTone } from '@/shared/ui';
@@ -41,8 +45,15 @@ const bytesToMb = (bytes: number): string => `${(bytes / (1024 * 1024)).toFixed(
 export function CarrierPortalPage(): JSX.Element {
   const [status, setStatus] = useState<ComplianceStatusResponse | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [documentType, setDocumentType] = useState<ComplianceDocumentType>('OperatingAuthority');
+  const uploadCardRef = useRef<HTMLDivElement>(null);
 
   const onUploaded = useCallback((next: ComplianceStatusResponse) => setStatus(next), []);
+
+  const pickDocumentType = useCallback((next: ComplianceDocumentType) => {
+    setDocumentType(next);
+    uploadCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -99,7 +110,9 @@ export function CarrierPortalPage(): JSX.Element {
             {/* Verification track */}
             <ol className="grid gap-3 sm:grid-cols-3">
               {VERIFICATION_STEPS.map((step, index) => {
-                const done = index < activeStep && !isRejected;
+                // Steps before the active one are always complete — a rejection still means the
+                // packet was filed and reviewed, so "Packet filed" stays checked in that flow.
+                const done = index < activeStep;
                 const current = index === activeStep;
                 return (
                   <li
@@ -155,10 +168,16 @@ export function CarrierPortalPage(): JSX.Element {
 
           <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
             <div className="flex flex-col gap-6">
-              <Card className="p-6">
-                <h2 className="mb-4 text-headline-sm">Upload a document</h2>
-                <ComplianceDropzone onUploaded={onUploaded} />
-              </Card>
+              <div ref={uploadCardRef} className="scroll-mt-20">
+                <Card className="p-6">
+                  <h2 className="mb-4 text-headline-sm">Upload a document</h2>
+                  <ComplianceDropzone
+                    onUploaded={onUploaded}
+                    documentType={documentType}
+                    onDocumentTypeChange={setDocumentType}
+                  />
+                </Card>
+              </div>
 
               <Card className="p-6">
                 <h2 className="mb-1 text-headline-sm">Required packet</h2>
@@ -168,8 +187,8 @@ export function CarrierPortalPage(): JSX.Element {
                 <ul className="flex flex-col divide-y divide-slate-200">
                   {COMPLIANCE_DOCUMENTS.map((doc) => {
                     const filed = filedTypes.has(doc.value);
-                    return (
-                      <li key={doc.value} className="flex items-start gap-3 py-3">
+                    const row = (
+                      <>
                         <span
                           className={cn(
                             'material-symbols-outlined mt-0.5 text-[20px]',
@@ -179,14 +198,29 @@ export function CarrierPortalPage(): JSX.Element {
                         >
                           {filed ? 'check_circle' : 'radio_button_unchecked'}
                         </span>
-                        <div className="flex min-w-0 flex-col">
+                        <span className="flex min-w-0 flex-col">
                           <span className="text-body-sm font-semibold text-on-surface">
                             {doc.label}
                           </span>
                           <span className="text-body-sm text-steel-gray">
                             {filed ? 'On file' : doc.hint}
                           </span>
-                        </div>
+                        </span>
+                      </>
+                    );
+                    return (
+                      <li key={doc.value}>
+                        {filed ? (
+                          <span className="flex items-start gap-3 py-3">{row}</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => pickDocumentType(doc.value)}
+                            className="flex w-full items-start gap-3 rounded py-3 text-left transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fleet-blue/40"
+                          >
+                            {row}
+                          </button>
+                        )}
                       </li>
                     );
                   })}

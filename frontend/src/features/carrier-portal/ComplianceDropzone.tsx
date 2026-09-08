@@ -8,16 +8,17 @@ import { useComplianceUpload } from './useComplianceUpload';
 
 interface ComplianceDropzoneProps {
   onUploaded: (status: ComplianceStatusResponse) => void;
-  /** Preselect the document type (e.g. when the carrier clicks a missing item in the checklist). */
-  initialDocumentType?: ComplianceDocumentType;
+  /** Controlled document type — owned by the parent so the checklist can drive it. */
+  documentType: ComplianceDocumentType;
+  onDocumentTypeChange: (documentType: ComplianceDocumentType) => void;
 }
 
 export function ComplianceDropzone({
   onUploaded,
-  initialDocumentType = 'OperatingAuthority',
+  documentType,
+  onDocumentTypeChange,
 }: ComplianceDropzoneProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [documentType, setDocumentType] = useState<ComplianceDocumentType>(initialDocumentType);
   const [dragging, setDragging] = useState(false);
   const [selected, setSelected] = useState<File | null>(null);
   const { phase, progress, error, upload } = useComplianceUpload(onUploaded);
@@ -48,7 +49,7 @@ export function ComplianceDropzone({
           id="document-type"
           className="h-12 rounded border border-outline-strong bg-surface-card px-3 text-[16px] outline-none transition-colors focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/25"
           value={documentType}
-          onChange={(event) => setDocumentType(event.target.value as ComplianceDocumentType)}
+          onChange={(event) => onDocumentTypeChange(event.target.value as ComplianceDocumentType)}
         >
           {COMPLIANCE_DOCUMENTS.map((type) => (
             <option key={type.value} value={type.value}>
