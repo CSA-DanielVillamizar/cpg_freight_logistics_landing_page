@@ -73,8 +73,15 @@ export function LoadDataGrid({ loads, onSelect }: LoadDataGridProps): JSX.Elemen
               <td className="whitespace-nowrap px-3 py-3 text-right font-mono text-body-sm tabular-nums text-on-surface-variant">
                 {load.weightLbs.toLocaleString()} lb
               </td>
-              <td className="whitespace-nowrap px-3 py-3 text-right font-mono text-body-sm font-semibold tabular-nums text-primary">
-                {currency.format(load.rateUsd)}
+              <td className="whitespace-nowrap px-3 py-3 text-right">
+                <div className="font-mono text-body-sm font-semibold tabular-nums text-primary">
+                  {currency.format(load.rateUsd)}
+                </div>
+                <div className="font-mono text-[11px] tabular-nums text-steel-gray">
+                  {load.distanceMiles > 0
+                    ? `$${(load.rateUsd / load.distanceMiles).toFixed(2)}/mi`
+                    : '—'}
+                </div>
               </td>
               <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm tabular-nums text-steel-gray">
                 {dateFormatter.format(new Date(load.pickupAtUtc))}
