@@ -35,6 +35,27 @@ export interface Load {
   specialInstructions: string | null;
 }
 
+/** POST /api/loads body. Mirrors the backend CreateLoadRequest DTO. */
+export interface CreateLoadInput {
+  reference?: string;
+  serviceType: LoadServiceType;
+  equipmentType: string;
+  originCity: string;
+  originState: string;
+  originZip: string;
+  destinationCity: string;
+  destinationState: string;
+  destinationZip: string;
+  distanceMiles: number;
+  weightLbs: number;
+  rateUsd: number;
+  shipperName: string;
+  pickupAtUtc: string;
+  deliveryAtUtc: string;
+  targetTemperatureF?: number;
+  specialInstructions?: string;
+}
+
 export const LOAD_STATUSES: readonly LoadStatus[] = [
   'Available',
   'Dispatched',
