@@ -35,6 +35,37 @@ type Errors = Partial<Record<keyof FormState, string>>;
 const ZIP = /^\d{5}$/;
 const REFERENCE = /^CPG-[A-Za-z0-9-]{2,30}$/;
 
+/** Field length caps — mirror CreateLoadCommandValidator. */
+const MAX = {
+  reference: 40,
+  equipmentType: 120,
+  originCity: 120,
+  destinationCity: 120,
+  shipperName: 200,
+  specialInstructions: 1000,
+} as const;
+
+/** FluentValidation reports PascalCase command properties; map them onto form fields. */
+const SERVER_FIELD_MAP: Readonly<Record<string, keyof FormState>> = {
+  Reference: 'reference',
+  ServiceType: 'serviceType',
+  EquipmentType: 'equipmentType',
+  ShipperName: 'shipperName',
+  OriginCity: 'originCity',
+  OriginState: 'originState',
+  OriginZip: 'originZip',
+  DestinationCity: 'destinationCity',
+  DestinationState: 'destinationState',
+  DestinationZip: 'destinationZip',
+  DistanceMiles: 'distanceMiles',
+  WeightLbs: 'weightLbs',
+  RateUsd: 'rateUsd',
+  PickupAtUtc: 'pickupAt',
+  DeliveryAtUtc: 'deliveryAt',
+  TargetTemperatureF: 'targetTemperatureF',
+  SpecialInstructions: 'specialInstructions',
+};
+
 function initialState(shipperName: string): FormState {
   return {
     reference: '',
@@ -64,14 +95,28 @@ function validate(form: FormState): Errors {
       errors[key] = `${label} is required.`;
     }
   };
+  const maxLen = (key: keyof typeof MAX, label: string): void => {
+    if (!errors[key] && form[key].trim().length > MAX[key]) {
+      errors[key] = `${label} must be ${MAX[key]} characters or fewer.`;
+    }
+  };
 
-  if (form.reference.trim() && !REFERENCE.test(form.reference.trim())) {
-    errors.reference = 'Use the form CPG-XXXXX, or leave blank to auto-generate.';
+  const reference = form.reference.trim();
+  if (reference) {
+    if (reference.length > MAX.reference) {
+      errors.reference = `Reference must be ${MAX.reference} characters or fewer.`;
+    } else if (!REFERENCE.test(reference)) {
+      errors.reference = 'Reference must look like CPG-XXXXX, or leave blank to auto-generate.';
+    }
   }
   required('equipmentType', 'Equipment type');
   required('shipperName', 'Shipper name');
   required('originCity', 'Origin city');
   required('destinationCity', 'Destination city');
+  maxLen('equipmentType', 'Equipment type');
+  maxLen('shipperName', 'Shipper name');
+  maxLen('originCity', 'Origin city');
+  maxLen('destinationCity', 'Destination city');
 
   for (const key of ['originState', 'destinationState'] as const) {
     if (form[key].trim().length !== 2) {
@@ -112,8 +157,8 @@ function validate(form: FormState): Errors {
       errors.targetTemperatureF = 'Between -40°F and 120°F.';
     }
   }
-  if (form.specialInstructions.length > 1000) {
-    errors.specialInstructions = 'Keep it under 1000 characters.';
+  if (form.specialInstructions.length > MAX.specialInstructions) {
+    errors.specialInstructions = `Keep it to ${MAX.specialInstructions} characters or fewer.`;
   }
 
   return errors;
@@ -188,16 +233,23 @@ export function PostLoadPage(): JSX.Element {
       navigate('/load-board');
     } catch (error) {
       if (error instanceof ApiError && error.status === 400) {
-        const fieldErrors = Object.entries(error.problem?.errors ?? {}).reduce<Errors>(
-          (acc, [key, messages]) => {
-            const camel = key.charAt(0).toLowerCase() + key.slice(1);
-            acc[camel as keyof FormState] = messages.join(' ');
-            return acc;
-          },
-          {},
-        );
+        const serverErrors: Record<string, string[]> = error.problem?.errors ?? {};
+        const fieldErrors: Errors = {};
+        const unmapped: string[] = [];
+        for (const [key, messages] of Object.entries(serverErrors)) {
+          const field = SERVER_FIELD_MAP[key];
+          const text = messages.join(' ');
+          if (field) {
+            fieldErrors[field] = text;
+          } else {
+            unmapped.push(text);
+          }
+        }
         setErrors(fieldErrors);
-        toast.error(error.problem?.detail ?? 'The load was rejected — check the fields.');
+        toast.error(
+          error.problem?.detail ??
+            (unmapped.length > 0 ? unmapped.join(' ') : 'The load was rejected — check the fields.'),
+        );
       } else if (error instanceof ApiError && error.status === 403) {
         toast.error('Only shipper accounts can post loads.');
       } else {
