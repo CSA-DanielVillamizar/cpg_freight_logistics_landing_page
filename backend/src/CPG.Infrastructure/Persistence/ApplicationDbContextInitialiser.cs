@@ -96,8 +96,10 @@ public sealed class ApplicationDbContextInitialiser(
     /// Seeds a minimal starter board for a fresh production database: one <c>Available</c> load per
     /// service line, no carrier assignment, no invoices. Skipped the moment the board shows any
     /// load a user can see, so it never competes with freight posted through <c>POST /api/loads</c>
-    /// (soft-deleted and <c>CPG-E2E-</c> rows don't count). Idempotent — starter references that
-    /// already exist are not re-inserted — and safe under concurrent replica startup via an
+    /// (soft-deleted and <c>CPG-E2E-</c> rows don't count). When the board is empty, any
+    /// pre-existing starter-reference row — which can only be a soft-deleted one — is restored to
+    /// <c>Available</c> rather than re-inserted (the <c>Reference</c> unique index is not filtered
+    /// on <c>IsDeleted</c>), and the rest are added. Safe under concurrent replica startup via an
     /// advisory lock + in-lock re-check.
     /// </summary>
     public async Task SeedStarterBoardAsync(CancellationToken cancellationToken = default)
@@ -131,24 +133,35 @@ public sealed class ApplicationDbContextInitialiser(
                 var loads = BuildStarterLoads(DateTimeOffset.UtcNow);
                 var references = loads.Select(load => load.Reference).ToList();
 
-                // Reference is globally unique (index is not filtered on IsDeleted), so skip any
-                // starter row whose reference already exists in any state.
-                var takenReferences = await dbContext.Loads
+                // The board is empty, so any starter-reference row that exists must be soft-deleted
+                // (a live one would have made the board non-empty). Restore it rather than
+                // re-inserting — the Reference unique index is not filtered on IsDeleted.
+                var existing = await dbContext.Loads
                     .IgnoreQueryFilters()
                     .Where(load => references.Contains(load.Reference))
-                    .Select(load => load.Reference)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                var toInsert = loads
-                    .Where(load => !takenReferences.Contains(load.Reference))
-                    .ToList();
-
-                if (toInsert.Count > 0)
+                foreach (var row in existing)
                 {
-                    dbContext.Loads.AddRange(toInsert);
+                    row.IsDeleted = false;
+                    row.Status = LoadStatus.Available;
+                    row.AssignedCarrierId = null;
+                }
+
+                var existingReferences = existing.Select(load => load.Reference).ToHashSet();
+                var toInsert = loads
+                    .Where(load => !existingReferences.Contains(load.Reference))
+                    .ToList();
+                dbContext.Loads.AddRange(toInsert);
+
+                if (existing.Count > 0 || toInsert.Count > 0)
+                {
                     await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                    logger.LogInformation("Seeded {Count} starter load board rows", toInsert.Count);
+                    logger.LogInformation(
+                        "Starter board: restored {Restored} soft-deleted, seeded {Seeded} new",
+                        existing.Count,
+                        toInsert.Count);
                 }
             }
 
