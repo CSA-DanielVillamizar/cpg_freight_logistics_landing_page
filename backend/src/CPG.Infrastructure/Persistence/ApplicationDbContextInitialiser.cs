@@ -86,25 +86,57 @@ public sealed class ApplicationDbContextInitialiser(
     }
 
     /// <summary>
+    /// Transaction-scoped Postgres advisory lock scoping starter-board seeding. The constant
+    /// (4281712) is an arbitrary application-chosen key; it is compile-time constant, so the
+    /// raw SQL carries no injection risk.
+    /// </summary>
+    private const string AcquireStarterBoardLockSql = "SELECT pg_advisory_xact_lock(4281712)";
+
+    /// <summary>
     /// Seeds a minimal starter board for a fresh production database: one <c>Available</c> load per
     /// service line, no carrier assignment, no invoices. Skipped the moment any real load exists, so
-    /// it never competes with freight posted through <c>POST /api/loads</c>. Idempotent.
+    /// it never competes with freight posted through <c>POST /api/loads</c>. Idempotent, and safe
+    /// under concurrent replica startup via an advisory lock + in-lock re-check.
     /// </summary>
     public async Task SeedStarterBoardAsync(CancellationToken cancellationToken = default)
     {
-        var boardHasLoads = await dbContext.Loads
-            .IgnoreQueryFilters()
-            .AnyAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        if (boardHasLoads)
+        if (!dbContext.Database.IsRelational())
         {
             return;
         }
 
-        var now = DateTimeOffset.UtcNow;
+        // Multiple API replicas can start at once. Take a transaction-scoped Postgres advisory
+        // lock so exactly one instance seeds; the others block, re-check inside the lock, and skip.
+        var strategy = dbContext.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            await using var transaction = await dbContext.Database
+                .BeginTransactionAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-        var loads = new List<Load>
+            await dbContext.Database
+                .ExecuteSqlRawAsync(AcquireStarterBoardLockSql, cancellationToken)
+                .ConfigureAwait(false);
+
+            var boardHasLoads = await dbContext.Loads
+                .IgnoreQueryFilters()
+                .AnyAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!boardHasLoads)
+            {
+                var loads = BuildStarterLoads(DateTimeOffset.UtcNow);
+                dbContext.Loads.AddRange(loads);
+                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                logger.LogInformation("Seeded {Count} starter load board rows", loads.Count);
+            }
+
+            await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        }).ConfigureAwait(false);
+    }
+
+    private static List<Load> BuildStarterLoads(DateTimeOffset now) =>
+        new()
         {
             new()
             {
@@ -166,11 +198,6 @@ public sealed class ApplicationDbContextInitialiser(
                 Status = LoadStatus.Available,
             },
         };
-
-        dbContext.Loads.AddRange(loads);
-        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        logger.LogInformation("Seeded {Count} starter load board rows", loads.Count);
-    }
 
     private async Task SeedCarrierAsync(CancellationToken cancellationToken)
     {
