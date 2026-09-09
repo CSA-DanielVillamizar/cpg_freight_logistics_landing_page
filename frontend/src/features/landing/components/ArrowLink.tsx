@@ -7,7 +7,10 @@ interface ArrowLinkProps {
   className?: string;
 }
 
-/** Text link with an arrow that nudges right when the link (its own `group/arrow`) is hovered. */
+/**
+ * Text link whose arrow nudges right when the link (its own `group/arrow`) is hovered or
+ * receives keyboard focus (`focus-visible`).
+ */
 export function ArrowLink({ to, children, className }: ArrowLinkProps): JSX.Element {
   return (
     <Link

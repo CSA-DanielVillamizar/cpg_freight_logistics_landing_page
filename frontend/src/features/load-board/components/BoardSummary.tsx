@@ -9,6 +9,12 @@ const currency = new Intl.NumberFormat('en-US', {
   currency: 'USD',
   maximumFractionDigits: 0,
 });
+const perMileCurrency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 /** Derived operator HUD — live totals computed from the loads currently on the board. */
 export function BoardSummary({ loads }: BoardSummaryProps): JSX.Element | null {
@@ -27,7 +33,7 @@ export function BoardSummary({ loads }: BoardSummaryProps): JSX.Element | null {
     { label: 'On the board', value: loads.length.toLocaleString() },
     { label: 'Available now', value: available.length.toLocaleString() },
     { label: 'Open gross', value: currency.format(openGross) },
-    { label: 'Avg rate / mi', value: `$${avgPerMile.toFixed(2)}` },
+    { label: 'Avg rate / mi', value: perMileCurrency.format(avgPerMile) },
     { label: 'Avg length of haul', value: `${avgHaul.toLocaleString()} mi` },
   ];
 
