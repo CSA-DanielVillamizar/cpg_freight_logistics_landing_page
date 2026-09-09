@@ -1,6 +1,7 @@
 import { Navigate, useParams } from 'react-router-dom';
 import { Card, Reveal } from '@/shared/ui';
 import { LeadCaptureForm } from '@/features/leads/LeadCaptureForm';
+import { FleetIllustration } from './components/FleetIllustration';
 import { VerticalIcon } from './components/VerticalIcon';
 import { getVerticalContent } from './verticalContent';
 import heroPhoto from '@/assets/hero-heavy-haul.jpg';
@@ -83,7 +84,13 @@ export function VerticalLandingPage(): JSX.Element {
           <div className="grid gap-4 md:grid-cols-2">
             {content.serviceCards.map((card, index) => (
               <Reveal key={card.title} delayMs={index * 70}>
-                <Card interactive className="flex h-full flex-col gap-2 p-5">
+                <Card interactive className="flex h-full flex-col gap-2 overflow-hidden p-5">
+                  {card.illustration ? (
+                    <FleetIllustration
+                      name={card.illustration}
+                      className="-mx-5 -mt-5 mb-1 block h-32 w-[calc(100%+2.5rem)]"
+                    />
+                  ) : null}
                   <span className="text-xs font-semibold uppercase tracking-wider text-steel-gray">
                     {card.tag}
                   </span>
@@ -111,21 +118,46 @@ export function VerticalLandingPage(): JSX.Element {
         <div className="mx-auto grid max-w-container gap-8 px-4 py-14 md:grid-cols-[1fr_1fr]">
           <div className="flex flex-col gap-4">
             <h2 className="text-headline-md">Engineered for enterprise contractors</h2>
-            <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-lg bg-fleet-blue/20">
-              {content.metrics.slice(0, 3).map((metric) => (
+            {content.proofIllustration ? (
+              <div className="relative overflow-hidden rounded-lg">
+                <FleetIllustration
+                  name={content.proofIllustration}
+                  className="absolute inset-0 h-full w-full"
+                />
                 <div
-                  key={metric.label}
-                  className="flex flex-col-reverse gap-1 bg-primary-container p-4"
-                >
-                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
-                    {metric.label}
-                  </dt>
-                  <dd className="font-mono text-headline-sm tabular-nums text-safety-amber">
-                    {metric.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-tr from-primary-container via-primary-container/85 to-primary-container/55"
+                />
+                <dl className="relative grid grid-cols-3 gap-4 p-5">
+                  {content.metrics.slice(0, 3).map((metric) => (
+                    <div key={metric.label} className="flex flex-col-reverse gap-1">
+                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
+                        {metric.label}
+                      </dt>
+                      <dd className="font-mono text-headline-sm tabular-nums text-safety-amber">
+                        {metric.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ) : (
+              <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-lg bg-fleet-blue/20">
+                {content.metrics.slice(0, 3).map((metric) => (
+                  <div
+                    key={metric.label}
+                    className="flex flex-col-reverse gap-1 bg-primary-container p-4"
+                  >
+                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
+                      {metric.label}
+                    </dt>
+                    <dd className="font-mono text-headline-sm tabular-nums text-safety-amber">
+                      {metric.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
             {content.proofPoints.map((point) => (
               <div key={point.title} className="flex flex-col gap-1">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-on-surface">

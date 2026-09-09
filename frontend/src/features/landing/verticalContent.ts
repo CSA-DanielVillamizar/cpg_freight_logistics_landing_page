@@ -15,6 +15,8 @@ export interface ServiceCard {
   title: string;
   detail: string;
   specs: readonly SpecRow[];
+  /** Optional FleetIllustration scene name rendered as a banner on the card. */
+  illustration?: string;
 }
 
 export interface VerticalContent {
@@ -32,6 +34,8 @@ export interface VerticalContent {
   testimonial: { quote: string; author: string; role: string };
   formHeading: string;
   defaultCargoPlaceholder: string;
+  /** Optional FleetIllustration scene name for the proof-points band. */
+  proofIllustration?: string;
 }
 
 export const VERTICAL_CONTENT: readonly VerticalContent[] = [
@@ -225,6 +229,7 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
       {
         tag: 'High capacity',
         title: 'Flatbed & Structural Steel',
+        illustration: 'flatbed-steel',
         detail:
           'Precision tie-down arrays for bridge beams, heavy pipe, structural rebar cages and bulk industrial fabrication.',
         specs: [
@@ -236,6 +241,7 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
       {
         tag: 'Taller clearances',
         title: 'Step-Deck / Drop-Deck',
+        illustration: 'step-deck',
         detail:
           'Lowered deck height for over-height machinery, tanks and pre-assembled modules that exceed standard flatbed clearance.',
         specs: [
@@ -247,6 +253,7 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
       {
         tag: '120,000+ lbs',
         title: 'RGN Multi-Axle / Superload',
+        illustration: 'rgn-lowboy',
         detail:
           'Removable gooseneck multi-axle configurations for extreme-height industrial turbines, pre-stressed bridge segments and high-center-of-gravity civil assets.',
         specs: [
@@ -258,6 +265,7 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
       {
         tag: 'Specialty haul',
         title: 'Commercial Fleet & Auto Transport',
+        illustration: 'auto-transport',
         detail:
           'Enclosed and hydraulic multi-level transport for municipal trucks, utility rolling stock and commercial fleets.',
         specs: [
@@ -289,6 +297,7 @@ export const VERTICAL_CONTENT: readonly VerticalContent[] = [
     },
     formHeading: 'Get your guaranteed heavy-haul quote',
     defaultCargoPlaceholder: 'Dimensions, weight, over-dimensional flags, origin & destination',
+    proofIllustration: 'rigging',
   },
   {
     slug: 'mobile-rate-calculator',
