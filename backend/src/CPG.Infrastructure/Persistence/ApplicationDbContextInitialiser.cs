@@ -86,17 +86,18 @@ public sealed class ApplicationDbContextInitialiser(
     }
 
     /// <summary>
-    /// Seeds a minimal starter board for a fresh production database: one <c>Available</c> load per
-    /// service line, no carrier assignment, no invoices. Skipped the moment any real load exists, so
-    /// it never competes with freight posted through <c>POST /api/loads</c>. Idempotent.
-    /// </summary>
-    /// <summary>
     /// Transaction-scoped Postgres advisory lock scoping starter-board seeding. The constant
     /// (4281712) is an arbitrary application-chosen key; it is compile-time constant, so the
     /// raw SQL carries no injection risk.
     /// </summary>
     private const string AcquireStarterBoardLockSql = "SELECT pg_advisory_xact_lock(4281712)";
 
+    /// <summary>
+    /// Seeds a minimal starter board for a fresh production database: one <c>Available</c> load per
+    /// service line, no carrier assignment, no invoices. Skipped the moment any real load exists, so
+    /// it never competes with freight posted through <c>POST /api/loads</c>. Idempotent, and safe
+    /// under concurrent replica startup via an advisory lock + in-lock re-check.
+    /// </summary>
     public async Task SeedStarterBoardAsync(CancellationToken cancellationToken = default)
     {
         if (!dbContext.Database.IsRelational())
