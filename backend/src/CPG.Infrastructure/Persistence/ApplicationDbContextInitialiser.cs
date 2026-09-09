@@ -94,9 +94,11 @@ public sealed class ApplicationDbContextInitialiser(
 
     /// <summary>
     /// Seeds a minimal starter board for a fresh production database: one <c>Available</c> load per
-    /// service line, no carrier assignment, no invoices. Skipped the moment any real load exists, so
-    /// it never competes with freight posted through <c>POST /api/loads</c>. Idempotent, and safe
-    /// under concurrent replica startup via an advisory lock + in-lock re-check.
+    /// service line, no carrier assignment, no invoices. Skipped the moment the board shows any
+    /// load a user can see, so it never competes with freight posted through <c>POST /api/loads</c>
+    /// (soft-deleted and <c>CPG-E2E-</c> rows don't count). Idempotent — starter references that
+    /// already exist are not re-inserted — and safe under concurrent replica startup via an
+    /// advisory lock + in-lock re-check.
     /// </summary>
     public async Task SeedStarterBoardAsync(CancellationToken cancellationToken = default)
     {
@@ -118,17 +120,36 @@ public sealed class ApplicationDbContextInitialiser(
                 .ExecuteSqlRawAsync(AcquireStarterBoardLockSql, cancellationToken)
                 .ConfigureAwait(false);
 
-            var boardHasLoads = await dbContext.Loads
-                .IgnoreQueryFilters()
+            // Respect the global query filter: only a load a user would actually see on the
+            // board counts. Left-over E2E or soft-deleted rows must not block the starter set.
+            var boardHasVisibleLoads = await dbContext.Loads
                 .AnyAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!boardHasLoads)
+            if (!boardHasVisibleLoads)
             {
                 var loads = BuildStarterLoads(DateTimeOffset.UtcNow);
-                dbContext.Loads.AddRange(loads);
-                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                logger.LogInformation("Seeded {Count} starter load board rows", loads.Count);
+                var references = loads.Select(load => load.Reference).ToList();
+
+                // Reference is globally unique (index is not filtered on IsDeleted), so skip any
+                // starter row whose reference already exists in any state.
+                var takenReferences = await dbContext.Loads
+                    .IgnoreQueryFilters()
+                    .Where(load => references.Contains(load.Reference))
+                    .Select(load => load.Reference)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                var toInsert = loads
+                    .Where(load => !takenReferences.Contains(load.Reference))
+                    .ToList();
+
+                if (toInsert.Count > 0)
+                {
+                    dbContext.Loads.AddRange(toInsert);
+                    await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    logger.LogInformation("Seeded {Count} starter load board rows", toInsert.Count);
+                }
             }
 
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
