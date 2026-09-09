@@ -94,9 +94,13 @@ public sealed class ApplicationDbContextInitialiser(
 
     /// <summary>
     /// Seeds a minimal starter board for a fresh production database: one <c>Available</c> load per
-    /// service line, no carrier assignment, no invoices. Skipped the moment any real load exists, so
-    /// it never competes with freight posted through <c>POST /api/loads</c>. Idempotent, and safe
-    /// under concurrent replica startup via an advisory lock + in-lock re-check.
+    /// service line, no carrier assignment, no invoices. Skipped the moment the board shows any
+    /// load a user can see, so it never competes with freight posted through <c>POST /api/loads</c>
+    /// (soft-deleted and <c>CPG-E2E-</c> rows don't count). When the board is empty, any
+    /// pre-existing starter-reference row — which can only be a soft-deleted one — is restored to
+    /// <c>Available</c> rather than re-inserted (the <c>Reference</c> unique index is not filtered
+    /// on <c>IsDeleted</c>), and the rest are added. Safe under concurrent replica startup via an
+    /// advisory lock + in-lock re-check.
     /// </summary>
     public async Task SeedStarterBoardAsync(CancellationToken cancellationToken = default)
     {
@@ -118,17 +122,47 @@ public sealed class ApplicationDbContextInitialiser(
                 .ExecuteSqlRawAsync(AcquireStarterBoardLockSql, cancellationToken)
                 .ConfigureAwait(false);
 
-            var boardHasLoads = await dbContext.Loads
-                .IgnoreQueryFilters()
+            // Respect the global query filter: only a load a user would actually see on the
+            // board counts. Left-over E2E or soft-deleted rows must not block the starter set.
+            var boardHasVisibleLoads = await dbContext.Loads
                 .AnyAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!boardHasLoads)
+            if (!boardHasVisibleLoads)
             {
                 var loads = BuildStarterLoads(DateTimeOffset.UtcNow);
-                dbContext.Loads.AddRange(loads);
-                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                logger.LogInformation("Seeded {Count} starter load board rows", loads.Count);
+                var references = loads.Select(load => load.Reference).ToList();
+
+                // The board is empty, so any starter-reference row that exists must be soft-deleted
+                // (a live one would have made the board non-empty). Restore it rather than
+                // re-inserting — the Reference unique index is not filtered on IsDeleted.
+                var existing = await dbContext.Loads
+                    .IgnoreQueryFilters()
+                    .Where(load => references.Contains(load.Reference))
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                foreach (var row in existing)
+                {
+                    row.IsDeleted = false;
+                    row.Status = LoadStatus.Available;
+                    row.AssignedCarrierId = null;
+                }
+
+                var existingReferences = existing.Select(load => load.Reference).ToHashSet();
+                var toInsert = loads
+                    .Where(load => !existingReferences.Contains(load.Reference))
+                    .ToList();
+                dbContext.Loads.AddRange(toInsert);
+
+                if (existing.Count > 0 || toInsert.Count > 0)
+                {
+                    await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    logger.LogInformation(
+                        "Starter board: restored {Restored} soft-deleted, seeded {Seeded} new",
+                        existing.Count,
+                        toInsert.Count);
+                }
             }
 
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
