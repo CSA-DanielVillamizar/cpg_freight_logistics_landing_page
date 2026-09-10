@@ -21,6 +21,8 @@
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Identity" />
 
+    <PackageReference Include="Stripe.net" />
+
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="BCrypt.Net-Next" />
 

@@ -1,4 +1,5 @@
 using CPG.Api.Infrastructure;
+using CPG.Application.Features.Billing.Disbursements;
 using CPG.Application.Features.Carriers;
 using CPG.Application.Features.Carriers.Register;
 using CPG.Application.Features.Telemetry;
@@ -6,12 +7,13 @@ using CPG.Application.Features.Telemetry.RegisterDevice;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace CPG.Api.Controllers;
 
 /// <summary>Carrier self-service onboarding. Restricted to the <c>Carrier</c> role.</summary>
 [Authorize(Policy = AuthorizationPolicies.CarrierOnly)]
-public sealed class CarriersController(ISender sender) : ApiControllerBase
+public sealed class CarriersController(ISender sender, IConfiguration configuration) : ApiControllerBase
 {
     /// <summary>
     /// Creates the authenticated carrier user's profile so they can accept loads and file
@@ -49,4 +51,38 @@ public sealed class CarriersController(ISender sender) : ApiControllerBase
         var device = await sender.Send(RegisterTelemetryDeviceCommand.FromRequest(request), cancellationToken);
         return Created($"/api/webhooks/telemetry/{device.Provider}", device);
     }
+
+    /// <summary>
+    /// Starts (or resumes) Stripe Connect onboarding for the authenticated carrier so they can
+    /// receive payouts (T-SDD Epica 2B). Returns a hosted onboarding link — CPG never collects
+    /// KYC data directly. Returns 409 if the carrier already has an active Stripe account.
+    /// </summary>
+    [HttpPost("stripe-connect")]
+    [ProducesResponseType(typeof(StripeConnectOnboardingResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<StripeConnectOnboardingResponse>> ConnectStripe(CancellationToken cancellationToken)
+    {
+        var appOrigin = Request.Headers.Origin.ToString() is { Length: > 0 } origin
+            ? origin
+            : configuration["Billing:AppBaseUrl"] ?? "http://localhost:5173";
+
+        var response = await sender.Send(
+            new CreateStripeConnectAccountCommand(
+                RefreshUrl: $"{appOrigin}/carrier/settings/stripe-connect",
+                ReturnUrl: $"{appOrigin}/carrier/payouts?onboarding=complete"),
+            cancellationToken);
+
+        return Created(response.AccountLinkUrl, response);
+    }
+
+    /// <summary>The authenticated carrier's payout ledger, newest first (T-SDD Epica 2B).</summary>
+    [HttpGet("payouts")]
+    [ProducesResponseType(typeof(IReadOnlyList<PayoutHistoryEntryResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<PayoutHistoryEntryResponse>>> GetPayouts(
+        CancellationToken cancellationToken)
+        => Ok(await sender.Send(new GetCarrierPayoutHistoryQuery(), cancellationToken));
 }

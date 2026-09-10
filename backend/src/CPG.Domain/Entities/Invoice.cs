@@ -1,5 +1,6 @@
 using CPG.Domain.Common;
 using CPG.Domain.Enums;
+using CPG.Domain.Events;
 
 namespace CPG.Domain.Entities;
 
@@ -53,7 +54,7 @@ public class Invoice : AggregateRoot, IAuditableEntity, IHasRowVersion, ISoftDel
             throw new DomainException($"Load {load.Reference} has no shipper to bill.");
         }
 
-        return new Invoice
+        var invoice = new Invoice
         {
             Reference = reference,
             LoadId = load.Id,
@@ -63,6 +64,10 @@ public class Invoice : AggregateRoot, IAuditableEntity, IHasRowVersion, ISoftDel
             IssuedAtUtc = issuedAtUtc,
             DueDate = issuedAtUtc.AddDays(netDays),
         };
+
+        invoice.RaiseDomainEvent(new InvoiceGeneratedDomainEvent(invoice.Id, invoice.LoadId, invoice.AmountUsd));
+
+        return invoice;
     }
 
     /// <summary>Records the Stripe Checkout session opened for this invoice.</summary>

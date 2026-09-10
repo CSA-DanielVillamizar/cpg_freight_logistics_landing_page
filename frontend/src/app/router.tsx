@@ -9,6 +9,8 @@ import { RequireRole } from '@/features/auth/RequireRole';
 import { RoleSelectionPage } from '@/features/auth/RoleSelectionPage';
 import { ShipperSignUpPage } from '@/features/auth/ShipperSignUpPage';
 import { CarrierPortalPage } from '@/features/carrier-portal/CarrierPortalPage';
+import { PayoutHistoryPage } from '@/features/carrier-portal/PayoutHistoryPage';
+import { StripeConnectOnboardingPage } from '@/features/carrier-portal/StripeConnectOnboardingPage';
 import { LandingPage } from '@/features/landing/LandingPage';
 import { VerticalLandingPage } from '@/features/landing/VerticalLandingPage';
 import { LoadBoardPage } from '@/features/load-board/LoadBoardPage';
@@ -70,6 +72,22 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole role="Carrier">
             <CarrierPortalPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'carrier/payouts',
+        element: (
+          <RequireRole role="Carrier">
+            <PayoutHistoryPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'carrier/settings/stripe-connect',
+        element: (
+          <RequireRole role="Carrier">
+            <StripeConnectOnboardingPage />
           </RequireRole>
         ),
       },

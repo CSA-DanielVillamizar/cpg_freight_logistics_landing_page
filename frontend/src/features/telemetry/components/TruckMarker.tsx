@@ -6,10 +6,10 @@ import L from 'leaflet';
  * heading at a glance on the live map.
  */
 export function createTruckIcon(headingDeg: number): L.DivIcon {
-  return L.divIcon({
-    className: 'cpg-truck-marker',
-    html: `<div class="cpg-truck-marker__body" style="transform: rotate(${headingDeg}deg)">🚚</div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-  });
+    return L.divIcon({
+        className: 'cpg-truck-marker',
+        html: `<div class="cpg-truck-marker__body" style="transform: rotate(${headingDeg}deg)">🚚</div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+    });
 }

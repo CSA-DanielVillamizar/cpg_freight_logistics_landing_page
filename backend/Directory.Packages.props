@@ -39,6 +39,10 @@
     <PackageVersion Include="Microsoft.Azure.SignalR" Version="1.28.0" />
   </ItemGroup>
 
+  <ItemGroup Label="Payments (Stripe Connect - T-SDD Epica 2B)">
+    <PackageVersion Include="Stripe.net" Version="47.4.0" />
+  </ItemGroup>
+
   <ItemGroup Label="Blob storage (Azurite dev / Azure Blob prod)">
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.22.2" />
     <PackageVersion Include="Azure.Identity" Version="1.13.2" />

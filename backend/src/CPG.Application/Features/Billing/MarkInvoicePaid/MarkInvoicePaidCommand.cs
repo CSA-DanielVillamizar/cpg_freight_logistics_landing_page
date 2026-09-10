@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using CPG.Application.Common.Interfaces;
+using CPG.Application.Features.Billing.Disbursements;
 using CPG.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,8 @@ public sealed record MarkInvoicePaidCommand(string StripeSessionId) : IRequest<b
 
 public sealed class MarkInvoicePaidCommandHandler(
     IApplicationDbContext dbContext,
-    IDateTimeProvider clock)
+    IDateTimeProvider clock,
+    ISender sender)
     : IRequestHandler<MarkInvoicePaidCommand, bool>
 {
     public async Task<bool> Handle(MarkInvoicePaidCommand request, CancellationToken cancellationToken)
@@ -48,6 +50,12 @@ public sealed class MarkInvoicePaidCommandHandler(
         });
 
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        // Now that the shipper's money has actually landed, attempt the Carrier's payout
+        // (T-SDD Epica 2B) — the disbursement row itself was already prepared when the
+        // invoice was raised.
+        await sender.Send(new ProcessLoadDisbursementCommand(invoice.Id), cancellationToken).ConfigureAwait(false);
+
         return true;
     }
 }

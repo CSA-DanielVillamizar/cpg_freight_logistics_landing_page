@@ -50,6 +50,19 @@ public class PaymentDisbursement : AggregateRoot, IAuditableEntity
 
     public string? LastModifiedBy { get; set; }
 
+    /// <summary>Records the Stripe Connect transfer id while the payout settles (T-SDD Epica 2B).</summary>
+    /// <exception cref="DomainException">The disbursement already reached a terminal state.</exception>
+    public void MarkTransferInitiated(string stripeTransferId)
+    {
+        if (Status is DisbursementStatus.Completed or DisbursementStatus.Failed)
+        {
+            throw new DomainException($"Payment disbursement {Id} cannot restart a transfer from status {Status}.");
+        }
+
+        StripeTransferId = stripeTransferId;
+        Status = DisbursementStatus.Processing;
+    }
+
     /// <summary>Marks the disbursement as transferred to the Carrier's Stripe Connect account.</summary>
     /// <exception cref="DomainException">The disbursement has already completed.</exception>
     public void MarkCompleted(string stripeTransferId, DateTimeOffset processedAtUtc)
@@ -63,7 +76,8 @@ public class PaymentDisbursement : AggregateRoot, IAuditableEntity
         ProcessedAtUtc = processedAtUtc;
         Status = DisbursementStatus.Completed;
 
-        RaiseDomainEvent(new PaymentDisbursementCompletedDomainEvent(Id, LoadId, CarrierId, CarrierNetAmountUsd));
+        RaiseDomainEvent(new PaymentDisbursementCompletedDomainEvent(
+            Id, LoadId, CarrierId, CarrierNetAmountUsd, stripeTransferId, QuickPayRequested));
     }
 
     /// <summary>Marks the disbursement as failed (e.g. the Carrier has no connected Stripe account).</summary>

@@ -12,6 +12,7 @@
 
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.Azure.SignalR" />
+    <PackageReference Include="Stripe.net" />
 
     <PackageReference Include="MediatR" />
     <PackageReference Include="FluentValidation" />

@@ -1,6 +1,7 @@
 using System.Reflection;
 using CPG.Application.Common.Behaviours;
 using CPG.Application.Common.Interfaces;
+using CPG.Application.Features.Billing.Disbursements;
 using CPG.Application.Features.Rates;
 using CPG.Application.Features.Rates.Engine;
 using CPG.Application.Features.Telemetry.Webhooks;
@@ -31,6 +32,8 @@ public static class DependencyInjection
         AddRateEngine(services);
 
         AddTelemetrySignatureVerifiers(services);
+
+        services.AddSingleton<IDisbursementCalculator, DisbursementCalculator>();
 
         return services;
     }

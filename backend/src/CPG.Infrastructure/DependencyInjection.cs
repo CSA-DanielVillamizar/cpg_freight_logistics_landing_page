@@ -37,6 +37,13 @@ public static class DependencyInjection
         AddSecurity(services, configuration);
 
         services.AddSingleton<IStripePaymentService, Billing.MockStripePaymentService>();
+        services.AddSingleton<IStripeConnectService>(sp =>
+        {
+            var secretKey = sp.GetRequiredService<IConfiguration>()["Stripe:SecretKey"];
+            return string.IsNullOrWhiteSpace(secretKey)
+                ? new Billing.MockStripeConnectService()
+                : new Billing.StripeConnectService(secretKey);
+        });
         services.AddSingleton<IDateTimeProvider, Services.DateTimeProvider>();
         services.AddDatabaseInitialiser();
 
@@ -89,6 +96,9 @@ public static class DependencyInjection
             bus.AddConsumer<LoadDeliveredNotificationConsumer>();
             bus.AddConsumer<UserWelcomeNotificationConsumer>();
             bus.AddConsumer<LoadGpsLocationUpdatedConsumer>();
+            bus.AddConsumer<InvoiceGeneratedConsumer>();
+            bus.AddConsumer<QuickPayProcessedNotificationConsumer>();
+            bus.AddConsumer<PaymentDisbursementFailedNotificationConsumer>();
 
             if (useServiceBus)
             {

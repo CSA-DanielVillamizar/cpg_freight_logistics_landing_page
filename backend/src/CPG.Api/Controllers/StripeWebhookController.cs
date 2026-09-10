@@ -1,22 +1,27 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using CPG.Application.Common.Interfaces;
+using CPG.Application.Features.Billing.Disbursements;
 using CPG.Application.Features.Billing.MarkInvoicePaid;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Stripe;
 
 namespace CPG.Api.Controllers;
 
 /// <summary>
-/// Stripe integration surface: the signed webhook that settles invoices asynchronously, and a
-/// mock hosted-Checkout page used when no Stripe keys are configured.
+/// Stripe integration surface: the signed webhooks that settle invoices and Connect payouts
+/// asynchronously, and a mock hosted-Checkout page used when no Stripe keys are configured.
 /// </summary>
 [ApiController]
 [AllowAnonymous]
 [Route("api")]
-public sealed class StripeWebhookController(ISender sender, IStripePaymentService stripe) : ControllerBase
+public sealed class StripeWebhookController(ISender sender, IStripePaymentService stripe, IConfiguration configuration)
+    : ControllerBase
 {
     /// <summary>
     /// Receives <c>checkout.session.completed</c> from Stripe. Validates the signature, then
@@ -39,6 +44,85 @@ public sealed class StripeWebhookController(ISender sender, IStripePaymentServic
         if (result.CheckoutCompleted && !string.IsNullOrEmpty(result.SessionId))
         {
             await sender.Send(new MarkInvoicePaidCommand(result.SessionId), cancellationToken);
+        }
+
+        return Ok(new { received = true });
+    }
+
+    /// <summary>
+    /// Receives <c>transfer.paid</c>/<c>transfer.failed</c> Stripe Connect events (T-SDD Epica
+    /// 2B). Verified via <see cref="EventUtility.ConstructEvent"/> against
+    /// <c>Stripe:ConnectWebhookSecret</c> when configured; falls back to the same
+    /// shared-secret convention as the mock Checkout webhook for local development.
+    /// </summary>
+    [HttpPost("webhooks/stripe-connect")]
+    [Consumes("application/json")]
+    public async Task<IActionResult> HandleConnect(CancellationToken cancellationToken)
+    {
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+        var json = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+        var signature = Request.Headers["Stripe-Signature"].ToString();
+        var connectWebhookSecret = configuration["Stripe:ConnectWebhookSecret"];
+
+        string eventType;
+        string? transferId;
+        string? failureReason;
+
+        if (!string.IsNullOrWhiteSpace(connectWebhookSecret))
+        {
+            Event stripeEvent;
+            try
+            {
+                stripeEvent = EventUtility.ConstructEvent(json, signature, connectWebhookSecret);
+            }
+            catch (StripeException)
+            {
+                return BadRequest(new { error = "Invalid signature." });
+            }
+
+            eventType = stripeEvent.Type;
+            var transfer = stripeEvent.Data.Object as Transfer;
+            transferId = transfer?.Id;
+            failureReason = null;
+        }
+        else
+        {
+            var expectedSecret = configuration["Stripe:WebhookSecret"] ?? "whsec_cpg_mock";
+            if (!string.Equals(signature, expectedSecret, StringComparison.Ordinal))
+            {
+                return BadRequest(new { error = "Invalid signature." });
+            }
+
+            try
+            {
+                using var document = JsonDocument.Parse(json);
+                var root = document.RootElement;
+                eventType = root.TryGetProperty("type", out var typeElement) ? typeElement.GetString() ?? string.Empty : string.Empty;
+
+                var stripeObject = root.TryGetProperty("data", out var data) && data.TryGetProperty("object", out var obj)
+                    ? obj
+                    : default;
+
+                transferId = stripeObject.ValueKind == JsonValueKind.Object
+                    && stripeObject.TryGetProperty("id", out var idElement)
+                    ? idElement.GetString()
+                    : null;
+
+                failureReason = stripeObject.ValueKind == JsonValueKind.Object
+                    && stripeObject.TryGetProperty("failure_message", out var failureElement)
+                    ? failureElement.GetString()
+                    : null;
+            }
+            catch (JsonException)
+            {
+                return BadRequest(new { error = "Invalid payload." });
+            }
+        }
+
+        if (!string.IsNullOrEmpty(transferId))
+        {
+            await sender.Send(new HandleStripeWebhookCommand(eventType, transferId, failureReason), cancellationToken)
+                .ConfigureAwait(false);
         }
 
         return Ok(new { received = true });
