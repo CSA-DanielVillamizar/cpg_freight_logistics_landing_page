@@ -2,20 +2,13 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ApiError } from '@/shared/api/client';
-import type { UserRole } from '@/shared/api/types';
 import { Button, Card, Input } from '@/shared/ui';
 import { useAuth } from './useAuth';
+import { ROLE_HOME } from './roleHome';
 
 interface LocationState {
   from?: { pathname: string };
 }
-
-/** Default landing route per role when the user wasn't intercepted en route to a specific page. */
-const ROLE_HOME: Record<UserRole, string> = {
-  Admin: '/admin/carriers',
-  Carrier: '/carrier',
-  Shipper: '/shipper/dashboard',
-};
 
 const SEED_ACCOUNTS = [
   { role: 'Admin', email: 'admin@cpgorlando.com' },

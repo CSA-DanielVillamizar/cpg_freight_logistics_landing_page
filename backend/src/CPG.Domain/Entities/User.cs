@@ -1,5 +1,6 @@
 using CPG.Domain.Common;
 using CPG.Domain.Enums;
+using CPG.Domain.Events;
 
 namespace CPG.Domain.Entities;
 
@@ -30,4 +31,37 @@ public class User : AggregateRoot, IAuditableEntity
     public DateTimeOffset? LastModifiedAtUtc { get; set; }
 
     public string? LastModifiedBy { get; set; }
+
+    /// <summary>
+    /// Self-registers a new principal via the Tri-Sign-Up flow (T-SDD Epica 1). Admin
+    /// accounts cannot be created through this path.
+    /// </summary>
+    /// <exception cref="DomainException">The requested role is <see cref="UserRole.Admin"/>.</exception>
+    public static User Register(
+        string email,
+        string passwordHash,
+        string fullName,
+        UserRole role,
+        string? companyName,
+        string? phoneNumber)
+    {
+        if (role == UserRole.Admin)
+        {
+            throw new DomainException("Admin accounts cannot be self-registered.");
+        }
+
+        var user = new User
+        {
+            Email = email,
+            PasswordHash = passwordHash,
+            FullName = fullName,
+            Role = role,
+            CompanyName = companyName,
+            PhoneNumber = phoneNumber,
+        };
+
+        user.RaiseDomainEvent(new UserRegisteredDomainEvent(user.Id, user.Email, user.Role));
+
+        return user;
+    }
 }

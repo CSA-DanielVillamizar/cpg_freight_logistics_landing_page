@@ -6,7 +6,7 @@
 
 export type ServiceType = 'ColdChain' | 'HeavyHaul' | 'Flatbed' | 'FdotConcrete';
 
-export type UserRole = 'Admin' | 'Carrier' | 'Shipper';
+export type UserRole = 'Admin' | 'Carrier' | 'Shipper' | 'Agent';
 
 /** POST /api/auth/login request body (SPEC.md US-01). */
 export interface LoginRequest {
@@ -17,6 +17,20 @@ export interface LoginRequest {
 /** POST /api/auth/refresh request body. */
 export interface RefreshRequest {
   refreshToken: string;
+}
+
+/** POST /api/auth/register request body — the Tri-Sign-Up flow (T-SDD Epica 1). */
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  fullName: string;
+  role: UserRole;
+  companyName?: string;
+  phoneNumber?: string;
+  /** Carrier-only. */
+  dotNumber?: string;
+  /** Carrier-only. */
+  mcNumber?: string;
 }
 
 export interface AuthenticatedUser {
@@ -103,6 +117,33 @@ export interface UploadComplianceDocumentResult {
   documentId: string;
   status: ComplianceStatus;
   blobUri: string;
+}
+
+export type AgentStatus = 'PendingActivation' | 'Active' | 'Suspended';
+
+export interface CarrierProfileSummary {
+  carrierId: string;
+  companyName: string;
+  complianceStatus: ComplianceStatus;
+}
+
+export interface AgentProfileSummary {
+  agentId: string;
+  companyName: string;
+  status: AgentStatus;
+  commissionRatePercent: number;
+}
+
+/** GET /api/me response (T-SDD Epica 1). */
+export interface MyProfileResponse {
+  userId: string;
+  email: string;
+  fullName: string;
+  role: UserRole;
+  companyName?: string;
+  phoneNumber?: string;
+  carrier?: CarrierProfileSummary;
+  agent?: AgentProfileSummary;
 }
 
 /** RFC 7807 problem document returned by the API on failure. */

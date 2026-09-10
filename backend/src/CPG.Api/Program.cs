@@ -123,9 +123,10 @@ builder.Services.AddCors(options => options.AddPolicy(CorsPolicyName, policy =>
 
 var app = builder.Build();
 
-// Apply pending EF Core migrations and seed the RBAC accounts on every startup (there is no
-// self-service registration). Outside Production the full demo dataset (carrier, invoices, PODs)
-// is loaded; Production gets only a one-per-service-line starter board until real loads are posted.
+// Apply pending EF Core migrations and seed the demo RBAC accounts on every startup (real
+// visitors self-register via POST /api/auth/register — T-SDD Epica 1 Tri-Sign-Up). Outside
+// Production the full demo dataset (carrier, invoices, PODs) is loaded; Production gets only
+// a one-per-service-line starter board until real loads are posted.
 await app.Services.InitialiseDatabaseAsync(seedDemoData: !app.Environment.IsProduction());
 
 // Warm the CQRS + validation pipeline so the first real rate request also meets the

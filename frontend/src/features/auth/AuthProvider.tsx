@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { registerAuthBridge } from '@/shared/api/client';
-import type { AuthResponse, AuthenticatedUser } from '@/shared/api/types';
+import type { AuthResponse, AuthenticatedUser, RegisterRequest } from '@/shared/api/types';
 import { AuthContext } from './authContext';
 import type { AuthContextValue } from './authContext';
 import { authApi } from './authApi';
@@ -71,6 +71,15 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
     [applySession],
   );
 
+  const register = useCallback(
+    async (request: RegisterRequest) => {
+      const response = await authApi.register(request);
+      applySession(response);
+      return response.user;
+    },
+    [applySession],
+  );
+
   const bridge = useMemo(
     () => ({
       getAccessToken: () => sessionRef.current?.accessToken ?? null,
@@ -118,9 +127,10 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
       isAuthenticated: session !== null,
       hasRole: (role) => session?.user.role === role,
       login,
+      register,
       logout,
     }),
-    [session, login, logout],
+    [session, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

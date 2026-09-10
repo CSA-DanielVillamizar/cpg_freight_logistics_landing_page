@@ -2,8 +2,13 @@ import { createBrowserRouter } from 'react-router-dom';
 import { App } from '@/App';
 import { AdminDashboardPage } from '@/features/admin/AdminDashboardPage';
 import { AuditLogsPage } from '@/features/admin/AuditLogsPage';
+import { AgentPortalPage } from '@/features/agent-portal/AgentPortalPage';
+import { AgentSignUpPage } from '@/features/auth/AgentSignUpPage';
+import { CarrierSignUpPage } from '@/features/auth/CarrierSignUpPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RequireRole } from '@/features/auth/RequireRole';
+import { RoleSelectionPage } from '@/features/auth/RoleSelectionPage';
+import { ShipperSignUpPage } from '@/features/auth/ShipperSignUpPage';
 import { CarrierPortalPage } from '@/features/carrier-portal/CarrierPortalPage';
 import { LandingPage } from '@/features/landing/LandingPage';
 import { LoadBoardPage } from '@/features/load-board/LoadBoardPage';
@@ -21,6 +26,10 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <LandingPage /> },
       { path: 'login', element: <LoginPage /> },
+      { path: 'signup', element: <RoleSelectionPage /> },
+      { path: 'signup/shipper', element: <ShipperSignUpPage /> },
+      { path: 'signup/carrier', element: <CarrierSignUpPage /> },
+      { path: 'signup/agent', element: <AgentSignUpPage /> },
       { path: 'rates', element: <RateCalculatorPage /> },
       {
         path: 'load-board',
@@ -60,6 +69,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole role="Carrier">
             <CarrierPortalPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'agent',
+        element: (
+          <RequireRole role="Agent">
+            <AgentPortalPage />
           </RequireRole>
         ),
       },

@@ -87,6 +87,7 @@ public static class DependencyInjection
             bus.AddConsumer<LeadNotificationConsumer>();
             bus.AddConsumer<LoadAcceptedNotificationConsumer>();
             bus.AddConsumer<LoadDeliveredNotificationConsumer>();
+            bus.AddConsumer<UserWelcomeNotificationConsumer>();
 
             if (useServiceBus)
             {
