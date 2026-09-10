@@ -1,7 +1,9 @@
 import { App } from '@/App';
 import { AdminDashboardPage } from '@/features/admin/AdminDashboardPage';
 import { AuditLogsPage } from '@/features/admin/AuditLogsPage';
-import { AgentPortalPage } from '@/features/agent-portal/AgentPortalPage';
+import { AgentDashboardPage } from '@/features/agent-portal/AgentDashboardPage';
+import { ClientListPage } from '@/features/agent-portal/ClientListPage';
+import { PublishAgentLoadForm } from '@/features/agent-portal/PublishAgentLoadForm';
 import { AgentSignUpPage } from '@/features/auth/AgentSignUpPage';
 import { CarrierSignUpPage } from '@/features/auth/CarrierSignUpPage';
 import { LoginPage } from '@/features/auth/LoginPage';
@@ -95,7 +97,23 @@ export const router = createBrowserRouter([
         path: 'agent',
         element: (
           <RequireRole role="Agent">
-            <AgentPortalPage />
+            <AgentDashboardPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'agent/clients',
+        element: (
+          <RequireRole role="Agent">
+            <ClientListPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'agent/loads/new',
+        element: (
+          <RequireRole role="Agent">
+            <PublishAgentLoadForm />
           </RequireRole>
         ),
       },

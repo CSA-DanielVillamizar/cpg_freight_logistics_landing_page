@@ -77,7 +77,8 @@ public class PaymentDisbursement : AggregateRoot, IAuditableEntity
         Status = DisbursementStatus.Completed;
 
         RaiseDomainEvent(new PaymentDisbursementCompletedDomainEvent(
-            Id, LoadId, CarrierId, CarrierNetAmountUsd, stripeTransferId, QuickPayRequested));
+            Id, LoadId, CarrierId, CarrierNetAmountUsd, stripeTransferId, QuickPayRequested,
+            AgentId, AgentCommissionAmountUsd));
     }
 
     /// <summary>Marks the disbursement as failed (e.g. the Carrier has no connected Stripe account).</summary>

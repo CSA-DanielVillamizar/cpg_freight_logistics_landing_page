@@ -9,4 +9,6 @@ public sealed record PaymentDisbursementCompletedDomainEvent(
     Guid CarrierId,
     decimal CarrierNetAmountUsd,
     string StripeTransferId,
-    bool QuickPayRequested) : DomainEvent;
+    bool QuickPayRequested,
+    Guid? AgentId,
+    decimal AgentCommissionAmountUsd) : DomainEvent;

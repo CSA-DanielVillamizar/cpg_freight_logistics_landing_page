@@ -99,6 +99,8 @@ public static class DependencyInjection
             bus.AddConsumer<InvoiceGeneratedConsumer>();
             bus.AddConsumer<QuickPayProcessedNotificationConsumer>();
             bus.AddConsumer<PaymentDisbursementFailedNotificationConsumer>();
+            bus.AddConsumer<ClientInvitationSentNotificationConsumer>();
+            bus.AddConsumer<AgentCommissionAccruedNotificationConsumer>();
 
             if (useServiceBus)
             {

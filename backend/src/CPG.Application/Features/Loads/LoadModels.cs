@@ -94,6 +94,10 @@ public sealed record LoadSummaryResponse
 
     public string? SpecialInstructions { get; init; }
 
+    public Guid? AgentId { get; init; }
+
+    public decimal? ProjectedAgentCommissionUsd { get; init; }
+
     public static LoadSummaryResponse FromEntity(Load load) => new()
     {
         Id = load.Id,
@@ -116,5 +120,7 @@ public sealed record LoadSummaryResponse
         DeliveryAtUtc = load.DeliveryAtUtc,
         TargetTemperatureF = load.TargetTemperatureF,
         SpecialInstructions = load.SpecialInstructions,
+        AgentId = load.AgentId,
+        ProjectedAgentCommissionUsd = load.ProjectedAgentCommissionUsd,
     };
 }

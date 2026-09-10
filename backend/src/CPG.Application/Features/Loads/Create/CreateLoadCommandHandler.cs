@@ -13,7 +13,8 @@ namespace CPG.Application.Features.Loads.Create;
 public sealed class CreateLoadCommandHandler(
     IApplicationDbContext dbContext,
     ICurrentUser currentUser,
-    IDateTimeProvider clock)
+    IDateTimeProvider clock,
+    IDisbursementCalculator disbursementCalculator)
     : IRequestHandler<CreateLoadCommand, LoadSummaryResponse>
 {
     public async Task<LoadSummaryResponse> Handle(
@@ -23,7 +24,22 @@ public sealed class CreateLoadCommandHandler(
         var userId = currentUser.UserId
             ?? throw new ForbiddenAccessException("The request is not authenticated.");
 
-        // A Shipper always books their own freight; an Admin posts on a shipper's behalf.
+        // An Agent publishes on behalf of one of their own clients; a Shipper always books
+        // their own freight; an Admin posts on any shipper's behalf.
+        Agent? agent = null;
+        if (currentUser.Role == UserRole.Agent)
+        {
+            agent = await dbContext.Agents
+                .FirstOrDefaultAsync(a => a.UserId == userId, cancellationToken)
+                .ConfigureAwait(false)
+                ?? throw new NotFoundException("An agent profile is required to publish loads.");
+
+            if (request.ShipperUserId is null)
+            {
+                throw new DomainException("An Agent must specify which client (shipperUserId) this load is for.");
+            }
+        }
+
         var shipperUserId = currentUser.Role == UserRole.Shipper
             ? userId
             : request.ShipperUserId;
@@ -65,6 +81,18 @@ public sealed class CreateLoadCommandHandler(
             Status = LoadStatus.Available,
         };
 
+        if (agent is not null)
+        {
+            var breakdown = disbursementCalculator.Calculate(new DisbursementCalculationRequest
+            {
+                GrossAmountUsd = load.RateUsd,
+                AgentCommissionRatePercent = agent.CommissionRatePercent,
+                QuickPayRequested = false,
+            });
+
+            load.AttributeToAgent(agent.Id, breakdown.AgentCommissionAmountUsd);
+        }
+
         dbContext.Loads.Add(load);
         dbContext.AuditLogEntries.Add(new AuditLogEntry
         {
@@ -79,6 +107,7 @@ public sealed class CreateLoadCommandHandler(
                 load.Reference,
                 load.RateUsd,
                 load.ShipperUserId,
+                load.AgentId,
                 PostedByRole = currentUser.Role?.ToString(),
             }),
         });

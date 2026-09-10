@@ -43,7 +43,7 @@ public sealed class LoadsController(ISender sender) : ApiControllerBase
     /// books their own freight and the shipper id is taken from the token.
     /// </summary>
     [HttpPost]
-    [Authorize(Roles = $"{nameof(UserRole.Admin)},{nameof(UserRole.Shipper)}")]
+    [Authorize(Roles = $"{nameof(UserRole.Admin)},{nameof(UserRole.Shipper)},{nameof(UserRole.Agent)}")]
     [ProducesResponseType(typeof(LoadSummaryResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

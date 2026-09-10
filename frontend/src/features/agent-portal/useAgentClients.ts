@@ -1,27 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { PayoutHistoryEntry } from './payoutsApi';
-import { payoutsApi } from './payoutsApi';
+import type { AgentClientView } from './agentApi';
+import { agentApi } from './agentApi';
 
-export type CarrierPayoutsStatus = 'loading' | 'ready' | 'error';
+export type AgentClientsStatus = 'loading' | 'ready' | 'error';
 
-/** Loads (and lets a caller refresh) the authenticated carrier's payout ledger. */
-export function useCarrierPayouts(): {
-    status: CarrierPayoutsStatus;
-    payouts: PayoutHistoryEntry[];
+export function useAgentClients(): {
+    status: AgentClientsStatus;
+    clients: AgentClientView[];
     refresh: () => void;
 } {
-    const [status, setStatus] = useState<CarrierPayoutsStatus>('loading');
-    const [payouts, setPayouts] = useState<PayoutHistoryEntry[]>([]);
+    const [status, setStatus] = useState<AgentClientsStatus>('loading');
+    const [clients, setClients] = useState<AgentClientView[]>([]);
     const [refreshToken, setRefreshToken] = useState(0);
 
     useEffect(() => {
         let cancelled = false;
         setStatus('loading');
-        payoutsApi
-            .getPayouts()
+        agentApi
+            .getClients()
             .then((data) => {
                 if (!cancelled) {
-                    setPayouts(data);
+                    setClients(data);
                     setStatus('ready');
                 }
             })
@@ -37,5 +36,5 @@ export function useCarrierPayouts(): {
 
     const refresh = useCallback(() => setRefreshToken((token) => token + 1), []);
 
-    return { status, payouts, refresh };
+    return { status, clients, refresh };
 }

@@ -50,6 +50,8 @@ export interface CreateLoadInput {
   weightLbs: number;
   rateUsd: number;
   shipperName: string;
+  /** Agent-only: which client (Shipper) this load is published for. */
+  shipperUserId?: string;
   pickupAtUtc: string;
   deliveryAtUtc: string;
   targetTemperatureF?: number;

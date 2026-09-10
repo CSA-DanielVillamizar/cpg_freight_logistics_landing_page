@@ -13,8 +13,9 @@ namespace CPG.Application.Features.Billing.Disbursements.EventHandlers;
 public sealed class PaymentDisbursementCompletedDomainEventHandler(IEventBus eventBus)
     : INotificationHandler<PaymentDisbursementCompletedDomainEvent>
 {
-    public Task Handle(PaymentDisbursementCompletedDomainEvent notification, CancellationToken cancellationToken)
-        => eventBus.PublishAsync(
+    public async Task Handle(PaymentDisbursementCompletedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        await eventBus.PublishAsync(
             new QuickPayProcessedIntegrationEvent
             {
                 LoadId = notification.LoadId,
@@ -23,5 +24,18 @@ public sealed class PaymentDisbursementCompletedDomainEventHandler(IEventBus eve
                 QuickPayRequested = notification.QuickPayRequested,
                 StripeTransferId = notification.StripeTransferId,
             },
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
+
+        if (notification.AgentId is { } agentId && notification.AgentCommissionAmountUsd > 0)
+        {
+            await eventBus.PublishAsync(
+                new AgentCommissionAccruedIntegrationEvent
+                {
+                    AgentId = agentId,
+                    LoadId = notification.LoadId,
+                    CommissionAmountUsd = notification.AgentCommissionAmountUsd,
+                },
+                cancellationToken).ConfigureAwait(false);
+        }
+    }
 }
