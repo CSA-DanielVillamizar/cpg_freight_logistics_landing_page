@@ -59,6 +59,9 @@ export interface RateCalculationRequest {
   targetTemperatureCelsius?: number;
 }
 
+/** Confidence signal for `RateCalculationResponse.suggestedRateUsd` (T-SDD Epica 5). */
+export type RateConfidence = 'Low' | 'Medium' | 'High';
+
 /** POST /api/rates/calculate - 200 response body. */
 export interface RateCalculationResponse {
   baseRate: number;
@@ -67,6 +70,9 @@ export interface RateCalculationResponse {
   totalEstimated: number;
   currency: string;
   calculatedAt: string;
+  /** Market-informed suggestion for this lane/service/season; falls back to `totalEstimated`. */
+  suggestedRateUsd: number | null;
+  suggestedRateConfidence: RateConfidence;
 }
 
 /** POST /api/leads - request body (SPEC.md US-04). */

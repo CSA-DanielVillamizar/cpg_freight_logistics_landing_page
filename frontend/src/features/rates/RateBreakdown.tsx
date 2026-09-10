@@ -1,11 +1,20 @@
 import type { RateCalculationResponse } from '@/shared/api/types';
 import { cn } from '@/shared/lib/cn';
+import { Badge, type BadgeTone } from '@/shared/ui';
 
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 interface RateBreakdownProps {
   result: RateCalculationResponse;
 }
+
+const CONFIDENCE_TONE: Record<RateCalculationResponse['suggestedRateConfidence'], BadgeTone> = {
+  High: 'delivered',
+  Medium: 'dispatched',
+  Low: 'neutral',
+};
+
+const CONFIDENCE_TOOLTIP = 'Basado en operaciones históricas recientes en este carril';
 
 /**
  * Detailed quote breakdown: base rate, cold-chain surcharge, fuel surcharge, total (SPEC.md US-02).
@@ -58,6 +67,23 @@ export function RateBreakdown({ result }: RateBreakdownProps): JSX.Element {
       <p className="text-xs text-white/60">
         {result.currency} · all-inclusive (fuel &amp; specialized surcharges)
       </p>
+
+      {result.suggestedRateUsd !== null && (
+        <div className="flex items-center justify-between border-t border-white/10 pt-4">
+          <span
+            className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-white/70"
+            title={CONFIDENCE_TOOLTIP}
+          >
+            Tarifa sugerida por mercado
+            <Badge tone={CONFIDENCE_TONE[result.suggestedRateConfidence]}>
+              {result.suggestedRateConfidence}
+            </Badge>
+          </span>
+          <span className="font-mono text-body-sm font-semibold tabular-nums text-white">
+            {currency.format(result.suggestedRateUsd)}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
