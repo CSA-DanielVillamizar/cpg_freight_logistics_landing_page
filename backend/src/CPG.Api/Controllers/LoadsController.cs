@@ -6,6 +6,9 @@ using CPG.Application.Features.Loads.Delete;
 using CPG.Application.Features.Loads.Deliver;
 using CPG.Application.Features.Loads.Depart;
 using CPG.Application.Features.Loads.GetLoads;
+using CPG.Application.Features.Telemetry;
+using CPG.Application.Features.Telemetry.GetHistory;
+using CPG.Application.Features.Telemetry.GetLocation;
 using CPG.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -116,4 +119,20 @@ public sealed class LoadsController(ISender sender) : ApiControllerBase
         await sender.Send(new DeleteLoadCommand(id), cancellationToken);
         return NoContent();
     }
+
+    /// <summary>The load's last-known GPS position (T-SDD Epica 2A). Any authenticated user may read it.</summary>
+    [HttpGet("{id:guid}/location")]
+    [ProducesResponseType(typeof(LoadLocationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<LoadLocationResponse>> GetLocation(Guid id, CancellationToken cancellationToken)
+        => Ok(await sender.Send(new GetLoadCurrentLocationQuery(id), cancellationToken));
+
+    /// <summary>The load's GPS trail, most recent first (T-SDD Epica 2A route replay).</summary>
+    [HttpGet("{id:guid}/telemetry-history")]
+    [ProducesResponseType(typeof(IReadOnlyList<TelemetryLogEntryResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<TelemetryLogEntryResponse>>> GetTelemetryHistory(
+        Guid id,
+        [FromQuery] int take = 200,
+        CancellationToken cancellationToken = default)
+        => Ok(await sender.Send(new GetLoadTelemetryHistoryQuery(id, take), cancellationToken));
 }

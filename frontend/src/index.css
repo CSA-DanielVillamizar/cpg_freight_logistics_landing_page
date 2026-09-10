@@ -38,3 +38,21 @@
     text-wrap: balance;
   }
 }
+
+/* Live Tracking (T-SDD Epica 2A): smooth the truck marker between GPS pings instead of
+   snapping — Leaflet repositions markers via an inline transform, so animating that
+   property is enough to interpolate motion without a plugin. */
+.leaflet-marker-icon {
+  transition: transform 0.6s linear;
+}
+
+.cpg-truck-marker__body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  filter: drop-shadow(0 1px 2px rgba(11, 25, 44, 0.5));
+  transition: transform 0.6s linear;
+}

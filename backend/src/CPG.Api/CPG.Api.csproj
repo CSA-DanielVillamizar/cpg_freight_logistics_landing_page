@@ -11,6 +11,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" />
 
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.Azure.SignalR" />
 
     <PackageReference Include="MediatR" />
     <PackageReference Include="FluentValidation" />

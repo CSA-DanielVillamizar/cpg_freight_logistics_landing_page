@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
 import { registerAuthBridge } from '@/shared/api/client';
 import type { AuthResponse, AuthenticatedUser, RegisterRequest } from '@/shared/api/types';
-import { AuthContext } from './authContext';
-import type { AuthContextValue } from './authContext';
+import type { ReactNode } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { authApi } from './authApi';
+import type { AuthContextValue } from './authContext';
+import { AuthContext } from './authContext';
 
 const STORAGE_KEY = 'cpg.auth.session';
 

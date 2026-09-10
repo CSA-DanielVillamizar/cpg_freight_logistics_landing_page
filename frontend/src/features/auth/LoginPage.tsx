@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { ApiError } from '@/shared/api/client';
 import { Button, Card, Input } from '@/shared/ui';
-import { useAuth } from './useAuth';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ROLE_HOME } from './roleHome';
+import { useAuth } from './useAuth';
 
 interface LocationState {
   from?: { pathname: string };

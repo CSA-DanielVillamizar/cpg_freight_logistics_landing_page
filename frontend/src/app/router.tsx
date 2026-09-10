@@ -1,4 +1,3 @@
-import { createBrowserRouter } from 'react-router-dom';
 import { App } from '@/App';
 import { AdminDashboardPage } from '@/features/admin/AdminDashboardPage';
 import { AuditLogsPage } from '@/features/admin/AuditLogsPage';
@@ -11,13 +10,15 @@ import { RoleSelectionPage } from '@/features/auth/RoleSelectionPage';
 import { ShipperSignUpPage } from '@/features/auth/ShipperSignUpPage';
 import { CarrierPortalPage } from '@/features/carrier-portal/CarrierPortalPage';
 import { LandingPage } from '@/features/landing/LandingPage';
-import { LoadBoardPage } from '@/features/load-board/LoadBoardPage';
 import { VerticalLandingPage } from '@/features/landing/VerticalLandingPage';
+import { LoadBoardPage } from '@/features/load-board/LoadBoardPage';
 import { RateCalculatorPage } from '@/features/rates/RateCalculatorPage';
+import { LoadTrackingDetailPage } from '@/features/shipper-portal/LoadTrackingDetailPage';
 import { PostLoadPage } from '@/features/shipper-portal/PostLoadPage';
 import { ShipperBillingPage } from '@/features/shipper-portal/ShipperBillingPage';
 import { ShipperDashboardPage } from '@/features/shipper-portal/ShipperDashboardPage';
 import { LiveTrackingPage } from '@/features/telemetry/LiveTrackingPage';
+import { createBrowserRouter } from 'react-router-dom';
 
 export const router = createBrowserRouter([
   {
@@ -101,6 +102,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireRole role="Shipper">
             <ShipperBillingPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'shipper/loads/:loadId/tracking',
+        element: (
+          <RequireRole role="Shipper">
+            <LoadTrackingDetailPage />
           </RequireRole>
         ),
       },

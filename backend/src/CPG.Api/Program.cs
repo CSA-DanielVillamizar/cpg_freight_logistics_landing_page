@@ -33,9 +33,17 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // --- Real-time telemetry (SignalR) ---
-builder.Services.AddSignalR()
+// Azure SignalR Service (serverless) is used when configured (production Container Apps);
+// otherwise falls back to the self-hosted hub for local development (T-SDD Epica 2A ADR-04).
+var signalRBuilder = builder.Services.AddSignalR()
     .AddJsonProtocol(options =>
         options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+var azureSignalRConnectionString = builder.Configuration.GetConnectionString("AzureSignalR");
+if (!string.IsNullOrWhiteSpace(azureSignalRConnectionString))
+{
+    signalRBuilder.AddAzureSignalR(azureSignalRConnectionString);
+}
+
 builder.Services.AddSingleton<ITelemetryBroadcaster, SignalRTelemetryBroadcaster>();
 if (!builder.Environment.IsEnvironment("Testing"))
 {
@@ -148,6 +156,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<IdempotencyKeyMiddleware>();
+app.UseMiddleware<TelemetryWebhookSignatureMiddleware>();
 
 app.MapControllers();
 app.MapHub<TelemetryHub>("/hubs/telemetry");

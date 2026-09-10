@@ -10,4 +10,8 @@ public sealed class SignalRTelemetryBroadcaster(IHubContext<TelemetryHub> hubCon
 {
     public Task BroadcastAsync(TelemetryReading reading, CancellationToken cancellationToken = default)
         => hubContext.Clients.All.SendAsync(TelemetryHub.ReceiveTelemetryUpdate, reading, cancellationToken);
+
+    public Task BroadcastToLoadGroupAsync(Guid loadId, TelemetryReading reading, CancellationToken cancellationToken = default)
+        => hubContext.Clients.Group(TelemetryHub.LoadGroupName(loadId))
+            .SendAsync(TelemetryHub.ReceiveTelemetryUpdate, reading, cancellationToken);
 }

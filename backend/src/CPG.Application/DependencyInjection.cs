@@ -1,7 +1,9 @@
 using System.Reflection;
 using CPG.Application.Common.Behaviours;
+using CPG.Application.Common.Interfaces;
 using CPG.Application.Features.Rates;
 using CPG.Application.Features.Rates.Engine;
+using CPG.Application.Features.Telemetry.Webhooks;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +30,8 @@ public static class DependencyInjection
 
         AddRateEngine(services);
 
+        AddTelemetrySignatureVerifiers(services);
+
         return services;
     }
 
@@ -41,5 +45,13 @@ public static class DependencyInjection
 
         services.AddSingleton<IDistanceCalculator, ZipCentroidDistanceCalculator>();
         services.AddSingleton<IRateEngine, RateEngine>();
+    }
+
+    private static void AddTelemetrySignatureVerifiers(IServiceCollection services)
+    {
+        // Strategy: one HMAC verification strategy per ELD provider.
+        services.AddSingleton<ITelemetrySignatureVerifier, SamsaraSignatureVerifier>();
+        services.AddSingleton<ITelemetrySignatureVerifier, MotiveSignatureVerifier>();
+        services.AddSingleton<ITelemetrySignatureVerifier, KeepTruckinSignatureVerifier>();
     }
 }

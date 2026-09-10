@@ -141,7 +141,7 @@ public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion, ISoftDelete
     /// (by <paramref name="recordedAtUtc"/>) are silently ignored for idempotency.
     /// </summary>
     /// <exception cref="DomainException">The load is not currently trackable.</exception>
-    public void UpdateTelemetry(decimal latitude, decimal longitude, DateTimeOffset recordedAtUtc)
+    public void UpdateTelemetry(decimal latitude, decimal longitude, DateTimeOffset recordedAtUtc, decimal? speedMph = null)
     {
         if (Status is not (LoadStatus.Dispatched or LoadStatus.InTransit))
         {
@@ -157,7 +157,7 @@ public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion, ISoftDelete
         LastKnownLongitude = longitude;
         LastTelemetryAtUtc = recordedAtUtc;
 
-        RaiseDomainEvent(new LoadGpsLocationUpdatedDomainEvent(Id, Reference, latitude, longitude, recordedAtUtc));
+        RaiseDomainEvent(new LoadGpsLocationUpdatedDomainEvent(Id, Reference, latitude, longitude, speedMph, recordedAtUtc));
     }
 
     /// <summary>

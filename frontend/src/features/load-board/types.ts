@@ -81,3 +81,20 @@ export const STATUS_TONE: Record<LoadStatus, BadgeTone> = {
   InTransit: 'transit',
   Delivered: 'delivered',
 };
+
+/** GET /api/loads/{id}/location response (T-SDD Epica 2A). */
+export interface LoadLocationResponse {
+  loadId: string;
+  latitude: number | null;
+  longitude: number | null;
+  lastTelemetryAtUtc: string | null;
+}
+
+/** A row of GET /api/loads/{id}/telemetry-history (T-SDD Epica 2A). */
+export interface TelemetryLogEntryResponse {
+  latitude: number;
+  longitude: number;
+  speedMph: number | null;
+  headingDegrees: number | null;
+  recordedAtUtc: string;
+}

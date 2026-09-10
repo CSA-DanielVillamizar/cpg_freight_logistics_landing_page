@@ -12,4 +12,5 @@ public sealed record LoadGpsLocationUpdatedDomainEvent(
     string Reference,
     decimal Latitude,
     decimal Longitude,
+    decimal? SpeedMph,
     DateTimeOffset RecordedAtUtc) : DomainEvent;

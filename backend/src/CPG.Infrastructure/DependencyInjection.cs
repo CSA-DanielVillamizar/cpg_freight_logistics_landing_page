@@ -88,6 +88,7 @@ public static class DependencyInjection
             bus.AddConsumer<LoadAcceptedNotificationConsumer>();
             bus.AddConsumer<LoadDeliveredNotificationConsumer>();
             bus.AddConsumer<UserWelcomeNotificationConsumer>();
+            bus.AddConsumer<LoadGpsLocationUpdatedConsumer>();
 
             if (useServiceBus)
             {

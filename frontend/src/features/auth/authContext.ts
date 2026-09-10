@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import type { AuthenticatedUser, RegisterRequest, UserRole } from '@/shared/api/types';
+import { createContext } from 'react';
 
 export interface AuthContextValue {
   user: AuthenticatedUser | null;
