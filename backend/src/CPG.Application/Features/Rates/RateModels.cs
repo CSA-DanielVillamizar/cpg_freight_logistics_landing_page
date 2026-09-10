@@ -37,4 +37,13 @@ public sealed record RateCalculationResponse
     public string Currency { get; init; } = "USD";
 
     public required DateTimeOffset CalculatedAt { get; init; }
+
+    /// <summary>
+    /// Market-informed rate suggestion for this lane/service/season (T-SDD Epica 5). Falls back
+    /// to <see cref="TotalEstimated"/> when there is no (or too little) historical data —
+    /// see <see cref="SuggestedRateConfidence"/>.
+    /// </summary>
+    public decimal? SuggestedRateUsd { get; init; }
+
+    public RateConfidence SuggestedRateConfidence { get; init; } = RateConfidence.Low;
 }

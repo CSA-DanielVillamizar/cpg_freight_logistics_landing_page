@@ -24,7 +24,9 @@ public sealed class RateEngine : IRateEngine
         _clock = clock;
     }
 
-    public RateCalculationResponse Calculate(RateCalculationRequest request)
+    public RateCalculationResponse Calculate(
+        RateCalculationRequest request,
+        Domain.Entities.LaneRateStatistic? laneStatistic = null)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -36,11 +38,11 @@ public sealed class RateEngine : IRateEngine
         var miles = _distance.RoadMilesBetween(request.OriginZip, request.DestinationZip);
         var baseRate = strategy.ComputeBaseRate(miles, request.WeightLbs);
 
-        var context = new SurchargeContext(request, miles, baseRate);
+        var context = new SurchargeContext(request, miles, baseRate, laneStatistic);
 
-        // Build the chain: cold-chain first, then fuel (fuel is a % of the base rate only).
+        // Build the chain: cold-chain, then fuel, then the historical margin suggestion.
         var coldChain = new ColdChainSurchargeHandler();
-        coldChain.SetNext(new FuelSurchargeHandler());
+        coldChain.SetNext(new FuelSurchargeHandler()).SetNext(new HistoricalMarginAdjustmentHandler());
         coldChain.Handle(context);
 
         var total = baseRate + context.ColdChainSurcharge + context.FuelSurcharge;
@@ -53,6 +55,8 @@ public sealed class RateEngine : IRateEngine
             TotalEstimated = Math.Round(total, 2, MidpointRounding.AwayFromZero),
             Currency = "USD",
             CalculatedAt = _clock.UtcNow,
+            SuggestedRateUsd = context.SuggestedRateUsd,
+            SuggestedRateConfidence = context.SuggestedRateConfidence,
         };
     }
 }

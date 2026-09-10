@@ -1,7 +1,11 @@
 namespace CPG.Application.Features.Rates.Engine;
 
 /// <summary>Mutable accumulator threaded through the surcharge chain.</summary>
-public sealed class SurchargeContext(RateCalculationRequest request, double roadMiles, decimal baseRate)
+public sealed class SurchargeContext(
+    RateCalculationRequest request,
+    double roadMiles,
+    decimal baseRate,
+    Domain.Entities.LaneRateStatistic? laneStatistic = null)
 {
     public RateCalculationRequest Request { get; } = request;
 
@@ -9,9 +13,20 @@ public sealed class SurchargeContext(RateCalculationRequest request, double road
 
     public decimal BaseRate { get; } = baseRate;
 
+    /// <summary>
+    /// Pre-fetched by the query handler (an O(1) lookup on the unique composite index) before
+    /// the synchronous chain runs — <see cref="SurchargeHandler.Apply"/> never touches the
+    /// database itself (T-SDD Epica 5).
+    /// </summary>
+    public Domain.Entities.LaneRateStatistic? LaneStatistic { get; } = laneStatistic;
+
     public decimal ColdChainSurcharge { get; set; }
 
     public decimal FuelSurcharge { get; set; }
+
+    public decimal? SuggestedRateUsd { get; set; }
+
+    public RateConfidence SuggestedRateConfidence { get; set; } = RateConfidence.Low;
 }
 
 /// <summary>

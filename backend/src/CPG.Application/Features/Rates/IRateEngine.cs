@@ -7,5 +7,12 @@ namespace CPG.Application.Features.Rates;
 /// </summary>
 public interface IRateEngine
 {
-    RateCalculationResponse Calculate(RateCalculationRequest request);
+    /// <summary>
+    /// <paramref name="laneStatistic"/> is an optional, already-fetched historical lane
+    /// statistic (see <see cref="Engine.HistoricalMarginAdjustmentHandler"/>); pass
+    /// <see langword="null"/> when none exists for the lane/service/month.
+    /// </summary>
+    RateCalculationResponse Calculate(
+        RateCalculationRequest request,
+        Domain.Entities.LaneRateStatistic? laneStatistic = null);
 }

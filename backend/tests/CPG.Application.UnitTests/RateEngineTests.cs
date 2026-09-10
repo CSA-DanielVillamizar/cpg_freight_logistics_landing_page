@@ -2,6 +2,7 @@ using System.Diagnostics;
 using CPG.Application.Common.Interfaces;
 using CPG.Application.Features.Rates;
 using CPG.Application.Features.Rates.Engine;
+using CPG.Domain.Entities;
 using CPG.Domain.Enums;
 using FluentAssertions;
 using Xunit;
@@ -84,6 +85,57 @@ public sealed class RateEngineTests
 
         stopwatch.Stop();
         (stopwatch.Elapsed.TotalMilliseconds / 1_000).Should().BeLessThan(1d);
+    }
+    [Fact]
+    public void No_lane_statistic_falls_back_to_total_estimated_with_low_confidence()
+    {
+        var engine = CreateEngine();
+
+        var response = engine.Calculate(new RateCalculationRequest
+        {
+            ServiceType = ServiceType.Flatbed,
+            OriginZip = "33602",
+            DestinationZip = "31401",
+            WeightLbs = 46_000,
+        });
+
+        response.SuggestedRateUsd.Should().Be(response.TotalEstimated);
+        response.SuggestedRateConfidence.Should().Be(RateConfidence.Low);
+    }
+
+    [Theory]
+    [InlineData(5, RateConfidence.Low)]
+    [InlineData(10, RateConfidence.Medium)]
+    [InlineData(29, RateConfidence.Medium)]
+    [InlineData(30, RateConfidence.High)]
+    public void Lane_statistic_sample_size_drives_confidence_level(int sampleSize, RateConfidence expected)
+    {
+        var engine = CreateEngine();
+        var request = new RateCalculationRequest
+        {
+            ServiceType = ServiceType.Flatbed,
+            OriginZip = "33602",
+            DestinationZip = "31401",
+            WeightLbs = 46_000,
+        };
+
+        var statistic = new LaneRateStatistic
+        {
+            OriginZip3 = "336",
+            DestinationZip3 = "314",
+            ServiceType = ServiceType.Flatbed,
+            Month = 9,
+            AvgRatePerMileUsd = 2.50m,
+            P25RatePerMileUsd = 2.10m,
+            P75RatePerMileUsd = 2.90m,
+            SampleSize = sampleSize,
+            ComputedAtUtc = new DateTimeOffset(2026, 9, 1, 0, 0, 0, TimeSpan.Zero),
+        };
+
+        var response = engine.Calculate(request, statistic);
+
+        response.SuggestedRateConfidence.Should().Be(expected);
+        response.SuggestedRateUsd.Should().NotBeNull();
     }
 
     private sealed class FixedClock : IDateTimeProvider

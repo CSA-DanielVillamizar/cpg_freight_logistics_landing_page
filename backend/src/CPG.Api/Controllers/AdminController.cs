@@ -5,6 +5,8 @@ using CPG.Application.Features.Admin.GetCarrierDocument;
 using CPG.Application.Features.Admin.GetCarriers;
 using CPG.Application.Features.Admin.GetLoads;
 using CPG.Application.Features.Admin.ReviewCarrier;
+using CPG.Application.Features.Rates.GetLaneRateStatistics;
+using CPG.Application.Features.Rates.RecomputeLaneRateStatistics;
 using CPG.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -85,6 +87,22 @@ public sealed class AdminController(ISender sender) : ApiControllerBase
 
         return File(document.Content, document.ContentType, document.FileName);
     }
+
+    /// <summary>Historical lane rate read model backing the "Tarifa Sugerida" feature (T-SDD Epica 5).</summary>
+    [HttpGet("lane-rate-statistics")]
+    [ProducesResponseType(typeof(IReadOnlyList<LaneRateStatisticResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IReadOnlyList<LaneRateStatisticResponse>>> GetLaneRateStatistics(
+        CancellationToken cancellationToken)
+        => Ok(await sender.Send(new GetLaneRateStatisticsQuery(), cancellationToken));
+
+    /// <summary>Rebuilds the lane rate statistics read model from the last 18 months of delivered loads.</summary>
+    [HttpPost("lane-rate-statistics/recompute")]
+    [ProducesResponseType(typeof(RecomputeLaneRateStatisticsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<RecomputeLaneRateStatisticsResponse>> RecomputeLaneRateStatistics(
+        CancellationToken cancellationToken)
+        => Ok(await sender.Send(new RecomputeLaneRateStatisticsCommand(), cancellationToken));
 }
 
 /// <summary>Body for <c>POST /api/admin/carriers/{id}/review</c>.</summary>
