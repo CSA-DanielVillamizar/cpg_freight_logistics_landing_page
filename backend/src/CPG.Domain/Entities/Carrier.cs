@@ -5,7 +5,7 @@ using CPG.Domain.Events;
 namespace CPG.Domain.Entities;
 
 /// <summary>A freight carrier / owner-operator account (SPEC.md US-03).</summary>
-public class Carrier : AggregateRoot, IAuditableEntity, IHasRowVersion
+public class Carrier : AggregateRoot, IAuditableEntity, IHasRowVersion, IHasStripeConnectAccount
 {
     private readonly List<ComplianceDocument> _complianceDocuments = [];
 
@@ -18,6 +18,10 @@ public class Carrier : AggregateRoot, IAuditableEntity, IHasRowVersion
     public string? McNumber { get; set; }
 
     public ComplianceStatus ComplianceStatus { get; private set; } = ComplianceStatus.PendingCompliance;
+
+    public string? StripeConnectAccountId { get; set; }
+
+    public StripeOnboardingStatus StripeOnboardingStatus { get; set; } = StripeOnboardingStatus.NotStarted;
 
     public IReadOnlyCollection<ComplianceDocument> ComplianceDocuments => _complianceDocuments.AsReadOnly();
 

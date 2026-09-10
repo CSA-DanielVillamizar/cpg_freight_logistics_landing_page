@@ -16,6 +16,11 @@ public class User : AggregateRoot, IAuditableEntity
 
     public bool IsActive { get; set; } = true;
 
+    /// <summary>Company name for Shipper/Agent principals without a dedicated aggregate.</summary>
+    public string? CompanyName { get; set; }
+
+    public string? PhoneNumber { get; set; }
+
     public ICollection<RefreshToken> RefreshTokens { get; } = [];
 
     public DateTimeOffset CreatedAtUtc { get; set; }

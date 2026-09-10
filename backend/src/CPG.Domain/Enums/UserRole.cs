@@ -6,4 +6,5 @@ public enum UserRole
     Admin = 1,
     Carrier = 2,
     Shipper = 3,
+    Agent = 4,
 }

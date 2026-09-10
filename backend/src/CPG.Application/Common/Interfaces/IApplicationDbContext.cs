@@ -25,5 +25,19 @@ public interface IApplicationDbContext
 
     DbSet<AuditLogEntry> AuditLogEntries { get; }
 
+    DbSet<Agent> Agents { get; }
+
+    DbSet<TelemetryDevice> TelemetryDevices { get; }
+
+    DbSet<TelemetryLog> TelemetryLogs { get; }
+
+    DbSet<PaymentDisbursement> PaymentDisbursements { get; }
+
+    DbSet<CaseStudy> CaseStudies { get; }
+
+    DbSet<AgentClientInvitation> AgentClientInvitations { get; }
+
+    DbSet<LaneRateStatistic> LaneRateStatistics { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -27,6 +27,20 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public DbSet<IdempotencyRecord> IdempotencyRecords => Set<IdempotencyRecord>();
 
+    public DbSet<Agent> Agents => Set<Agent>();
+
+    public DbSet<TelemetryDevice> TelemetryDevices => Set<TelemetryDevice>();
+
+    public DbSet<TelemetryLog> TelemetryLogs => Set<TelemetryLog>();
+
+    public DbSet<PaymentDisbursement> PaymentDisbursements => Set<PaymentDisbursement>();
+
+    public DbSet<CaseStudy> CaseStudies => Set<CaseStudy>();
+
+    public DbSet<AgentClientInvitation> AgentClientInvitations => Set<AgentClientInvitation>();
+
+    public DbSet<LaneRateStatistic> LaneRateStatistics => Set<LaneRateStatistic>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);

@@ -59,6 +59,19 @@ public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion, ISoftDelete
 
     public Carrier? AssignedCarrier { get; set; }
 
+    /// <summary>Last GPS latitude reported by an ELD webhook, denormalized for fast map reads.</summary>
+    public decimal? LastKnownLatitude { get; set; }
+
+    public decimal? LastKnownLongitude { get; set; }
+
+    public DateTimeOffset? LastTelemetryAtUtc { get; set; }
+
+    /// <summary>The Independent Agent this load was published by, if any.</summary>
+    public Guid? AgentId { get; set; }
+
+    /// <summary>Pre-calculated commission shown on the Agent's dashboard at publish time.</summary>
+    public decimal? ProjectedAgentCommissionUsd { get; set; }
+
     /// <summary>Optimistic concurrency token mapped to PostgreSQL <c>xmin</c>.</summary>
     public uint RowVersion { get; set; }
 
@@ -121,5 +134,47 @@ public class Load : AggregateRoot, IAuditableEntity, IHasRowVersion, ISoftDelete
         Status = LoadStatus.Delivered;
 
         RaiseDomainEvent(new LoadDeliveredDomainEvent(Id, Reference, ShipperUserId));
+    }
+
+    /// <summary>
+    /// Records a verified GPS reading from an ELD webhook. Out-of-order or duplicate readings
+    /// (by <paramref name="recordedAtUtc"/>) are silently ignored for idempotency.
+    /// </summary>
+    /// <exception cref="DomainException">The load is not currently trackable.</exception>
+    public void UpdateTelemetry(decimal latitude, decimal longitude, DateTimeOffset recordedAtUtc)
+    {
+        if (Status is not (LoadStatus.Dispatched or LoadStatus.InTransit))
+        {
+            throw new DomainException($"Load {Reference} cannot receive telemetry in status {Status}.");
+        }
+
+        if (LastTelemetryAtUtc is { } lastRecordedAtUtc && recordedAtUtc <= lastRecordedAtUtc)
+        {
+            return;
+        }
+
+        LastKnownLatitude = latitude;
+        LastKnownLongitude = longitude;
+        LastTelemetryAtUtc = recordedAtUtc;
+
+        RaiseDomainEvent(new LoadGpsLocationUpdatedDomainEvent(Id, Reference, latitude, longitude, recordedAtUtc));
+    }
+
+    /// <summary>
+    /// Attributes a newly published load to the Independent Agent that created it, storing the
+    /// pre-calculated projected commission shown on the Agent's dashboard.
+    /// </summary>
+    /// <exception cref="DomainException">The load is not newly published (available).</exception>
+    public void AttributeToAgent(Guid agentId, decimal projectedCommissionUsd)
+    {
+        if (Status != LoadStatus.Available)
+        {
+            throw new DomainException("Solo se puede atribuir una carga recien publicada.");
+        }
+
+        AgentId = agentId;
+        ProjectedAgentCommissionUsd = projectedCommissionUsd;
+
+        RaiseDomainEvent(new LoadPublishedByAgentDomainEvent(Id, agentId, projectedCommissionUsd));
     }
 }

@@ -1,5 +1,6 @@
 using CPG.Domain.Common;
 using CPG.Domain.Entities;
+using CPG.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,6 +34,8 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.PasswordHash).HasMaxLength(512).IsRequired();
         builder.Property(u => u.FullName).HasMaxLength(200).IsRequired();
         builder.Property(u => u.Role).HasConversion<string>().HasMaxLength(32);
+        builder.Property(u => u.CompanyName).HasMaxLength(200);
+        builder.Property(u => u.PhoneNumber).HasMaxLength(20);
         builder.HasMany(u => u.RefreshTokens)
             .WithOne()
             .HasForeignKey(rt => rt.UserId)
@@ -63,7 +66,11 @@ internal sealed class CarrierConfiguration : IEntityTypeConfiguration<Carrier>
         builder.Property(c => c.DotNumber).HasMaxLength(32);
         builder.Property(c => c.McNumber).HasMaxLength(32);
         builder.Property(c => c.ComplianceStatus).HasConversion<string>().HasMaxLength(32);
+        builder.Property(c => c.StripeConnectAccountId).HasMaxLength(64);
+        builder.Property(c => c.StripeOnboardingStatus).HasConversion<string>().HasMaxLength(32)
+            .HasDefaultValue(StripeOnboardingStatus.NotStarted);
         builder.HasIndex(c => c.UserId).IsUnique();
+        builder.HasIndex(c => c.StripeConnectAccountId).IsUnique().HasFilter("\"StripeConnectAccountId\" IS NOT NULL");
         builder.HasMany(c => c.ComplianceDocuments)
             .WithOne()
             .HasForeignKey(d => d.CarrierId)
@@ -132,9 +139,13 @@ internal sealed class LoadConfiguration : IEntityTypeConfiguration<Load>
         builder.Property(l => l.SpecialInstructions).HasMaxLength(1000);
         builder.Property(l => l.Status).HasConversion<string>().HasMaxLength(32);
         builder.Property(l => l.IsDeleted).HasDefaultValue(false);
+        builder.Property(l => l.LastKnownLatitude).HasPrecision(9, 6);
+        builder.Property(l => l.LastKnownLongitude).HasPrecision(9, 6);
+        builder.Property(l => l.ProjectedAgentCommissionUsd).HasPrecision(12, 2);
         builder.HasIndex(l => l.Status);
         builder.HasIndex(l => l.ShipperUserId);
         builder.HasIndex(l => l.IsDeleted);
+        builder.HasIndex(l => l.AgentId);
         builder.HasOne(l => l.AssignedCarrier)
             .WithMany()
             .HasForeignKey(l => l.AssignedCarrierId)
@@ -204,5 +215,124 @@ internal sealed class IdempotencyRecordConfiguration : IEntityTypeConfiguration<
         builder.Property(r => r.RequestPath).HasMaxLength(400).IsRequired();
         builder.Property(r => r.ResponseBody).HasColumnType("jsonb");
         builder.HasIndex(r => r.CreatedAtUtc);
+    }
+}
+
+internal sealed class AgentConfiguration : IEntityTypeConfiguration<Agent>
+{
+    public void Configure(EntityTypeBuilder<Agent> builder)
+    {
+        builder.ToTable("agents");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.CompanyName).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.CpgLicenseReference).HasMaxLength(64).IsRequired();
+        builder.Property(a => a.CommissionRatePercent).HasPrecision(5, 2);
+        builder.Property(a => a.Status).HasConversion<string>().HasMaxLength(32);
+        builder.Property(a => a.StripeConnectAccountId).HasMaxLength(64);
+        builder.HasIndex(a => a.UserId).IsUnique();
+        builder.HasIndex(a => a.StripeConnectAccountId).IsUnique().HasFilter("\"StripeConnectAccountId\" IS NOT NULL");
+        builder.MapXminRowVersion();
+        builder.Ignore(a => a.DomainEvents);
+    }
+}
+
+internal sealed class TelemetryDeviceConfiguration : IEntityTypeConfiguration<TelemetryDevice>
+{
+    public void Configure(EntityTypeBuilder<TelemetryDevice> builder)
+    {
+        builder.ToTable("telemetry_devices");
+        builder.HasKey(d => d.Id);
+        builder.Property(d => d.Provider).HasConversion<string>().HasMaxLength(32);
+        builder.Property(d => d.ExternalDeviceId).HasMaxLength(120).IsRequired();
+        builder.Property(d => d.WebhookSecretHash).HasMaxLength(512).IsRequired();
+        builder.HasIndex(d => d.CarrierId);
+        builder.HasIndex(d => new { d.Provider, d.ExternalDeviceId }).IsUnique();
+    }
+}
+
+internal sealed class TelemetryLogConfiguration : IEntityTypeConfiguration<TelemetryLog>
+{
+    public void Configure(EntityTypeBuilder<TelemetryLog> builder)
+    {
+        builder.ToTable("telemetry_log");
+        builder.HasKey(t => t.Id);
+        builder.Property(t => t.Latitude).HasPrecision(9, 6);
+        builder.Property(t => t.Longitude).HasPrecision(9, 6);
+        builder.Property(t => t.SpeedMph).HasPrecision(6, 2);
+        builder.Property(t => t.HeadingDegrees).HasPrecision(5, 2);
+        builder.HasIndex(t => new { t.LoadId, t.RecordedAtUtc });
+        builder.HasIndex(t => t.TelemetryDeviceId);
+    }
+}
+
+internal sealed class PaymentDisbursementConfiguration : IEntityTypeConfiguration<PaymentDisbursement>
+{
+    public void Configure(EntityTypeBuilder<PaymentDisbursement> builder)
+    {
+        builder.ToTable("payment_disbursements");
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.GrossAmountUsd).HasPrecision(12, 2);
+        builder.Property(p => p.CpgMarginAmountUsd).HasPrecision(12, 2);
+        builder.Property(p => p.AgentCommissionAmountUsd).HasPrecision(12, 2);
+        builder.Property(p => p.QuickPayFeeAmountUsd).HasPrecision(12, 2);
+        builder.Property(p => p.CarrierNetAmountUsd).HasPrecision(12, 2);
+        builder.Property(p => p.Status).HasConversion<string>().HasMaxLength(32);
+        builder.Property(p => p.StripeTransferId).HasMaxLength(128);
+        builder.Property(p => p.FailureReason).HasMaxLength(1000);
+        builder.HasIndex(p => p.LoadId);
+        builder.HasIndex(p => p.InvoiceId);
+        builder.HasIndex(p => p.CarrierId);
+        builder.HasIndex(p => p.AgentId);
+        builder.HasIndex(p => p.Status);
+        builder.Ignore(p => p.DomainEvents);
+    }
+}
+
+internal sealed class CaseStudyConfiguration : IEntityTypeConfiguration<CaseStudy>
+{
+    public void Configure(EntityTypeBuilder<CaseStudy> builder)
+    {
+        builder.ToTable("case_studies");
+        builder.HasKey(c => c.Id);
+        builder.Property(c => c.Title).HasMaxLength(200).IsRequired();
+        builder.Property(c => c.Slug).HasMaxLength(200).IsRequired();
+        builder.Property(c => c.ServiceType).HasConversion<string>().HasMaxLength(32);
+        builder.Property(c => c.SummaryMarkdown).HasMaxLength(2000).IsRequired();
+        builder.Property(c => c.HeroImageBlobUri).HasMaxLength(1024);
+        builder.HasIndex(c => c.Slug).IsUnique();
+        builder.HasIndex(c => c.IsPublished);
+        builder.Ignore(c => c.DomainEvents);
+    }
+}
+
+internal sealed class AgentClientInvitationConfiguration : IEntityTypeConfiguration<AgentClientInvitation>
+{
+    public void Configure(EntityTypeBuilder<AgentClientInvitation> builder)
+    {
+        builder.ToTable("agent_client_invitations");
+        builder.HasKey(i => i.Id);
+        builder.Property(i => i.InvitedEmail).HasMaxLength(256).IsRequired();
+        builder.Property(i => i.Token).HasMaxLength(256).IsRequired();
+        builder.Property(i => i.Status).HasConversion<string>().HasMaxLength(32);
+        builder.HasIndex(i => i.Token).IsUnique();
+        builder.HasIndex(i => i.AgentId);
+    }
+}
+
+internal sealed class LaneRateStatisticConfiguration : IEntityTypeConfiguration<LaneRateStatistic>
+{
+    public void Configure(EntityTypeBuilder<LaneRateStatistic> builder)
+    {
+        builder.ToTable("lane_rate_statistics");
+        builder.HasKey(l => l.Id);
+        builder.Property(l => l.OriginZip3).HasMaxLength(3).IsRequired();
+        builder.Property(l => l.DestinationZip3).HasMaxLength(3).IsRequired();
+        builder.Property(l => l.ServiceType).HasConversion<string>().HasMaxLength(32);
+        builder.Property(l => l.AvgRatePerMileUsd).HasPrecision(8, 4);
+        builder.Property(l => l.P25RatePerMileUsd).HasPrecision(8, 4);
+        builder.Property(l => l.P75RatePerMileUsd).HasPrecision(8, 4);
+
+        // Composite lookup key used by the rate engine's HistoricalMarginAdjustmentHandler (T-SDD Epica 5).
+        builder.HasIndex(l => new { l.OriginZip3, l.DestinationZip3, l.ServiceType, l.Month }).IsUnique();
     }
 }
